@@ -1,0 +1,64 @@
+default_platform(:ios)
+
+platform :ios do
+  desc "Build and upload iOS release to App Store"
+  lane :ios_release do
+    ensure_git_status_clean
+
+    increment_build_number(xcodeproj: "ios/TourismMarketplace.xcodeproj")
+
+    match(
+      type: "appstore",
+      app_identifier: "com.tourismmarketplace.app",
+      readonly: true
+    )
+
+    build_app(
+      workspace: "ios/TourismMarketplace.xcworkspace",
+      scheme: "TourismMarketplace",
+      configuration: "Release",
+      export_method: "app-store",
+      output_directory: "build/ios",
+      output_name: "TourismMarketplace.ipa"
+    )
+
+    upload_to_app_store(
+      skip_metadata: false,
+      skip_screenshots: false,
+      submit_for_review: false,
+      automatic_release: false,
+      metadata_path: "ios/fastlane/metadata",
+      screenshots_path: "ios/fastlane/screenshots"
+    )
+
+    slack(message: "iOS release uploaded to App Store Connect") if ENV["SLACK_URL"]
+  end
+end
+
+platform :android do
+  desc "Build and upload Android release to Google Play"
+  lane :android_release do
+    ensure_git_status_clean
+
+    gradle(
+      task: "bundle",
+      build_type: "Release",
+      project_dir: "android/",
+      properties: {
+        "android.injected.signing.store.file" => ENV["KEYSTORE_FILE"],
+        "android.injected.signing.store.password" => ENV["KEYSTORE_PASSWORD"],
+        "android.injected.signing.key.alias" => ENV["KEY_ALIAS"],
+        "android.injected.signing.key.password" => ENV["KEY_PASSWORD"]
+      }
+    )
+
+    upload_to_play_store(
+      track: "production",
+      aab: "android/app/build/outputs/bundle/release/app-release.aab",
+      json_key: "fastlane/google-play-key.json",
+      metadata_path: "android/fastlane/metadata"
+    )
+
+    slack(message: "Android release uploaded to Google Play") if ENV["SLACK_URL"]
+  end
+end

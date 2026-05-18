@@ -1,0 +1,8 @@
+app_identifier("com.tourismmarketplace.app")
+apple_id("your-apple-id@example.com")
+itc_team_id("YOUR_ITC_TEAM_ID")
+team_id("YOUR_TEAM_ID")
+
+# Android
+json_key_file("fastlane/google-play-key.json")
+package_name("com.tourismmarketplace.app")
