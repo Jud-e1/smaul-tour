@@ -68,7 +68,7 @@ const CANCELLATION_POLICY_LABELS: Record<string, string> = {
 
 const inp = inputCls('rose');
 const ghostBtn =
-  'rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/70 transition hover:bg-white/10 hover:text-white';
+  'rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900';
 
 export default function TravelerDashboard() {
   const { user, logout } = useAuthStore();
@@ -294,8 +294,8 @@ export default function TravelerDashboard() {
                 onClick={() => setBookingFilter(s)}
                 className={`rounded-xl px-4 py-2 text-sm font-medium capitalize transition-all ${
                   bookingFilter === s
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'border border-white/10 bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
+                    ? 'bg-gradient-to-r from-rose-500 to-pink-600 text-white shadow-sm'
+                    : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                 }`}
               >
                 {s}
@@ -312,7 +312,7 @@ export default function TravelerDashboard() {
               icon={IconCalendar}
               title={`No ${bookingFilter} bookings`}
               action={
-                <Link href="/experiences" className="text-sm font-medium text-rose-300 hover:text-rose-200">
+                <Link href="/experiences" className="text-sm font-medium text-rose-600 hover:text-rose-700">
                   Browse experiences →
                 </Link>
               }
@@ -326,38 +326,38 @@ export default function TravelerDashboard() {
                       <img
                         src={booking.experience.images[0].url}
                         alt={booking.experience.title}
-                        className="h-20 w-20 shrink-0 rounded-xl object-cover ring-1 ring-white/10"
+                        className="h-20 w-20 shrink-0 rounded-xl object-cover ring-1 ring-gray-200"
                       />
                     )}
                     <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <Link href={`/experiences/${booking.experience?.id}`} className="font-semibold text-white transition-colors hover:text-rose-300">
+                          <Link href={`/experiences/${booking.experience?.id}`} className="font-semibold text-gray-900 transition-colors hover:text-rose-600">
                             {booking.experience?.title || 'Experience'}
                           </Link>
-                          <p className="mt-0.5 text-sm text-white/50">
+                          <p className="mt-0.5 text-sm text-gray-500">
                             {new Date(booking.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} · {booking.startTime}
                           </p>
-                          <p className="mt-0.5 text-xs text-white/30">#{booking.referenceNumber}</p>
+                          <p className="mt-0.5 text-xs text-gray-400">#{booking.referenceNumber}</p>
                         </div>
                         <div className="shrink-0 text-right">
                           <StatusBadge tone={toneFor(booking.status)}>{booking.status}</StatusBadge>
-                          <p className="mt-1 text-base font-bold text-white">
+                          <p className="mt-1 text-base font-bold text-gray-900">
                             {booking.totalCurrency} {booking.totalAmount?.toFixed(2)}
                           </p>
                         </div>
                       </div>
                       {booking.cancellationPolicy && (
-                        <p className="mt-1 text-xs text-white/30">{CANCELLATION_POLICY_LABELS[booking.cancellationPolicy]}</p>
+                        <p className="mt-1 text-xs text-gray-400">{CANCELLATION_POLICY_LABELS[booking.cancellationPolicy]}</p>
                       )}
                       <div className="mt-3 flex flex-wrap gap-2">
                         {booking.status === 'confirmed' && (
-                          <button onClick={() => setCancelModal(booking)} className="rounded-lg border border-rose-400/20 bg-rose-500/10 px-3 py-1.5 text-xs font-medium text-rose-300 transition hover:bg-rose-500/20">
+                          <button onClick={() => setCancelModal(booking)} className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-medium text-rose-600 transition hover:bg-rose-100">
                             Cancel
                           </button>
                         )}
                         {booking.status === 'completed' && (
-                          <button onClick={() => setReviewModal({ bookingId: booking.id, experienceId: booking.experience?.id || '' })} className="flex items-center gap-1.5 rounded-lg border border-amber-400/20 bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-300 transition hover:bg-amber-500/20">
+                          <button onClick={() => setReviewModal({ bookingId: booking.id, experienceId: booking.experience?.id || '' })} className="flex items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-700 transition hover:bg-amber-100">
                             <IconStar className="h-3.5 w-3.5" /> Leave Review
                           </button>
                         )}
@@ -392,7 +392,7 @@ export default function TravelerDashboard() {
               icon={IconCompass}
               title="No saved itineraries yet"
               action={
-                <Link href="/trip-planner" className="text-sm font-medium text-rose-300 hover:text-rose-200">
+                <Link href="/trip-planner" className="text-sm font-medium text-rose-600 hover:text-rose-700">
                   Plan your first trip →
                 </Link>
               }
@@ -403,23 +403,23 @@ export default function TravelerDashboard() {
                 <div key={itin.id} className={`${card} ${cardHover} p-4`}>
                   <div className="flex items-start justify-between">
                     <div>
-                      <p className="font-semibold text-white">
+                      <p className="font-semibold text-gray-900">
                         {itin.experiences.length} experience{itin.experiences.length !== 1 ? 's' : ''}
                       </p>
-                      <p className="mt-0.5 text-sm text-white/50">
+                      <p className="mt-0.5 text-sm text-gray-500">
                         Generated {new Date(itin.generatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                       </p>
-                      <p className="mt-1 text-xs text-white/30">
+                      <p className="mt-1 text-xs text-gray-400">
                         {itin.experiences.slice(0, 3).map((e) => e.experience?.title || e.experienceId).join(' · ')}
                         {itin.experiences.length > 3 && ` +${itin.experiences.length - 3} more`}
                       </p>
                     </div>
-                    <span className="text-lg font-bold text-white">
+                    <span className="text-lg font-bold text-gray-900">
                       {itin.totalCost.currency} {itin.totalCost.amount.toFixed(0)}
                     </span>
                   </div>
                   <div className="mt-3">
-                    <Link href={`/trip-planner?itinerary=${itin.id}`} className="inline-block rounded-lg border border-rose-400/20 bg-rose-500/10 px-3 py-1.5 text-xs font-medium text-rose-300 transition hover:bg-rose-500/20">
+                    <Link href={`/trip-planner?itinerary=${itin.id}`} className="inline-block rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-medium text-rose-600 transition hover:bg-rose-100">
                       View in Trip Planner →
                     </Link>
                   </div>
@@ -439,7 +439,7 @@ export default function TravelerDashboard() {
               icon={IconHeart}
               title="Your wishlist is empty"
               action={
-                <Link href="/experiences" className="text-sm font-medium text-rose-300 hover:text-rose-200">
+                <Link href="/experiences" className="text-sm font-medium text-rose-600 hover:text-rose-700">
                   Browse experiences →
                 </Link>
               }
@@ -455,19 +455,19 @@ export default function TravelerDashboard() {
                     </div>
                   )}
                   <div className="p-4">
-                    <Link href={`/experiences/${item.id}`} className="block font-semibold text-white transition-colors hover:text-rose-300">
+                    <Link href={`/experiences/${item.id}`} className="block font-semibold text-gray-900 transition-colors hover:text-rose-600">
                       {item.title}
                     </Link>
                     <div className="mt-2 flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <StarRating value={item.averageRating} readonly size="sm" />
-                        <span className="text-sm font-bold text-white">
+                        <span className="text-sm font-bold text-gray-900">
                           {item.price.currency} {item.price.amount.toFixed(2)}
                         </span>
                       </div>
                       <button
                         onClick={() => void removeFromWishlist(item.id)}
-                        className="rounded-lg border border-rose-400/20 bg-rose-500/10 px-2.5 py-1 text-xs text-rose-300 transition hover:bg-rose-500/20"
+                        className="rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1 text-xs text-rose-600 transition hover:bg-rose-100"
                       >
                         Remove
                       </button>
@@ -499,7 +499,7 @@ export default function TravelerDashboard() {
               <label className={labelCls}>Profile photo URL</label>
               <input type="url" value={profileForm.profilePhotoUrl} onChange={(e) => setProfileForm((p) => ({ ...p, profilePhotoUrl: e.target.value }))} placeholder="https://example.com/photo.jpg" className={inp} />
               {profileForm.profilePhotoUrl && (
-                <img src={profileForm.profilePhotoUrl} alt="Preview" className="mt-2 h-16 w-16 rounded-full border-2 border-white/10 object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                <img src={profileForm.profilePhotoUrl} alt="Preview" className="mt-2 h-16 w-16 rounded-full border-2 border-gray-200 object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
               )}
             </div>
             <div>
@@ -510,14 +510,14 @@ export default function TravelerDashboard() {
               <label className={labelCls}>Travel preferences</label>
               <div className="mb-2 flex gap-2">
                 <input value={prefInput} onChange={(e) => setPrefInput(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addPreference(); } }} placeholder="e.g. food, adventure, culture" className={inp} />
-                <button type="button" onClick={addPreference} className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-white/70 transition hover:bg-white/10">Add</button>
+                <button type="button" onClick={addPreference} className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100">Add</button>
               </div>
               {profileForm.travelPreferences.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
                   {profileForm.travelPreferences.map((pref) => (
-                    <span key={pref} className="inline-flex items-center gap-1 rounded-full border border-rose-400/20 bg-rose-500/10 px-2.5 py-1 text-xs font-medium text-rose-200">
+                    <span key={pref} className="inline-flex items-center gap-1 rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1 text-xs font-medium text-rose-700">
                       {pref}
-                      <button type="button" onClick={() => removePreference(pref)} className="leading-none hover:text-white">×</button>
+                      <button type="button" onClick={() => removePreference(pref)} className="leading-none hover:text-gray-900">×</button>
                     </span>
                   ))}
                 </div>
@@ -532,20 +532,20 @@ export default function TravelerDashboard() {
 
       {/* Cancel Modal */}
       {cancelModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4 backdrop-blur-sm">
           <div className={`${card} w-full max-w-md p-6 shadow-2xl animate-fade-up`}>
-            <h3 className="mb-2 text-lg font-bold text-white">Cancel Booking</h3>
-            <p className="mb-3 text-sm text-white/60">
-              Cancel your booking for <span className="font-semibold text-white">{cancelModal.experience?.title}</span>?
+            <h3 className="mb-2 text-lg font-bold text-gray-900">Cancel Booking</h3>
+            <p className="mb-3 text-sm text-gray-600">
+              Cancel your booking for <span className="font-semibold text-gray-900">{cancelModal.experience?.title}</span>?
             </p>
             {cancelModal.cancellationPolicy && (
-              <div className="mb-4 rounded-xl border border-amber-400/20 bg-amber-500/10 p-3">
-                <p className="mb-0.5 text-xs font-semibold text-amber-300">Cancellation Policy</p>
-                <p className="text-xs text-amber-200/80">{CANCELLATION_POLICY_LABELS[cancelModal.cancellationPolicy]}</p>
+              <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 p-3">
+                <p className="mb-0.5 text-xs font-semibold text-amber-700">Cancellation Policy</p>
+                <p className="text-xs text-amber-700/80">{CANCELLATION_POLICY_LABELS[cancelModal.cancellationPolicy]}</p>
               </div>
             )}
             <div className="flex gap-3">
-              <button onClick={() => setCancelModal(null)} className="flex-1 rounded-xl border border-white/10 bg-white/5 py-2.5 text-sm font-medium text-white/70 hover:bg-white/10">Keep Booking</button>
+              <button onClick={() => setCancelModal(null)} className="flex-1 rounded-xl border border-gray-200 bg-white py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100">Keep Booking</button>
               <button onClick={() => void confirmCancel()} className="flex-1 rounded-xl bg-rose-500 py-2.5 text-sm font-semibold text-white hover:bg-rose-400">Cancel Booking</button>
             </div>
           </div>
@@ -554,21 +554,21 @@ export default function TravelerDashboard() {
 
       {/* Review Modal */}
       {reviewModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4 backdrop-blur-sm">
           <div className={`${card} w-full max-w-md p-6 shadow-2xl animate-fade-up`}>
-            <h3 className="mb-4 text-lg font-bold text-white">Leave a Review</h3>
+            <h3 className="mb-4 text-lg font-bold text-gray-900">Leave a Review</h3>
             <div className="mb-3">
               <label className={labelCls}>Rating</label>
               <StarRating value={reviewRating} onChange={setReviewRating} size="lg" />
             </div>
             <div className="mb-4">
               <label className={labelCls}>
-                Comment <span className="font-normal normal-case text-white/30">({reviewComment.length}/1000)</span>
+                Comment <span className="font-normal normal-case text-gray-400">({reviewComment.length}/1000)</span>
               </label>
               <textarea value={reviewComment} onChange={(e) => setReviewComment(e.target.value.slice(0, 1000))} rows={4} className={`${inp} resize-none`} placeholder="Share your experience..." />
             </div>
             <div className="flex gap-3">
-              <button onClick={() => setReviewModal(null)} className="flex-1 rounded-xl border border-white/10 bg-white/5 py-2.5 text-sm font-medium text-white/70 hover:bg-white/10">Cancel</button>
+              <button onClick={() => setReviewModal(null)} className="flex-1 rounded-xl border border-gray-200 bg-white py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100">Cancel</button>
               <button onClick={() => void submitReview()} className="flex-1 rounded-xl bg-gradient-to-r from-rose-500 to-pink-600 py-2.5 text-sm font-semibold text-white hover:from-rose-400 hover:to-pink-500">Submit Review</button>
             </div>
           </div>

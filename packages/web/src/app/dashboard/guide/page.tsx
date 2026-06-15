@@ -330,7 +330,7 @@ export default function GuideDashboard() {
   const subline = avgRating > 0 ? (
     <div className="mt-1 flex items-center gap-1.5">
       <StarRating value={Math.round(avgRating)} readonly size="sm" />
-      <span className="text-xs text-white/50">{avgRating.toFixed(1)} avg rating</span>
+      <span className="text-xs text-gray-500">{avgRating.toFixed(1)} avg rating</span>
     </div>
   ) : undefined;
 
@@ -355,17 +355,17 @@ export default function GuideDashboard() {
           <div className={`${card} mb-6 p-5`}>
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-white/40">Revenue trend</p>
-                <p className="text-sm text-white/60">Confirmed &amp; completed bookings · last 6 months</p>
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">Revenue trend</p>
+                <p className="text-sm text-gray-600">Confirmed &amp; completed bookings · last 6 months</p>
               </div>
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-emerald-300">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
                 <IconChart className="h-[18px] w-[18px]" />
               </span>
             </div>
             {hasRevenue ? (
               <BarChart data={revenueTrend} prefix="$" />
             ) : (
-              <div className="flex h-[120px] items-center justify-center text-sm text-white/40">
+              <div className="flex h-[120px] items-center justify-center text-sm text-gray-400">
                 No booking revenue yet — your earnings trend will appear here.
               </div>
             )}
@@ -382,7 +382,7 @@ export default function GuideDashboard() {
             <EmptyState
               icon={IconSparkles}
               title="No experiences yet"
-              action={<button onClick={openCreateForm} className="text-sm font-medium text-emerald-300 hover:text-emerald-200">Create your first experience →</button>}
+              action={<button onClick={openCreateForm} className="text-sm font-medium text-emerald-600 hover:text-emerald-700">Create your first experience →</button>}
             />
           ) : (
             <div className="space-y-3">
@@ -390,9 +390,9 @@ export default function GuideDashboard() {
                 <div key={exp.id} className={`${card} ${cardHover} overflow-hidden`}>
                   <div className="flex gap-4 p-4">
                     {exp.images?.[0]?.url ? (
-                      <img src={exp.images[0].url} alt={exp.title} className="h-20 w-20 shrink-0 rounded-xl object-cover ring-1 ring-white/10" />
+                      <img src={exp.images[0].url} alt={exp.title} className="h-20 w-20 shrink-0 rounded-xl object-cover ring-1 ring-gray-200" />
                     ) : (
-                      <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 text-emerald-300">
+                      <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-100 to-teal-100 text-emerald-600">
                         <IconCompass className="h-7 w-7" />
                       </div>
                     )}
@@ -400,14 +400,14 @@ export default function GuideDashboard() {
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
-                            <span className="truncate font-semibold text-white">{exp.title}</span>
+                            <span className="truncate font-semibold text-gray-900">{exp.title}</span>
                             <StatusBadge tone={toneFor(exp.status)}>{exp.status.replace('_', ' ')}</StatusBadge>
                           </div>
-                          <p className="mt-0.5 truncate text-sm text-white/50">{exp.location?.address}</p>
-                          <div className="mt-1 flex items-center gap-3 text-xs text-white/40">
-                            <span className="font-medium text-white/60">{exp.price?.currency} {exp.price?.amount?.toFixed(2)}</span>
+                          <p className="mt-0.5 truncate text-sm text-gray-500">{exp.location?.address}</p>
+                          <div className="mt-1 flex items-center gap-3 text-xs text-gray-400">
+                            <span className="font-medium text-gray-600">{exp.price?.currency} {exp.price?.amount?.toFixed(2)}</span>
                             <span>{exp.duration}h</span>
-                            {exp.averageRating > 0 && <span className="flex items-center gap-1"><IconStar className="h-3.5 w-3.5 text-amber-300" /> {exp.averageRating.toFixed(1)} ({exp.reviewCount})</span>}
+                            {exp.averageRating > 0 && <span className="flex items-center gap-1"><IconStar className="h-3.5 w-3.5 text-amber-500" /> {exp.averageRating.toFixed(1)} ({exp.reviewCount})</span>}
                           </div>
                         </div>
                         <div className="flex shrink-0 items-center gap-2">
@@ -416,13 +416,13 @@ export default function GuideDashboard() {
                             disabled={togglingId === exp.id || exp.status === 'pending_approval'}
                             title={exp.status === 'active' ? 'Deactivate' : 'Activate'}
                             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 ${
-                              exp.status === 'active' ? 'bg-emerald-500' : 'bg-white/15'
+                              exp.status === 'active' ? 'bg-emerald-500' : 'bg-gray-200'
                             }`}
                           >
                             <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${exp.status === 'active' ? 'translate-x-6' : 'translate-x-1'}`} />
                           </button>
-                          <button onClick={() => openEditForm(exp)} className="rounded-lg border border-emerald-400/20 bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-300 transition hover:bg-emerald-500/20">Edit</button>
-                          <button onClick={() => setDeleteConfirm(exp)} className="rounded-lg border border-rose-400/20 bg-rose-500/10 px-3 py-1.5 text-xs font-medium text-rose-300 transition hover:bg-rose-500/20">Delete</button>
+                          <button onClick={() => openEditForm(exp)} className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 transition hover:bg-emerald-100">Edit</button>
+                          <button onClick={() => setDeleteConfirm(exp)} className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-medium text-rose-700 transition hover:bg-rose-100">Delete</button>
                         </div>
                       </div>
                     </div>
@@ -441,7 +441,7 @@ export default function GuideDashboard() {
             {(['upcoming', 'past', 'cancelled'] as BookingFilter[]).map((s) => (
               <button key={s} onClick={() => setBookingFilter(s)}
                 className={`rounded-xl px-4 py-2 text-sm font-medium capitalize transition-all ${
-                  bookingFilter === s ? 'bg-white text-gray-900 shadow-sm' : 'border border-white/10 bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
+                  bookingFilter === s ? 'bg-emerald-600 text-white shadow-sm' : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                 }`}>
                 {s}
               </button>
@@ -461,15 +461,15 @@ export default function GuideDashboard() {
                   <div key={booking.id} className={`${card} ${cardHover} p-4`}>
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <p className="font-semibold text-white">{booking.experience?.title || 'Experience'}</p>
-                        <p className="mt-0.5 text-sm text-white/50">
+                        <p className="font-semibold text-gray-900">{booking.experience?.title || 'Experience'}</p>
+                        <p className="mt-0.5 text-sm text-gray-500">
                           {travelerName} · {new Date(booking.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} at {booking.startTime}
                         </p>
-                        <p className="mt-0.5 text-xs text-white/30">#{booking.referenceNumber}</p>
+                        <p className="mt-0.5 text-xs text-gray-400">#{booking.referenceNumber}</p>
                       </div>
                       <div className="shrink-0 text-right">
                         <StatusBadge tone={toneFor(booking.status)}>{booking.status}</StatusBadge>
-                        <p className="mt-1 text-base font-bold text-white">{booking.totalCurrency} {booking.totalAmount?.toFixed(2)}</p>
+                        <p className="mt-1 text-base font-bold text-gray-900">{booking.totalCurrency} {booking.totalAmount?.toFixed(2)}</p>
                       </div>
                     </div>
                   </div>
@@ -491,9 +491,9 @@ export default function GuideDashboard() {
           ) : (
             <div className="space-y-6">
               {[
-                { label: 'Pending (Escrowed)', filter: (p: Payment) => p.status === 'escrowed' || p.status === 'captured', color: 'text-violet-300' },
-                { label: 'Released', filter: (p: Payment) => p.status === 'released', color: 'text-emerald-300' },
-                { label: 'Other', filter: (p: Payment) => !['escrowed', 'captured', 'released'].includes(p.status), color: 'text-white/60' },
+                { label: 'Pending (Escrowed)', filter: (p: Payment) => p.status === 'escrowed' || p.status === 'captured', color: 'text-violet-600' },
+                { label: 'Released', filter: (p: Payment) => p.status === 'released', color: 'text-emerald-600' },
+                { label: 'Other', filter: (p: Payment) => !['escrowed', 'captured', 'released'].includes(p.status), color: 'text-gray-600' },
               ].map(({ label, filter, color }) => {
                 const group = payments.filter(filter);
                 if (group.length === 0) return null;
@@ -505,15 +505,15 @@ export default function GuideDashboard() {
                         <div key={payment.id} className={`${card} p-4`}>
                           <div className="flex items-center justify-between">
                             <div>
-                              <p className="font-semibold text-white">{payment.booking?.experience?.title || 'Experience'}</p>
-                              <p className="mt-0.5 text-xs text-white/30">
+                              <p className="font-semibold text-gray-900">{payment.booking?.experience?.title || 'Experience'}</p>
+                              <p className="mt-0.5 text-xs text-gray-400">
                                 {new Date(payment.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                 {payment.booking?.referenceNumber && ` · #${payment.booking.referenceNumber}`}
                               </p>
                             </div>
                             <div className="text-right">
                               <StatusBadge tone={toneFor(payment.status)}>{payment.status}</StatusBadge>
-                              <p className="mt-1 text-base font-bold text-white">{payment.currency} {payment.amount?.toFixed(2)}</p>
+                              <p className="mt-1 text-base font-bold text-gray-900">{payment.currency} {payment.amount?.toFixed(2)}</p>
                             </div>
                           </div>
                         </div>
@@ -547,12 +547,12 @@ export default function GuideDashboard() {
                       <div className="flex-1">
                         <div className="mb-1 flex items-center gap-2">
                           <StarRating value={review.rating} readonly size="sm" />
-                          <span className="text-sm font-semibold text-white/80">{reviewerName}</span>
+                          <span className="text-sm font-semibold text-gray-700">{reviewerName}</span>
                         </div>
-                        {review.experience?.title && <p className="mb-1 text-xs font-medium text-emerald-300">{review.experience.title}</p>}
-                        {review.comment && <p className="text-sm text-white/60">{review.comment}</p>}
+                        {review.experience?.title && <p className="mb-1 text-xs font-medium text-emerald-600">{review.experience.title}</p>}
+                        {review.comment && <p className="text-sm text-gray-600">{review.comment}</p>}
                       </div>
-                      <p className="shrink-0 text-xs text-white/30">{new Date(review.createdAt).toLocaleDateString()}</p>
+                      <p className="shrink-0 text-xs text-gray-400">{new Date(review.createdAt).toLocaleDateString()}</p>
                     </div>
                   </div>
                 );
@@ -581,7 +581,7 @@ export default function GuideDashboard() {
               <label className={labelCls}>Profile photo URL</label>
               <input type="url" value={profileForm.profilePhotoUrl} onChange={(e) => setProfileForm((p) => ({ ...p, profilePhotoUrl: e.target.value }))} placeholder="https://example.com/photo.jpg" className={inp} />
               {profileForm.profilePhotoUrl && (
-                <img src={profileForm.profilePhotoUrl} alt="Preview" className="mt-2 h-16 w-16 rounded-full border-2 border-white/10 object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                <img src={profileForm.profilePhotoUrl} alt="Preview" className="mt-2 h-16 w-16 rounded-full border-2 border-gray-200 object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
               )}
             </div>
             <div>
@@ -601,9 +601,9 @@ export default function GuideDashboard() {
 
       {/* ── Experience Form Modal ── */}
       {showExpForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/70 p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-gray-900/50 p-4 backdrop-blur-sm">
           <div className={`${card} my-4 w-full max-w-lg p-6 shadow-2xl animate-fade-up`}>
-            <h3 className="mb-4 text-lg font-bold text-white">{editingExp ? 'Edit Experience' : 'New Experience'}</h3>
+            <h3 className="mb-4 text-lg font-bold text-gray-900">{editingExp ? 'Edit Experience' : 'New Experience'}</h3>
             <div className="space-y-3">
               <div>
                 <label className={labelCls}>Title</label>
@@ -645,25 +645,25 @@ export default function GuideDashboard() {
                 <div>
                   <label className={labelCls}>Cancellation Policy</label>
                   <select value={expForm.cancellationPolicy} onChange={(e) => setExpForm((f) => ({ ...f, cancellationPolicy: e.target.value as ExperienceForm['cancellationPolicy'] }))} className={inp}>
-                    <option className="bg-[#15161f]" value="flexible">Flexible</option>
-                    <option className="bg-[#15161f]" value="moderate">Moderate</option>
-                    <option className="bg-[#15161f]" value="strict">Strict</option>
+                    <option value="flexible">Flexible</option>
+                    <option value="moderate">Moderate</option>
+                    <option value="strict">Strict</option>
                   </select>
                 </div>
               </div>
               <div>
-                <label className={labelCls}>Categories <span className="font-normal normal-case text-white/30">(comma-separated)</span></label>
+                <label className={labelCls}>Categories <span className="font-normal normal-case text-gray-400">(comma-separated)</span></label>
                 <input value={expForm.category} onChange={(e) => setExpForm((f) => ({ ...f, category: e.target.value }))} className={inp} placeholder="food, culture, adventure" />
               </div>
               {!editingExp && (
                 <div>
-                  <label className={labelCls}>Image URL <span className="font-normal normal-case text-white/30">(optional)</span></label>
+                  <label className={labelCls}>Image URL <span className="font-normal normal-case text-gray-400">(optional)</span></label>
                   <input type="url" value={expForm.imageUrl} onChange={(e) => setExpForm((f) => ({ ...f, imageUrl: e.target.value }))} className={inp} placeholder="https://example.com/image.jpg" />
                 </div>
               )}
             </div>
             <div className="mt-5 flex gap-3">
-              <button onClick={() => setShowExpForm(false)} className="flex-1 rounded-xl border border-white/10 bg-white/5 py-2.5 text-sm font-medium text-white/70 hover:bg-white/10">Cancel</button>
+              <button onClick={() => setShowExpForm(false)} className="flex-1 rounded-xl border border-gray-200 bg-white py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100">Cancel</button>
               <button onClick={() => void saveExperience()} disabled={expSaving} className="flex-1 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 py-2.5 text-sm font-semibold text-white hover:from-emerald-400 hover:to-teal-500 disabled:opacity-50">
                 {expSaving ? 'Saving…' : editingExp ? 'Save Changes' : 'Create Experience'}
               </button>
@@ -674,14 +674,14 @@ export default function GuideDashboard() {
 
       {/* ── Delete Confirm Modal ── */}
       {deleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4 backdrop-blur-sm">
           <div className={`${card} w-full max-w-sm p-6 shadow-2xl animate-fade-up`}>
-            <h3 className="mb-2 text-lg font-bold text-white">Delete Experience</h3>
-            <p className="mb-4 text-sm text-white/60">
-              Are you sure you want to delete <span className="font-semibold text-white">{deleteConfirm.title}</span>? This cannot be undone.
+            <h3 className="mb-2 text-lg font-bold text-gray-900">Delete Experience</h3>
+            <p className="mb-4 text-sm text-gray-600">
+              Are you sure you want to delete <span className="font-semibold text-gray-900">{deleteConfirm.title}</span>? This cannot be undone.
             </p>
             <div className="flex gap-3">
-              <button onClick={() => setDeleteConfirm(null)} className="flex-1 rounded-xl border border-white/10 bg-white/5 py-2.5 text-sm font-medium text-white/70 hover:bg-white/10">Cancel</button>
+              <button onClick={() => setDeleteConfirm(null)} className="flex-1 rounded-xl border border-gray-200 bg-white py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100">Cancel</button>
               <button onClick={() => void deleteExperience()} className="flex-1 rounded-xl bg-rose-500 py-2.5 text-sm font-semibold text-white hover:bg-rose-400">Delete</button>
             </div>
           </div>

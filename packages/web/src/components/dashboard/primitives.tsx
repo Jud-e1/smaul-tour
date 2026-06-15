@@ -7,32 +7,32 @@ export const accentMap: Record<
   { grad: string; gradHover: string; glow: string; ring: string; text: string; soft: string; softText: string }
 > = {
   rose: {
-    grad: 'from-rose-500 to-pink-600',
-    gradHover: 'hover:from-rose-400 hover:to-pink-500',
-    glow: 'shadow-[0_8px_30px_-8px_rgba(244,63,94,0.6)]',
-    ring: 'focus:ring-rose-400/50',
-    text: 'text-rose-300',
-    soft: 'bg-rose-500/10 border-rose-400/20',
-    softText: 'text-rose-200',
+    grad: 'from-[#FF385C] to-[#E31C5F]',
+    gradHover: 'hover:from-[#E31C5F] hover:to-[#d11a55]',
+    glow: 'shadow-[0_8px_24px_-10px_rgba(255,56,92,0.5)]',
+    ring: 'focus:ring-rose-300',
+    text: 'text-[#FF385C]',
+    soft: 'bg-rose-50 border-rose-200',
+    softText: 'text-rose-700',
   },
   emerald: {
     grad: 'from-emerald-500 to-teal-600',
     gradHover: 'hover:from-emerald-400 hover:to-teal-500',
-    glow: 'shadow-[0_8px_30px_-8px_rgba(16,185,129,0.55)]',
-    ring: 'focus:ring-emerald-400/50',
-    text: 'text-emerald-300',
-    soft: 'bg-emerald-500/10 border-emerald-400/20',
-    softText: 'text-emerald-200',
+    glow: 'shadow-[0_8px_24px_-10px_rgba(16,185,129,0.45)]',
+    ring: 'focus:ring-emerald-300',
+    text: 'text-emerald-600',
+    soft: 'bg-emerald-50 border-emerald-200',
+    softText: 'text-emerald-700',
   },
 };
 
 // Shared surface tokens — keep the whole dashboard visually consistent.
-export const card = 'rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-xl';
+export const card = 'rounded-2xl border border-gray-200 bg-white shadow-sm';
 export const cardHover =
-  'transition-all duration-300 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.07]';
-export const label = 'mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-white/40';
+  'transition-all duration-300 hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-md';
+export const label = 'mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-gray-500';
 export const input =
-  'w-full rounded-xl border border-white/10 bg-white/5 px-3.5 py-2.5 text-sm text-white placeholder-white/30 outline-none transition focus:border-transparent focus:ring-2';
+  'w-full rounded-xl border border-gray-300 bg-white px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-transparent focus:ring-2';
 
 export function inputCls(accent: Accent) {
   return `${input} ${accentMap[accent].ring}`;
@@ -51,7 +51,7 @@ export function SectionHeader({
 }) {
   return (
     <div className="mb-5 flex items-center justify-between gap-3">
-      <h2 className="text-lg font-semibold tracking-tight text-white">{title}</h2>
+      <h2 className="text-lg font-semibold tracking-tight text-gray-900">{title}</h2>
       {children}
     </div>
   );
@@ -68,10 +68,10 @@ export function EmptyState({
 }) {
   return (
     <div className={`${card} flex flex-col items-center justify-center px-6 py-16 text-center`}>
-      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-white/50">
+      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-400">
         <IconCmp className="h-7 w-7" />
       </div>
-      <p className="font-medium text-white/70">{title}</p>
+      <p className="font-medium text-gray-500">{title}</p>
       {action && <div className="mt-4">{action}</div>}
     </div>
   );
@@ -85,21 +85,21 @@ export function StatusBadge({ children, tone }: { children: React.ReactNode; ton
   );
 }
 
-// Dark-mode status tones used across both dashboards.
+// Light-mode status tones used across both dashboards.
 export const STATUS_TONES: Record<string, string> = {
-  active: 'border-emerald-400/20 bg-emerald-500/10 text-emerald-300',
-  confirmed: 'border-emerald-400/20 bg-emerald-500/10 text-emerald-300',
-  released: 'border-sky-400/20 bg-sky-500/10 text-sky-300',
-  completed: 'border-sky-400/20 bg-sky-500/10 text-sky-300',
-  inactive: 'border-white/10 bg-white/5 text-white/50',
-  pending: 'border-amber-400/20 bg-amber-500/10 text-amber-300',
-  pending_approval: 'border-amber-400/20 bg-amber-500/10 text-amber-300',
-  escrowed: 'border-violet-400/20 bg-violet-500/10 text-violet-300',
-  captured: 'border-violet-400/20 bg-violet-500/10 text-violet-300',
-  cancelled: 'border-rose-400/20 bg-rose-500/10 text-rose-300',
-  refunded: 'border-rose-400/20 bg-rose-500/10 text-rose-300',
+  active: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+  confirmed: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+  released: 'border-sky-200 bg-sky-50 text-sky-700',
+  completed: 'border-sky-200 bg-sky-50 text-sky-700',
+  inactive: 'border-gray-200 bg-gray-100 text-gray-500',
+  pending: 'border-amber-200 bg-amber-50 text-amber-700',
+  pending_approval: 'border-amber-200 bg-amber-50 text-amber-700',
+  escrowed: 'border-violet-200 bg-violet-50 text-violet-700',
+  captured: 'border-violet-200 bg-violet-50 text-violet-700',
+  cancelled: 'border-rose-200 bg-rose-50 text-rose-700',
+  refunded: 'border-rose-200 bg-rose-50 text-rose-700',
 };
 
 export function toneFor(status: string) {
-  return STATUS_TONES[status] || 'border-white/10 bg-white/5 text-white/60';
+  return STATUS_TONES[status] || 'border-gray-200 bg-gray-100 text-gray-600';
 }

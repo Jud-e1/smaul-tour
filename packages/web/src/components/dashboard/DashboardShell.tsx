@@ -18,13 +18,13 @@ export interface StatItem {
   tone: 'rose' | 'emerald' | 'sky' | 'violet' | 'amber' | 'teal';
 }
 
-const STAT_TONES: Record<StatItem['tone'], { text: string; ring: string }> = {
-  rose: { text: 'text-rose-300', ring: 'shadow-[inset_0_0_0_1px_rgba(244,63,94,0.18)]' },
-  emerald: { text: 'text-emerald-300', ring: 'shadow-[inset_0_0_0_1px_rgba(16,185,129,0.18)]' },
-  sky: { text: 'text-sky-300', ring: 'shadow-[inset_0_0_0_1px_rgba(56,189,248,0.18)]' },
-  violet: { text: 'text-violet-300', ring: 'shadow-[inset_0_0_0_1px_rgba(167,139,250,0.18)]' },
-  amber: { text: 'text-amber-300', ring: 'shadow-[inset_0_0_0_1px_rgba(251,191,36,0.18)]' },
-  teal: { text: 'text-teal-300', ring: 'shadow-[inset_0_0_0_1px_rgba(45,212,191,0.18)]' },
+const STAT_TONES: Record<StatItem['tone'], { text: string; chip: string }> = {
+  rose: { text: 'text-[#FF385C]', chip: 'bg-rose-50' },
+  emerald: { text: 'text-emerald-600', chip: 'bg-emerald-50' },
+  sky: { text: 'text-sky-600', chip: 'bg-sky-50' },
+  violet: { text: 'text-violet-600', chip: 'bg-violet-50' },
+  amber: { text: 'text-amber-600', chip: 'bg-amber-50' },
+  teal: { text: 'text-teal-600', chip: 'bg-teal-50' },
 };
 
 interface ShellProps {
@@ -72,10 +72,10 @@ export default function DashboardShell({
         className={`group flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all ${
           active
             ? `bg-gradient-to-r ${a.grad} text-white ${a.glow}`
-            : 'text-white/55 hover:bg-white/5 hover:text-white'
+            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
         } ${mobile ? 'w-full' : ''}`}
       >
-        <Ico className={`h-[18px] w-[18px] ${active ? 'text-white' : 'text-white/45 group-hover:text-white'}`} />
+        <Ico className={`h-[18px] w-[18px] ${active ? 'text-white' : 'text-gray-400 group-hover:text-gray-900'}`} />
         <span>{t.label}</span>
       </button>
     );
@@ -94,19 +94,19 @@ export default function DashboardShell({
   );
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#0a0b12] text-white">
-      {/* Aurora background */}
+    <div className="relative min-h-screen overflow-hidden bg-gray-50 text-gray-900">
+      {/* Soft brand-tinted background */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div
-          className={`absolute -left-32 -top-40 h-[36rem] w-[36rem] rounded-full bg-gradient-to-br ${a.grad} opacity-[0.18] blur-[120px] animate-float-slow`}
+          className={`absolute -left-32 -top-40 h-[36rem] w-[36rem] rounded-full bg-gradient-to-br ${a.grad} opacity-[0.07] blur-[120px] animate-float-slow`}
         />
-        <div className="absolute -right-40 top-20 h-[34rem] w-[34rem] rounded-full bg-gradient-to-br from-violet-600 to-sky-500 opacity-[0.14] blur-[120px] animate-float-slower" />
-        <div className="absolute bottom-[-12rem] left-1/3 h-[30rem] w-[30rem] rounded-full bg-gradient-to-br from-indigo-600 to-fuchsia-500 opacity-[0.12] blur-[120px] animate-float-slow" />
+        <div className="absolute -right-40 top-20 h-[34rem] w-[34rem] rounded-full bg-gradient-to-br from-sky-300 to-violet-300 opacity-[0.08] blur-[120px] animate-float-slower" />
+        <div className="absolute bottom-[-12rem] left-1/3 h-[30rem] w-[30rem] rounded-full bg-gradient-to-br from-amber-200 to-rose-200 opacity-[0.08] blur-[120px] animate-float-slow" />
         <div
-          className="absolute inset-0 opacity-[0.18]"
+          className="absolute inset-0 opacity-[0.5]"
           style={{
             backgroundImage:
-              'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.16) 1px, transparent 0)',
+              'radial-gradient(circle at 1px 1px, rgba(15,23,42,0.04) 1px, transparent 0)',
             backgroundSize: '40px 40px',
           }}
         />
@@ -114,35 +114,35 @@ export default function DashboardShell({
 
       <div className="relative z-10 mx-auto flex max-w-[1440px] gap-6 px-4 py-5 lg:px-8 lg:py-7">
         {/* Sidebar — desktop */}
-        <aside className="sticky top-7 hidden h-[calc(100vh-3.5rem)] w-64 shrink-0 flex-col rounded-3xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur-xl lg:flex">
+        <aside className="sticky top-7 hidden h-[calc(100vh-3.5rem)] w-64 shrink-0 flex-col rounded-3xl border border-gray-200 bg-white p-4 shadow-sm lg:flex">
           <Link href="/" className="mb-6 flex items-center gap-2 px-2 pt-1">
             <span className={`flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br ${a.grad} ${a.glow}`}>
               <IconCompass className="h-5 w-5 text-white" />
             </span>
-            <span className="text-lg font-bold tracking-tight">tourlocal</span>
+            <span className="text-lg font-bold tracking-tight text-gray-900">tourlocal</span>
           </Link>
 
-          <p className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-white/30">Menu</p>
+          <p className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-gray-400">Menu</p>
           <nav className="flex flex-1 flex-col gap-1">{tabs.map((t) => navButton(t))}</nav>
 
-          <div className="mt-3 flex flex-col gap-1 border-t border-white/10 pt-3">
+          <div className="mt-3 flex flex-col gap-1 border-t border-gray-200 pt-3">
             <Link
               href="/"
-              className="flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-white/55 transition-all hover:bg-white/5 hover:text-white"
+              className="flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-gray-600 transition-all hover:bg-gray-100 hover:text-gray-900"
             >
-              <IconHome className="h-[18px] w-[18px] text-white/45" />
+              <IconHome className="h-[18px] w-[18px] text-gray-400" />
               Home
             </Link>
             <Link
               href="/notifications"
-              className="flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-white/55 transition-all hover:bg-white/5 hover:text-white"
+              className="flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-gray-600 transition-all hover:bg-gray-100 hover:text-gray-900"
             >
-              <IconBell className="h-[18px] w-[18px] text-white/45" />
+              <IconBell className="h-[18px] w-[18px] text-gray-400" />
               Notifications
             </Link>
             <button
               onClick={onSignOut}
-              className="flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-white/55 transition-all hover:bg-rose-500/10 hover:text-rose-300"
+              className="flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-gray-600 transition-all hover:bg-rose-50 hover:text-[#FF385C]"
             >
               <IconLogout className="h-[18px] w-[18px]" />
               Sign out
@@ -157,15 +157,15 @@ export default function DashboardShell({
             <div className="flex items-center gap-3.5">
               <button
                 onClick={() => setMobileNav((v) => !v)}
-                className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white/70 lg:hidden"
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-600 shadow-sm lg:hidden"
                 aria-label="Toggle menu"
               >
                 <IconMenu className="h-5 w-5" />
               </button>
               {avatar}
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-white/40">{roleLabel}</p>
-                <h1 className="text-xl font-bold tracking-tight sm:text-2xl">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">{roleLabel}</p>
+                <h1 className="text-xl font-bold tracking-tight text-gray-900 sm:text-2xl">
                   Hey, {firstName} <span className="inline-block">👋</span>
                 </h1>
                 {subline}
@@ -174,14 +174,14 @@ export default function DashboardShell({
             <div className="hidden items-center gap-2 sm:flex">
               <Link
                 href="/notifications"
-                className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white/60 transition hover:bg-white/10 hover:text-white"
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-600 shadow-sm transition hover:bg-gray-100 hover:text-gray-900"
                 title="Notifications"
               >
                 <IconBell className="h-5 w-5" />
               </Link>
               <button
                 onClick={onSignOut}
-                className="hidden items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3.5 py-2.5 text-sm font-medium text-white/60 transition hover:bg-white/10 hover:text-white lg:flex"
+                className="hidden items-center gap-2 rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm font-medium text-gray-600 shadow-sm transition hover:bg-gray-100 hover:text-gray-900 lg:flex"
               >
                 <IconLogout className="h-[18px] w-[18px]" />
                 Sign out
@@ -191,7 +191,7 @@ export default function DashboardShell({
 
           {/* Mobile nav drawer */}
           {mobileNav && (
-            <div className="mb-5 grid grid-cols-2 gap-2 rounded-2xl border border-white/10 bg-white/[0.04] p-2 backdrop-blur-xl lg:hidden animate-fade-up">
+            <div className="mb-5 grid grid-cols-2 gap-2 rounded-2xl border border-gray-200 bg-white p-2 shadow-sm lg:hidden animate-fade-up">
               {tabs.map((t) => navButton(t, true))}
             </div>
           )}
@@ -208,7 +208,7 @@ export default function DashboardShell({
                   className={`flex shrink-0 items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-medium transition-all ${
                     active
                       ? `bg-gradient-to-r ${a.grad} text-white ${a.glow}`
-                      : 'border border-white/10 bg-white/5 text-white/60'
+                      : 'border border-gray-200 bg-white text-gray-600 shadow-sm'
                   }`}
                 >
                   <Ico className="h-[16px] w-[16px]" />
@@ -226,14 +226,14 @@ export default function DashboardShell({
               return (
                 <div
                   key={s.label}
-                  className={`group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] p-4 backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/[0.07] ${tone.ring} animate-fade-up`}
+                  className={`group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md hover:border-gray-300 animate-fade-up`}
                   style={{ animationDelay: `${i * 70}ms` }}
                 >
-                  <div className={`mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 ${tone.text}`}>
+                  <div className={`mb-3 flex h-9 w-9 items-center justify-center rounded-xl ${tone.chip} ${tone.text}`}>
                     <Ico className="h-[18px] w-[18px]" />
                   </div>
-                  <div className="text-2xl font-bold tracking-tight text-white">{s.value}</div>
-                  <div className="mt-0.5 text-xs font-medium text-white/45">{s.label}</div>
+                  <div className="text-2xl font-bold tracking-tight text-gray-900">{s.value}</div>
+                  <div className="mt-0.5 text-xs font-medium text-gray-500">{s.label}</div>
                 </div>
               );
             })}
