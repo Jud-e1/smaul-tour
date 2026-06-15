@@ -175,8 +175,10 @@ export default function GuideDashboard() {
       .finally(() => setBookingsLoading(false));
   }, [user, tab, bookingFilter]);
 
+  // Load payments on mount so earnings KPIs are accurate before the
+  // Payments tab is ever opened.
   useEffect(() => {
-    if (!user || tab !== 'payments') return;
+    if (!user) return;
     setPaymentsLoading(true);
     bookingsApi.getGuideBookings(user.id)
       .then(async ({ data }: { data: Booking[] }) => {
@@ -191,7 +193,7 @@ export default function GuideDashboard() {
       })
       .catch(() => {})
       .finally(() => setPaymentsLoading(false));
-  }, [user, tab]);
+  }, [user]);
 
   useEffect(() => {
     if (!user || tab !== 'reviews') return;

@@ -65,6 +65,11 @@ body {
 }
 .animate-fade-up { animation: fade-up 0.5s cubic-bezier(0.21, 1.02, 0.73, 1) both; }
 
+/* Opacity-only entrance: no transform, so it never creates a containing block
+   that would trap position:fixed modals rendered inside it */
+@keyframes content-in { from { opacity: 0; } to { opacity: 1; } }
+.animate-content-in { animation: content-in 0.4s ease-out both; }
+
 /* Drifting aurora blobs */
 @keyframes float-slow {
   0%, 100% { transform: translate(0, 0) scale(1); }
@@ -101,6 +106,7 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-up,
+  .animate-content-in,
   .animate-float-slow,
   .animate-float-slower,
   .skeleton::after { animation: none; }

@@ -239,8 +239,9 @@ export default function DashboardShell({
             })}
           </div>
 
-          {/* Content */}
-          <div className="animate-fade-up" style={{ animationDelay: '120ms' }}>
+          {/* Content — opacity-only entrance (no transform) so nested
+              position:fixed modals are not trapped in a containing block */}
+          <div className="animate-content-in" style={{ animationDelay: '120ms' }}>
             {children}
           </div>
         </main>
