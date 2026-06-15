@@ -34,9 +34,10 @@ export class LlmParserService {
     }
 
     try {
-      const raw = provider === 'anthropic'
-        ? await this.callAnthropic(naturalLanguageInput, apiKey, model)
-        : await this.callOpenAI(naturalLanguageInput, apiKey, model);
+      const raw =
+        provider === 'anthropic'
+          ? await this.callAnthropic(naturalLanguageInput, apiKey, model)
+          : await this.callOpenAI(naturalLanguageInput, apiKey, model);
 
       return this.parseAndValidate(raw);
     } catch (error) {
@@ -60,7 +61,7 @@ export class LlmParserService {
       {
         headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
         timeout: 10000,
-      },
+      }
     );
     return response.data.choices[0].message.content;
   }
@@ -81,7 +82,7 @@ export class LlmParserService {
           'Content-Type': 'application/json',
         },
         timeout: 10000,
-      },
+      }
     );
     return response.data.content[0].text;
   }
@@ -145,11 +146,20 @@ export class LlmParserService {
       params.budget = { min: 0, max, currency: 'USD' };
     }
 
-    const preferenceKeywords = ['food', 'culture', 'adventure', 'nature', 'history', 'art', 'beach', 'shopping'];
-    params.preferences = preferenceKeywords.filter(k => lower.includes(k));
+    const preferenceKeywords = [
+      'food',
+      'culture',
+      'adventure',
+      'nature',
+      'history',
+      'art',
+      'beach',
+      'shopping',
+    ];
+    params.preferences = preferenceKeywords.filter((k) => lower.includes(k));
 
     const activityKeywords = ['hiking', 'cooking', 'museum', 'tour', 'diving', 'cycling', 'yoga'];
-    params.activityTypes = activityKeywords.filter(k => lower.includes(k));
+    params.activityTypes = activityKeywords.filter((k) => lower.includes(k));
 
     return params;
   }

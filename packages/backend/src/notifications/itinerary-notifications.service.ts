@@ -28,27 +28,29 @@ export class ItineraryNotificationsService {
   async sendItineraryGenerated(data: ItineraryNotificationData): Promise<void> {
     const itineraryLink = `/itineraries/${data.itineraryId}`;
 
-    await this.notificationsService.sendNotification({
-      userId: data.userId,
-      type: 'itinerary_generated',
-      channels: ['email', 'in_app'],
-      priority: 'normal',
-      subject: '',
-      body: '',
-      status: 'pending',
-      data: {
-        itineraryId: data.itineraryId,
-        itineraryLink,
-        experienceCount: data.experienceCount,
-        totalCost: data.totalCost,
-        currency: data.currency,
-        userEmail: data.userEmail,
-        deviceTokens: data.deviceTokens ?? [],
-      },
-    }).catch(err =>
-      this.logger.error(
-        `Failed to send itinerary notification to user ${data.userId}: ${(err as Error).message}`,
-      ),
-    );
+    await this.notificationsService
+      .sendNotification({
+        userId: data.userId,
+        type: 'itinerary_generated',
+        channels: ['email', 'in_app'],
+        priority: 'normal',
+        subject: '',
+        body: '',
+        status: 'pending',
+        data: {
+          itineraryId: data.itineraryId,
+          itineraryLink,
+          experienceCount: data.experienceCount,
+          totalCost: data.totalCost,
+          currency: data.currency,
+          userEmail: data.userEmail,
+          deviceTokens: data.deviceTokens ?? [],
+        },
+      })
+      .catch((err) =>
+        this.logger.error(
+          `Failed to send itinerary notification to user ${data.userId}: ${(err as Error).message}`
+        )
+      );
   }
 }

@@ -13,7 +13,7 @@ export class EmbeddingService {
 
   constructor(
     private readonly configService: ConfigService,
-    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache
   ) {}
 
   private getCacheKey(text: string): string {
@@ -70,11 +70,7 @@ export class EmbeddingService {
     description: string;
     category: string[];
   }): Promise<number[]> {
-    const combinedText = [
-      experience.title,
-      experience.description,
-      experience.category.join(', '),
-    ]
+    const combinedText = [experience.title, experience.description, experience.category.join(', ')]
       .filter(Boolean)
       .join(' | ');
 
@@ -95,19 +91,19 @@ export class EmbeddingService {
             Authorization: `Bearer ${apiKey}`,
             'Content-Type': 'application/json',
           },
-        },
+        }
       );
 
       // Sort by index to preserve order
       const sorted = response.data.data.sort(
         (a: { embedding: number[]; index: number }, b: { embedding: number[]; index: number }) =>
-          a.index - b.index,
+          a.index - b.index
       );
       return sorted.map((item: { embedding: number[]; index: number }) => item.embedding);
     } catch (error) {
       this.logger.error(
         `OpenAI embeddings API error: ${(error as Error).message}`,
-        (error as Error).stack,
+        (error as Error).stack
       );
       throw error;
     }

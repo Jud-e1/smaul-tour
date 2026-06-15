@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Post,
-  Req,
-  Headers,
-  BadRequestException,
-  Logger,
-} from '@nestjs/common';
+import { Controller, Post, Req, Headers, BadRequestException, Logger } from '@nestjs/common';
 import { Request } from 'express';
 import Stripe from 'stripe';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -22,13 +15,13 @@ export class WebhookController {
     private readonly stripeGateway: StripeGatewayService,
     @InjectRepository(PaymentEntity)
     private readonly paymentRepo: Repository<PaymentEntity>,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService
   ) {}
 
   @Post('stripe')
   async handleStripeWebhook(
     @Req() req: Request,
-    @Headers('stripe-signature') signature: string,
+    @Headers('stripe-signature') signature: string
   ): Promise<{ received: boolean }> {
     const webhookSecret = this.configService.get<string>('STRIPE_WEBHOOK_SECRET') ?? '';
     const rawBody: Buffer = (req as any).rawBody ?? req.body;
@@ -62,9 +55,10 @@ export class WebhookController {
       }
       case 'charge.refunded': {
         const charge = event.data.object as Stripe.Charge;
-        const paymentIntentId = typeof charge.payment_intent === 'string'
-          ? charge.payment_intent
-          : charge.payment_intent?.id;
+        const paymentIntentId =
+          typeof charge.payment_intent === 'string'
+            ? charge.payment_intent
+            : charge.payment_intent?.id;
         if (paymentIntentId) {
           await this.updatePaymentStatus(paymentIntentId, PaymentStatus.REFUNDED);
         }
@@ -77,7 +71,7 @@ export class WebhookController {
 
   private async updatePaymentStatus(
     gatewayTransactionId: string,
-    newStatus: PaymentStatus,
+    newStatus: PaymentStatus
   ): Promise<void> {
     const payment = await this.paymentRepo.findOne({ where: { gatewayTransactionId } });
     if (!payment) {
@@ -86,7 +80,7 @@ export class WebhookController {
     }
 
     this.logger.log(
-      `Updating payment ${payment.id} status: ${payment.status} → ${newStatus} (event: ${gatewayTransactionId})`,
+      `Updating payment ${payment.id} status: ${payment.status} → ${newStatus} (event: ${gatewayTransactionId})`
     );
 
     payment.status = newStatus;

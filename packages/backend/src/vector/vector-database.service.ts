@@ -11,7 +11,7 @@ export class VectorDatabaseService implements OnModuleInit {
 
   constructor(
     @InjectDataSource()
-    private readonly dataSource: DataSource,
+    private readonly dataSource: DataSource
   ) {}
 
   async onModuleInit(): Promise<void> {
@@ -26,7 +26,7 @@ export class VectorDatabaseService implements OnModuleInit {
       this.logger.log('pgvector extension enabled');
     } catch (error) {
       this.logger.warn(
-        `pgvector extension not available: ${(error as Error).message}. Vector search will be disabled.`,
+        `pgvector extension not available: ${(error as Error).message}. Vector search will be disabled.`
       );
       return;
     }
@@ -71,16 +71,13 @@ export class VectorDatabaseService implements OnModuleInit {
     } catch (error) {
       this.logger.error(
         `Failed to initialize vector schema: ${(error as Error).message}`,
-        (error as Error).stack,
+        (error as Error).stack
       );
       throw error;
     }
   }
 
-  async upsertExperienceEmbedding(
-    experienceId: string,
-    embedding: number[],
-  ): Promise<void> {
+  async upsertExperienceEmbedding(experienceId: string, embedding: number[]): Promise<void> {
     if (!this.pgvectorAvailable) {
       this.logger.warn('pgvector not available, skipping upsertExperienceEmbedding');
       return;
@@ -93,14 +90,11 @@ export class VectorDatabaseService implements OnModuleInit {
       ON CONFLICT (experience_id)
       DO UPDATE SET embedding = EXCLUDED.embedding, updated_at = NOW()
       `,
-      [experienceId, `[${embedding.join(',')}]`],
+      [experienceId, `[${embedding.join(',')}]`]
     );
   }
 
-  async upsertUserPreferenceEmbedding(
-    userId: string,
-    embedding: number[],
-  ): Promise<void> {
+  async upsertUserPreferenceEmbedding(userId: string, embedding: number[]): Promise<void> {
     if (!this.pgvectorAvailable) {
       this.logger.warn('pgvector not available, skipping upsertUserPreferenceEmbedding');
       return;
@@ -113,31 +107,30 @@ export class VectorDatabaseService implements OnModuleInit {
       ON CONFLICT (user_id)
       DO UPDATE SET embedding = EXCLUDED.embedding, updated_at = NOW()
       `,
-      [userId, `[${embedding.join(',')}]`],
+      [userId, `[${embedding.join(',')}]`]
     );
   }
 
   async searchSimilarExperiences(
     embedding: number[],
     threshold: number,
-    limit: number,
+    limit: number
   ): Promise<Array<{ experienceId: string; similarity: number }>> {
     if (!this.pgvectorAvailable) {
       this.logger.warn('pgvector not available, returning empty results');
       return [];
     }
 
-    const rows: Array<{ experience_id: string; similarity: number }> =
-      await this.dataSource.query(
-        `
+    const rows: Array<{ experience_id: string; similarity: number }> = await this.dataSource.query(
+      `
         SELECT experience_id, 1 - (embedding <=> $1::vector) AS similarity
         FROM experience_embeddings
         WHERE 1 - (embedding <=> $1::vector) >= $2
         ORDER BY similarity DESC
         LIMIT $3
         `,
-        [`[${embedding.join(',')}]`, threshold, limit],
-      );
+      [`[${embedding.join(',')}]`, threshold, limit]
+    );
 
     return rows.map((row) => ({
       experienceId: row.experience_id,
@@ -147,24 +140,23 @@ export class VectorDatabaseService implements OnModuleInit {
 
   async searchSimilarUserPreferences(
     userId: string,
-    embedding: number[],
+    embedding: number[]
   ): Promise<Array<{ userId: string; similarity: number }>> {
     if (!this.pgvectorAvailable) {
       this.logger.warn('pgvector not available, returning empty results');
       return [];
     }
 
-    const rows: Array<{ user_id: string; similarity: number }> =
-      await this.dataSource.query(
-        `
+    const rows: Array<{ user_id: string; similarity: number }> = await this.dataSource.query(
+      `
         SELECT user_id, 1 - (embedding <=> $1::vector) AS similarity
         FROM user_preference_embeddings
         WHERE user_id != $2
         ORDER BY similarity DESC
         LIMIT 10
         `,
-        [`[${embedding.join(',')}]`, userId],
-      );
+      [`[${embedding.join(',')}]`, userId]
+    );
 
     return rows.map((row) => ({
       userId: row.user_id,
@@ -178,9 +170,8 @@ export class VectorDatabaseService implements OnModuleInit {
       return;
     }
 
-    await this.dataSource.query(
-      'DELETE FROM experience_embeddings WHERE experience_id = $1',
-      [experienceId],
-    );
+    await this.dataSource.query('DELETE FROM experience_embeddings WHERE experience_id = $1', [
+      experienceId,
+    ]);
   }
 }

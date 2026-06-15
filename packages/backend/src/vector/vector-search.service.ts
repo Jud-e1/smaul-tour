@@ -6,13 +6,13 @@ import { EmbeddingService } from './embedding.service';
 export class VectorSearchService {
   constructor(
     private readonly vectorDatabaseService: VectorDatabaseService,
-    private readonly embeddingService: EmbeddingService,
+    private readonly embeddingService: EmbeddingService
   ) {}
 
   async semanticSearchExperiences(
     query: string,
     threshold: number = 0.7,
-    limit: number = 10,
+    limit: number = 10
   ): Promise<Array<{ experienceId: string; similarity: number }>> {
     const embedding = await this.embeddingService.generateEmbedding(query);
     return this.vectorDatabaseService.searchSimilarExperiences(embedding, threshold, limit);

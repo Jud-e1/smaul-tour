@@ -61,9 +61,15 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
 
   // Step 1: Create booking
   const handleBookingSubmit = async (values: BookingFormValues) => {
-    if (!user) { setError('Please log in to book.'); return; }
+    if (!user) {
+      setError('Please log in to book.');
+      return;
+    }
     const slot = slots.find((s) => s.id === values.slotId);
-    if (!slot) { setError('Please select a date and time.'); return; }
+    if (!slot) {
+      setError('Please select a date and time.');
+      return;
+    }
     setLoading(true);
     setError('');
     try {
@@ -107,7 +113,11 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
   };
 
   const formatCardNumber = (value: string) =>
-    value.replace(/\D/g, '').slice(0, 16).replace(/(.{4})/g, '$1 ').trim();
+    value
+      .replace(/\D/g, '')
+      .slice(0, 16)
+      .replace(/(.{4})/g, '$1 ')
+      .trim();
 
   const formatExpiry = (value: string) => {
     const digits = value.replace(/\D/g, '').slice(0, 4);
@@ -119,8 +129,18 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
   if (step === 'confirmed' && confirmed) {
     return (
       <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
-        <svg className="w-12 h-12 text-green-500 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <svg
+          className="w-12 h-12 text-green-500 mx-auto mb-3"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
         </svg>
         <h3 className="text-lg font-semibold text-green-800">Booking Confirmed!</h3>
         <p className="text-green-700 mt-1">
@@ -148,7 +168,9 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
               </div>
               <div className="flex justify-between">
                 <span>Time</span>
-                <span>{selectedSlot.startTime} – {selectedSlot.endTime}</span>
+                <span>
+                  {selectedSlot.startTime} – {selectedSlot.endTime}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span>Participants</span>
@@ -156,7 +178,9 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
               </div>
               <div className="flex justify-between font-semibold border-t border-blue-200 pt-1 mt-1">
                 <span>Total</span>
-                <span>{price.currency} {totalCost.toFixed(2)}</span>
+                <span>
+                  {price.currency} {totalCost.toFixed(2)}
+                </span>
               </div>
             </div>
           )}
@@ -172,11 +196,15 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
             <input
               type="text"
               placeholder="Name on card"
-              {...paymentForm.register('cardholderName', { required: 'Cardholder name is required' })}
+              {...paymentForm.register('cardholderName', {
+                required: 'Cardholder name is required',
+              })}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {paymentForm.formState.errors.cardholderName && (
-              <p className="text-red-500 text-xs mt-1">{paymentForm.formState.errors.cardholderName.message}</p>
+              <p className="text-red-500 text-xs mt-1">
+                {paymentForm.formState.errors.cardholderName.message}
+              </p>
             )}
           </div>
 
@@ -188,13 +216,18 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
               inputMode="numeric"
               {...paymentForm.register('cardNumber', {
                 required: 'Card number is required',
-                validate: (v: string) => v.replace(/\s/g, '').length === 16 || 'Enter a valid 16-digit card number',
-                onChange: (e: React.ChangeEvent<HTMLInputElement>) => { e.target.value = formatCardNumber(e.target.value); },
+                validate: (v: string) =>
+                  v.replace(/\s/g, '').length === 16 || 'Enter a valid 16-digit card number',
+                onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                  e.target.value = formatCardNumber(e.target.value);
+                },
               })}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
             />
             {paymentForm.formState.errors.cardNumber && (
-              <p className="text-red-500 text-xs mt-1">{paymentForm.formState.errors.cardNumber.message}</p>
+              <p className="text-red-500 text-xs mt-1">
+                {paymentForm.formState.errors.cardNumber.message}
+              </p>
             )}
           </div>
 
@@ -208,12 +241,16 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
                 {...paymentForm.register('expiry', {
                   required: 'Expiry is required',
                   pattern: { value: /^\d{2}\/\d{2}$/, message: 'Use MM/YY format' },
-                  onChange: (e: React.ChangeEvent<HTMLInputElement>) => { e.target.value = formatExpiry(e.target.value); },
+                  onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                    e.target.value = formatExpiry(e.target.value);
+                  },
                 })}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
               />
               {paymentForm.formState.errors.expiry && (
-                <p className="text-red-500 text-xs mt-1">{paymentForm.formState.errors.expiry.message}</p>
+                <p className="text-red-500 text-xs mt-1">
+                  {paymentForm.formState.errors.expiry.message}
+                </p>
               )}
             </div>
             <div>
@@ -230,14 +267,21 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
               />
               {paymentForm.formState.errors.cvc && (
-                <p className="text-red-500 text-xs mt-1">{paymentForm.formState.errors.cvc.message}</p>
+                <p className="text-red-500 text-xs mt-1">
+                  {paymentForm.formState.errors.cvc.message}
+                </p>
               )}
             </div>
           </div>
 
           <div className="flex items-center gap-1 text-xs text-gray-400">
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
             </svg>
             Payments are processed securely
           </div>
@@ -251,7 +295,10 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
           <div className="flex gap-2">
             <button
               type="button"
-              onClick={() => { setStep('select'); setError(''); }}
+              onClick={() => {
+                setStep('select');
+                setError('');
+              }}
               disabled={loading}
               className="flex-1 border border-gray-300 text-gray-700 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 disabled:opacity-50 transition-colors"
             >
@@ -274,7 +321,9 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
   return (
     <form onSubmit={bookingForm.handleSubmit(handleBookingSubmit)} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Select Date &amp; Time</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Select Date &amp; Time
+        </label>
         {availableSlots.length === 0 ? (
           <div className="text-center py-6 bg-gray-50 rounded-xl border border-dashed border-gray-300">
             <p className="text-sm text-gray-500">No available slots at this time</p>
@@ -296,20 +345,36 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
                   <input
                     type="radio"
                     value={slot.id}
-                    {...bookingForm.register('slotId', { required: 'Please select a date and time' })}
+                    {...bookingForm.register('slotId', {
+                      required: 'Please select a date and time',
+                    })}
                     className="sr-only"
                   />
                   <div>
-                    <p className={`text-sm font-medium ${isSelected ? 'text-teal-800' : 'text-gray-800'}`}>
-                      {new Date(slot.date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
+                    <p
+                      className={`text-sm font-medium ${isSelected ? 'text-teal-800' : 'text-gray-800'}`}
+                    >
+                      {new Date(slot.date).toLocaleDateString(undefined, {
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric',
+                      })}
                     </p>
-                    <p className={`text-xs mt-0.5 ${isSelected ? 'text-teal-600' : 'text-gray-500'}`}>
+                    <p
+                      className={`text-xs mt-0.5 ${isSelected ? 'text-teal-600' : 'text-gray-500'}`}
+                    >
                       {slot.startTime} – {slot.endTime}
                     </p>
                   </div>
-                  <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                    spotsLeft <= 2 ? 'bg-amber-100 text-amber-700' : isSelected ? 'bg-teal-100 text-teal-700' : 'bg-gray-100 text-gray-600'
-                  }`}>
+                  <span
+                    className={`text-xs font-medium px-2 py-1 rounded-full ${
+                      spotsLeft <= 2
+                        ? 'bg-amber-100 text-amber-700'
+                        : isSelected
+                          ? 'bg-teal-100 text-teal-700'
+                          : 'bg-gray-100 text-gray-600'
+                    }`}
+                  >
                     {spotsLeft} spot{spotsLeft !== 1 ? 's' : ''} left
                   </span>
                 </label>
@@ -337,7 +402,9 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
         <div className="bg-gray-50 rounded-lg p-3 text-sm">
           <div className="flex justify-between text-gray-600">
             <span>Price per person</span>
-            <span>{price.currency} {price.amount.toFixed(2)}</span>
+            <span>
+              {price.currency} {price.amount.toFixed(2)}
+            </span>
           </div>
           <div className="flex justify-between text-gray-600 mt-1">
             <span>Participants</span>
@@ -345,7 +412,9 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
           </div>
           <div className="flex justify-between font-semibold mt-2 pt-2 border-t border-gray-200">
             <span>Total</span>
-            <span>{price.currency} {totalCost.toFixed(2)}</span>
+            <span>
+              {price.currency} {totalCost.toFixed(2)}
+            </span>
           </div>
         </div>
       )}
@@ -367,8 +436,10 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
       {!user && (
         <p className="text-xs text-center text-gray-500">
           You&apos;ll need to{' '}
-          <a href="/login" className="text-blue-600 hover:underline">log in</a>
-          {' '}to complete your booking.
+          <a href="/login" className="text-blue-600 hover:underline">
+            log in
+          </a>{' '}
+          to complete your booking.
         </p>
       )}
     </form>

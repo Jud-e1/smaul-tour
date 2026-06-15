@@ -23,7 +23,7 @@ export class TracingMiddleware implements NestMiddleware {
     res.setHeader(SPAN_ID_HEADER, spanId);
 
     this.logger.debug(
-      `Trace started: traceId=${traceId} spanId=${spanId} ${req.method} ${req.originalUrl}`,
+      `Trace started: traceId=${traceId} spanId=${spanId} ${req.method} ${req.originalUrl}`
     );
 
     next();

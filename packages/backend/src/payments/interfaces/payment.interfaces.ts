@@ -86,9 +86,6 @@ export const PAYMENT_STATE_TRANSITIONS: Record<Payment['status'], Payment['statu
 /**
  * Returns true if the transition from `from` to `to` is valid.
  */
-export function isValidPaymentTransition(
-  from: Payment['status'],
-  to: Payment['status'],
-): boolean {
+export function isValidPaymentTransition(from: Payment['status'], to: Payment['status']): boolean {
   return PAYMENT_STATE_TRANSITIONS[from]?.includes(to) ?? false;
 }

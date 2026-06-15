@@ -16,7 +16,7 @@ export class ImageStorageService {
   validateFile(file: MulterFile): void {
     if (!ALLOWED_MIMETYPES.includes(file.mimetype)) {
       throw new BadRequestException(
-        `Invalid file type. Allowed types: ${ALLOWED_MIMETYPES.join(', ')}`,
+        `Invalid file type. Allowed types: ${ALLOWED_MIMETYPES.join(', ')}`
       );
     }
     if (file.size > MAX_SIZE_BYTES) {
@@ -32,7 +32,7 @@ export class ImageStorageService {
   // TODO: Replace with actual S3 upload and sharp image processing
   async processAndUpload(
     _file: MulterFile,
-    filename: string,
+    filename: string
   ): Promise<{ url: string; thumbnailUrl: string; mediumUrl: string }> {
     return {
       url: `https://storage.example.com/images/${filename}`,

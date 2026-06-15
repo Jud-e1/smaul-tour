@@ -49,7 +49,12 @@ export class LocationService {
    * Uses Google Maps Distance Matrix API if configured, falls back to Haversine.
    * TODO: Enable Google Maps API by setting GOOGLE_MAPS_API_KEY in environment
    */
-  async getDistance(fromLat: number, fromLng: number, toLat: number, toLng: number): Promise<DistanceResult> {
+  async getDistance(
+    fromLat: number,
+    fromLng: number,
+    toLat: number,
+    toLng: number
+  ): Promise<DistanceResult> {
     if (this.apiKey) {
       try {
         const url = 'https://maps.googleapis.com/maps/api/distancematrix/json';
@@ -63,7 +68,10 @@ export class LocationService {
         const element = response.data?.rows?.[0]?.elements?.[0];
         if (element?.status === 'OK') {
           return {
-            fromLat, fromLng, toLat, toLng,
+            fromLat,
+            fromLng,
+            toLat,
+            toLng,
             distanceKm: element.distance.value / 1000,
             durationMinutes: Math.ceil(element.duration.value / 60),
           };
@@ -76,7 +84,10 @@ export class LocationService {
     // Fallback: Haversine distance, estimate 30 km/h average speed
     const distanceKm = this.calculateHaversineDistance(fromLat, fromLng, toLat, toLng);
     return {
-      fromLat, fromLng, toLat, toLng,
+      fromLat,
+      fromLng,
+      toLat,
+      toLng,
       distanceKm,
       durationMinutes: Math.ceil((distanceKm / 30) * 60),
     };
@@ -86,9 +97,14 @@ export class LocationService {
    * Calculate distances between consecutive locations in the list.
    */
   async calculateTravelTimes(
-    locations: Array<{ id: string; lat: number; lng: number }>,
+    locations: Array<{ id: string; lat: number; lng: number }>
   ): Promise<Array<{ fromId: string; toId: string; distanceKm: number; durationMinutes: number }>> {
-    const results: Array<{ fromId: string; toId: string; distanceKm: number; durationMinutes: number }> = [];
+    const results: Array<{
+      fromId: string;
+      toId: string;
+      distanceKm: number;
+      durationMinutes: number;
+    }> = [];
     for (let i = 0; i < locations.length - 1; i++) {
       const from = locations[i];
       const to = locations[i + 1];

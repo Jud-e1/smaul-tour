@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, Unique } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  Unique,
+} from 'typeorm';
 import { Experience } from './experience.entity';
 
 export enum SlotStatus {
@@ -37,7 +45,9 @@ export class AvailabilitySlot {
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @ManyToOne(() => Experience, experience => experience.availabilitySlots, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Experience, (experience) => experience.availabilitySlots, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'experience_id' })
   experience: Experience;
 }

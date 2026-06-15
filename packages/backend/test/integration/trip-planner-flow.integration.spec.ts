@@ -20,7 +20,8 @@ describe('AI Trip Planner Flow Integration', () => {
 
   describe('Request → Generate → Modify → Save', () => {
     it('completes full trip planner flow', async () => {
-      const naturalLanguageInput = '3-day adventure trip in Nairobi with $300 budget, interested in culture and food';
+      const naturalLanguageInput =
+        '3-day adventure trip in Nairobi with $300 budget, interested in culture and food';
 
       // Step 1: Parse natural language
       const parsedParams = {
@@ -69,7 +70,11 @@ describe('AI Trip Planner Flow Integration', () => {
         ...itinerary,
         experiences: [
           itinerary.experiences[0],
-          { experienceId: 'exp-4', suggestedDate: '2026-04-02', reasoning: 'Outdoor activity as requested' },
+          {
+            experienceId: 'exp-4',
+            suggestedDate: '2026-04-02',
+            reasoning: 'Outdoor activity as requested',
+          },
           itinerary.experiences[2],
         ],
       };
@@ -92,10 +97,17 @@ describe('AI Trip Planner Flow Integration', () => {
       const budget = 100;
       const itinerary = {
         totalCost: { amount: 95, currency: 'USD' },
-        experiences: [{ experienceId: 'exp-1' }, { experienceId: 'exp-2' }, { experienceId: 'exp-3' }],
+        experiences: [
+          { experienceId: 'exp-1' },
+          { experienceId: 'exp-2' },
+          { experienceId: 'exp-3' },
+        ],
       };
       mockTripPlannerService.generateItinerary.mockResolvedValueOnce(itinerary);
-      const result = await mockTripPlannerService.generateItinerary({ budget: { max: budget } }, []);
+      const result = await mockTripPlannerService.generateItinerary(
+        { budget: { max: budget } },
+        []
+      );
       expect(result.totalCost.amount).toBeLessThanOrEqual(budget);
     });
   });

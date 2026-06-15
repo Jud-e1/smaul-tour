@@ -15,10 +15,7 @@ describe('LlmParserService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        LlmParserService,
-        { provide: ConfigService, useValue: mockConfigService },
-      ],
+      providers: [LlmParserService, { provide: ConfigService, useValue: mockConfigService }],
     }).compile();
 
     service = module.get<LlmParserService>(LlmParserService);
@@ -58,12 +55,14 @@ describe('LlmParserService', () => {
         data: { choices: [{ message: { content: llmResponse } }] },
       });
 
-      const result = await service.parseTripRequest('3-day food and culture trip in Tokyo under $500');
+      const result = await service.parseTripRequest(
+        '3-day food and culture trip in Tokyo under $500'
+      );
 
       expect(mockedAxios.post).toHaveBeenCalledWith(
         expect.stringContaining('openai.com'),
         expect.objectContaining({ model: 'gpt-4o-mini' }),
-        expect.any(Object),
+        expect.any(Object)
       );
       expect(result.duration).toBe(3);
       expect(result.preferences).toContain('food');
@@ -93,7 +92,7 @@ describe('LlmParserService', () => {
       expect(mockedAxios.post).toHaveBeenCalledWith(
         expect.stringContaining('anthropic.com'),
         expect.any(Object),
-        expect.any(Object),
+        expect.any(Object)
       );
       expect(result.preferences).toContain('adventure');
     });

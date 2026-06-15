@@ -39,7 +39,7 @@ export class TransactionLog {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   timestamp!: Date;
 
-  @ManyToOne(() => Payment, payment => payment.transactionLogs)
+  @ManyToOne(() => Payment, (payment) => payment.transactionLogs)
   @JoinColumn({ name: 'payment_id' })
   payment!: Payment;
 }

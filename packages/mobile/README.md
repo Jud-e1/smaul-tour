@@ -5,11 +5,13 @@ React Native mobile application for iOS and Android.
 ## Setup
 
 1. Install dependencies:
+
    ```bash
    npm install
    ```
 
 2. For iOS (macOS only):
+
    ```bash
    cd ios && pod install && cd ..
    npm run ios

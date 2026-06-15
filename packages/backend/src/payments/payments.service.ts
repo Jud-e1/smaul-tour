@@ -1,13 +1,15 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Payment as PaymentEntity, PaymentStatus, PaymentMethod } from '../database/entities/payment.entity';
-import { TransactionLog as TransactionLogEntity, TransactionAction } from '../database/entities/transaction-log.entity';
+import {
+  Payment as PaymentEntity,
+  PaymentStatus,
+  PaymentMethod,
+} from '../database/entities/payment.entity';
+import {
+  TransactionLog as TransactionLogEntity,
+  TransactionAction,
+} from '../database/entities/transaction-log.entity';
 import {
   Payment,
   PaymentRequest,
@@ -30,7 +32,7 @@ export class PaymentsService implements IPaymentService {
     @InjectRepository(TransactionLogEntity)
     private readonly transactionLogRepo: Repository<TransactionLogEntity>,
     private readonly stripeGateway: StripeGatewayService,
-    private readonly receiptService: ReceiptService,
+    private readonly receiptService: ReceiptService
   ) {}
 
   async processPayment(request: PaymentRequest): Promise<PaymentResult> {
@@ -54,7 +56,7 @@ export class PaymentsService implements IPaymentService {
         request.amount.amount,
         request.amount.currency,
         request.paymentMethodId,
-        request.returnUrl,
+        request.returnUrl
       );
 
       // Store gateway transaction ID
@@ -66,7 +68,7 @@ export class PaymentsService implements IPaymentService {
         TransactionAction.AUTHORIZE,
         PaymentStatus.PENDING,
         PaymentStatus.AUTHORIZED,
-        { gatewayTransactionId: intentResult.paymentIntentId },
+        { gatewayTransactionId: intentResult.paymentIntentId }
       );
 
       // 4. Handle 3DS redirect — return early with redirectUrl
@@ -90,7 +92,7 @@ export class PaymentsService implements IPaymentService {
         TransactionAction.CAPTURE,
         PaymentStatus.AUTHORIZED,
         PaymentStatus.CAPTURED,
-        { gatewayTransactionId: intentResult.paymentIntentId },
+        { gatewayTransactionId: intentResult.paymentIntentId }
       );
 
       savedPayment.status = PaymentStatus.CAPTURED;
@@ -106,7 +108,7 @@ export class PaymentsService implements IPaymentService {
         TransactionAction.ESCROW,
         PaymentStatus.CAPTURED,
         PaymentStatus.ESCROWED,
-        { amount: request.amount.amount, currency: request.amount.currency },
+        { amount: request.amount.amount, currency: request.amount.currency }
       );
 
       // 7. Generate receipt URL
@@ -125,15 +127,19 @@ export class PaymentsService implements IPaymentService {
       this.logger.error(`Payment ${savedPayment.id} failed: ${(error as Error).message}`);
 
       savedPayment.status = PaymentStatus.FAILED;
-      await this.paymentRepo.save(savedPayment).catch(() => {/* best-effort */});
+      await this.paymentRepo.save(savedPayment).catch(() => {
+        /* best-effort */
+      });
 
       await this.logTransaction(
         savedPayment.id,
         TransactionAction.FAIL,
         PaymentStatus.PENDING,
         PaymentStatus.FAILED,
-        { error: (error as Error).message },
-      ).catch(() => {/* best-effort */});
+        { error: (error as Error).message }
+      ).catch(() => {
+        /* best-effort */
+      });
 
       return {
         success: false,
@@ -157,7 +163,7 @@ export class PaymentsService implements IPaymentService {
 
     try {
       const intentResult = await this.stripeGateway.confirmPaymentIntent(
-        payment.gatewayTransactionId,
+        payment.gatewayTransactionId
       );
 
       if (intentResult.nextActionUrl) {
@@ -175,7 +181,7 @@ export class PaymentsService implements IPaymentService {
         TransactionAction.CAPTURE,
         PaymentStatus.AUTHORIZED,
         PaymentStatus.CAPTURED,
-        { gatewayTransactionId: intentResult.paymentIntentId },
+        { gatewayTransactionId: intentResult.paymentIntentId }
       );
       payment.status = PaymentStatus.CAPTURED;
       await this.paymentRepo.save(payment);
@@ -190,7 +196,7 @@ export class PaymentsService implements IPaymentService {
         TransactionAction.ESCROW,
         PaymentStatus.CAPTURED,
         PaymentStatus.ESCROWED,
-        { amount: payment.amount, currency: payment.currency },
+        { amount: payment.amount, currency: payment.currency }
       );
 
       return { success: true, payment: this.mapToInterface(finalPayment) };
@@ -203,9 +209,13 @@ export class PaymentsService implements IPaymentService {
         TransactionAction.FAIL,
         PaymentStatus.AUTHORIZED,
         PaymentStatus.FAILED,
-        { error: (error as Error).message },
+        { error: (error as Error).message }
       ).catch(() => {});
-      return { success: false, payment: this.mapToInterface(payment), error: (error as Error).message };
+      return {
+        success: false,
+        payment: this.mapToInterface(payment),
+        error: (error as Error).message,
+      };
     }
   }
 
@@ -214,7 +224,7 @@ export class PaymentsService implements IPaymentService {
 
     if (!isValidPaymentTransition(payment.status as Payment['status'], 'escrowed')) {
       throw new BadRequestException(
-        `Cannot escrow payment in status '${payment.status}'. Expected 'captured'.`,
+        `Cannot escrow payment in status '${payment.status}'. Expected 'captured'.`
       );
     }
 
@@ -223,10 +233,16 @@ export class PaymentsService implements IPaymentService {
     payment.escrowedAt = new Date();
     const saved = await this.paymentRepo.save(payment);
 
-    await this.logTransaction(paymentId, TransactionAction.ESCROW, previous, PaymentStatus.ESCROWED, {
-      amount: payment.amount,
-      currency: payment.currency,
-    });
+    await this.logTransaction(
+      paymentId,
+      TransactionAction.ESCROW,
+      previous,
+      PaymentStatus.ESCROWED,
+      {
+        amount: payment.amount,
+        currency: payment.currency,
+      }
+    );
 
     return this.mapToInterface(saved);
   }
@@ -236,7 +252,7 @@ export class PaymentsService implements IPaymentService {
 
     if (!isValidPaymentTransition(payment.status as Payment['status'], 'released')) {
       throw new BadRequestException(
-        `Cannot release payment in status '${payment.status}'. Expected 'escrowed'.`,
+        `Cannot release payment in status '${payment.status}'. Expected 'escrowed'.`
       );
     }
 
@@ -245,10 +261,16 @@ export class PaymentsService implements IPaymentService {
     payment.releasedAt = new Date();
     const saved = await this.paymentRepo.save(payment);
 
-    await this.logTransaction(paymentId, TransactionAction.RELEASE, previous, PaymentStatus.RELEASED, {
-      amount: payment.amount,
-      currency: payment.currency,
-    });
+    await this.logTransaction(
+      paymentId,
+      TransactionAction.RELEASE,
+      previous,
+      PaymentStatus.RELEASED,
+      {
+        amount: payment.amount,
+        currency: payment.currency,
+      }
+    );
 
     return this.mapToInterface(saved);
   }
@@ -258,7 +280,7 @@ export class PaymentsService implements IPaymentService {
 
     if (!isValidPaymentTransition(payment.status as Payment['status'], 'refunded')) {
       throw new BadRequestException(
-        `Cannot refund payment in status '${payment.status}'. Expected 'escrowed'.`,
+        `Cannot refund payment in status '${payment.status}'. Expected 'escrowed'.`
       );
     }
 
@@ -267,12 +289,14 @@ export class PaymentsService implements IPaymentService {
     try {
       const refundResult = await this.stripeGateway.createRefund(
         payment.gatewayTransactionId,
-        request.amount.amount,
+        request.amount.amount
       );
       stripeRefundId = refundResult.refundId;
       this.logger.log(`Stripe refund ${stripeRefundId} created for payment ${payment.id}`);
     } catch (error) {
-      this.logger.error(`Stripe refund failed for payment ${payment.id}: ${(error as Error).message}`);
+      this.logger.error(
+        `Stripe refund failed for payment ${payment.id}: ${(error as Error).message}`
+      );
       throw error;
     }
 
@@ -281,12 +305,18 @@ export class PaymentsService implements IPaymentService {
     payment.refundedAt = new Date();
     const saved = await this.paymentRepo.save(payment);
 
-    await this.logTransaction(request.paymentId, TransactionAction.REFUND, previous, PaymentStatus.REFUNDED, {
-      amount: request.amount.amount,
-      currency: request.amount.currency,
-      reason: request.reason,
-      stripeRefundId,
-    });
+    await this.logTransaction(
+      request.paymentId,
+      TransactionAction.REFUND,
+      previous,
+      PaymentStatus.REFUNDED,
+      {
+        amount: request.amount.amount,
+        currency: request.amount.currency,
+        reason: request.reason,
+        stripeRefundId,
+      }
+    );
 
     return this.mapToInterface(saved);
   }
@@ -294,7 +324,7 @@ export class PaymentsService implements IPaymentService {
   calculateRefundAmount(
     originalAmount: number,
     cancellationPolicy: 'flexible' | 'moderate' | 'strict',
-    daysBefore: number,
+    daysBefore: number
   ): { refundAmount: number; refundPercentage: number } {
     return calculateRefundAmount(originalAmount, cancellationPolicy, daysBefore);
   }
@@ -338,7 +368,7 @@ export class PaymentsService implements IPaymentService {
     action: TransactionAction,
     previousStatus: string,
     newStatus: string,
-    metadata: Record<string, any> = {},
+    metadata: Record<string, any> = {}
   ): Promise<void> {
     const log = this.transactionLogRepo.create({
       paymentId,
@@ -377,9 +407,8 @@ export class PaymentsService implements IPaymentService {
       action: log.action as TransactionLog['action'],
       previousStatus: log.previousStatus,
       newStatus: log.newStatus,
-      amount: log.amount != null
-        ? { amount: Number(log.amount), currency: log.currency }
-        : undefined,
+      amount:
+        log.amount != null ? { amount: Number(log.amount), currency: log.currency } : undefined,
       metadata: log.metadata ?? {},
       timestamp: log.timestamp,
     };
@@ -396,7 +425,7 @@ export class PaymentsService implements IPaymentService {
 export function calculateRefundAmount(
   originalAmount: number,
   cancellationPolicy: 'flexible' | 'moderate' | 'strict',
-  daysBefore: number,
+  daysBefore: number
 ): { refundAmount: number; refundPercentage: number } {
   const thresholds: Record<'flexible' | 'moderate' | 'strict', number> = {
     flexible: 1,

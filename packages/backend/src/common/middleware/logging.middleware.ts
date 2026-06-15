@@ -24,13 +24,13 @@ export class LoggingMiddleware implements NestMiddleware {
           userId,
           statusCode,
           responseTimeMs: responseTime,
-        }),
+        })
       );
 
       // Alert if response time exceeds 2 seconds (Requirement 25.4)
       if (responseTime > 2000) {
         this.logger.warn(
-          `Slow API response: ${method} ${originalUrl} took ${responseTime}ms (userId: ${userId})`,
+          `Slow API response: ${method} ${originalUrl} took ${responseTime}ms (userId: ${userId})`
         );
       }
     });

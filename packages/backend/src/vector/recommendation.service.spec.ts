@@ -67,7 +67,7 @@ describe('RecommendationService', () => {
       expect(mockVectorDatabaseService.searchSimilarExperiences).toHaveBeenCalledWith(
         [0.1, 0.2, 0.3],
         0.7,
-        6, // limit + 1
+        6 // limit + 1
       );
       // Source id filtered out
       expect(result.find((r) => r.experienceId === 'exp-1')).toBeUndefined();
@@ -118,7 +118,7 @@ describe('RecommendationService', () => {
       expect(mockVectorDatabaseService.searchSimilarExperiences).toHaveBeenCalledWith(
         [0.1, 0.2, 0.3],
         0.5,
-        10,
+        10
       );
       expect(result).toEqual(searchResults);
     });
@@ -143,7 +143,7 @@ describe('RecommendationService', () => {
 
       expect(mockVectorDatabaseService.upsertUserPreferenceEmbedding).toHaveBeenCalledWith(
         'user-1',
-        newEmb,
+        newEmb
       );
     });
 
@@ -159,7 +159,7 @@ describe('RecommendationService', () => {
       // Average: (0.4+0.2)/2=0.3, (0.8+0.4)/2=0.6, (1.0+0.6)/2=0.8
       expect(mockVectorDatabaseService.upsertUserPreferenceEmbedding).toHaveBeenCalledWith(
         'user-1',
-        [0.3, 0.6, 0.8],
+        [0.3, 0.6, 0.8]
       );
     });
 
@@ -172,7 +172,7 @@ describe('RecommendationService', () => {
 
       expect(mockVectorDatabaseService.upsertUserPreferenceEmbedding).toHaveBeenCalledWith(
         'user-42',
-        expect.any(Array),
+        expect.any(Array)
       );
     });
   });

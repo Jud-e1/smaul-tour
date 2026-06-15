@@ -10,58 +10,58 @@ Node.js was not available in the CI environment at validation time, so tests cou
 
 ### Backend (`packages/backend`)
 
-| Test File | Type | Expected Status | Notes |
-|-----------|------|-----------------|-------|
-| `auth/auth.service.spec.ts` | Unit | ✅ Pass | Password utils, login lockout, JWT tokens, RolesGuard |
-| `bookings/bookings.service.spec.ts` | Unit | ✅ Pass | Create/cancel/complete booking, idempotency, Redis lock |
-| `payments/payments.service.spec.ts` | Unit | ✅ Pass | Escrow, release, refund, Stripe integration, state machine |
-| `payments/currency.service.spec.ts` | Unit | ✅ Pass | Currency conversion |
-| `reviews/reviews.service.spec.ts` | Unit | ✅ Pass | Create review, avg rating recalc, one-per-booking constraint |
-| `admin/admin.service.spec.ts` | Unit | ✅ Pass | Verification, suspend/unsuspend, metrics, audit logs, refunds |
-| `notifications/notifications.service.spec.ts` | Unit | ✅ Pass | Send, template rendering, preferences, retry backoff |
-| `experiences/experiences.service.spec.ts` | Unit | ✅ Pass | CRUD, image upload, availability, search, recommendations |
-| `experiences/image-storage.service.spec.ts` | Unit | ✅ Pass | File validation, upload processing |
-| `experiences/location.service.spec.ts` | Unit | ✅ Pass | Travel time calculation |
-| `trip-planner/trip-planner.service.spec.ts` | Unit | ✅ Pass | Generate/modify itinerary, budget filter, geo clustering |
-| `trip-planner/llm-parser.service.spec.ts` | Unit | ✅ Pass | LLM response parsing |
-| `vector/recommendation.service.spec.ts` | Unit | ✅ Pass | Similar experiences, personalized recommendations |
-| `vector/vector-search.service.spec.ts` | Unit | ✅ Pass | Semantic search |
-| `vector/embedding.service.spec.ts` | Unit | ✅ Pass | Embedding generation |
-| `vector/vector-database.service.spec.ts` | Unit | ✅ Pass | Upsert/query vector DB |
-| `security/fraud-detection.service.spec.ts` | Unit | ✅ Pass | Rate limiting, fraud checks, blocklist, device fingerprint |
-| `common/cache.service.spec.ts` | Unit | ✅ Pass | Cache get/set/invalidate |
-| `common/json-serializer.spec.ts` | Unit | ✅ Pass | Serialization edge cases |
-| `config/configuration.test.ts` | Unit | ✅ Pass | Config schema validation |
-| `test/integration/booking-flow.integration.spec.ts` | Integration | ⚠️ Requires DB | Needs live PostgreSQL + Redis |
-| `test/integration/payment-escrow-flow.integration.spec.ts` | Integration | ⚠️ Requires DB | Needs live PostgreSQL + Stripe test keys |
-| `test/integration/review-flow.integration.spec.ts` | Integration | ⚠️ Requires DB | Needs live PostgreSQL |
-| `test/integration/trip-planner-flow.integration.spec.ts` | Integration | ⚠️ Requires DB | Needs live PostgreSQL + OpenAI key |
-| `test/integration/fraud-detection.integration.spec.ts` | Integration | ⚠️ Requires DB | Needs live PostgreSQL |
-| `test/integration/performance.integration.spec.ts` | Integration | ⚠️ Requires DB | Load test — needs full stack |
-| `test/integration/security.integration.spec.ts` | Integration | ⚠️ Requires DB | Needs full stack |
-| `test/integration/cross-platform-sync.integration.spec.ts` | Integration | ⚠️ Requires DB | Needs full stack |
+| Test File                                                  | Type        | Expected Status | Notes                                                         |
+| ---------------------------------------------------------- | ----------- | --------------- | ------------------------------------------------------------- |
+| `auth/auth.service.spec.ts`                                | Unit        | ✅ Pass         | Password utils, login lockout, JWT tokens, RolesGuard         |
+| `bookings/bookings.service.spec.ts`                        | Unit        | ✅ Pass         | Create/cancel/complete booking, idempotency, Redis lock       |
+| `payments/payments.service.spec.ts`                        | Unit        | ✅ Pass         | Escrow, release, refund, Stripe integration, state machine    |
+| `payments/currency.service.spec.ts`                        | Unit        | ✅ Pass         | Currency conversion                                           |
+| `reviews/reviews.service.spec.ts`                          | Unit        | ✅ Pass         | Create review, avg rating recalc, one-per-booking constraint  |
+| `admin/admin.service.spec.ts`                              | Unit        | ✅ Pass         | Verification, suspend/unsuspend, metrics, audit logs, refunds |
+| `notifications/notifications.service.spec.ts`              | Unit        | ✅ Pass         | Send, template rendering, preferences, retry backoff          |
+| `experiences/experiences.service.spec.ts`                  | Unit        | ✅ Pass         | CRUD, image upload, availability, search, recommendations     |
+| `experiences/image-storage.service.spec.ts`                | Unit        | ✅ Pass         | File validation, upload processing                            |
+| `experiences/location.service.spec.ts`                     | Unit        | ✅ Pass         | Travel time calculation                                       |
+| `trip-planner/trip-planner.service.spec.ts`                | Unit        | ✅ Pass         | Generate/modify itinerary, budget filter, geo clustering      |
+| `trip-planner/llm-parser.service.spec.ts`                  | Unit        | ✅ Pass         | LLM response parsing                                          |
+| `vector/recommendation.service.spec.ts`                    | Unit        | ✅ Pass         | Similar experiences, personalized recommendations             |
+| `vector/vector-search.service.spec.ts`                     | Unit        | ✅ Pass         | Semantic search                                               |
+| `vector/embedding.service.spec.ts`                         | Unit        | ✅ Pass         | Embedding generation                                          |
+| `vector/vector-database.service.spec.ts`                   | Unit        | ✅ Pass         | Upsert/query vector DB                                        |
+| `security/fraud-detection.service.spec.ts`                 | Unit        | ✅ Pass         | Rate limiting, fraud checks, blocklist, device fingerprint    |
+| `common/cache.service.spec.ts`                             | Unit        | ✅ Pass         | Cache get/set/invalidate                                      |
+| `common/json-serializer.spec.ts`                           | Unit        | ✅ Pass         | Serialization edge cases                                      |
+| `config/configuration.test.ts`                             | Unit        | ✅ Pass         | Config schema validation                                      |
+| `test/integration/booking-flow.integration.spec.ts`        | Integration | ⚠️ Requires DB  | Needs live PostgreSQL + Redis                                 |
+| `test/integration/payment-escrow-flow.integration.spec.ts` | Integration | ⚠️ Requires DB  | Needs live PostgreSQL + Stripe test keys                      |
+| `test/integration/review-flow.integration.spec.ts`         | Integration | ⚠️ Requires DB  | Needs live PostgreSQL                                         |
+| `test/integration/trip-planner-flow.integration.spec.ts`   | Integration | ⚠️ Requires DB  | Needs live PostgreSQL + OpenAI key                            |
+| `test/integration/fraud-detection.integration.spec.ts`     | Integration | ⚠️ Requires DB  | Needs live PostgreSQL                                         |
+| `test/integration/performance.integration.spec.ts`         | Integration | ⚠️ Requires DB  | Load test — needs full stack                                  |
+| `test/integration/security.integration.spec.ts`            | Integration | ⚠️ Requires DB  | Needs full stack                                              |
+| `test/integration/cross-platform-sync.integration.spec.ts` | Integration | ⚠️ Requires DB  | Needs full stack                                              |
 
 **Unit test count:** ~20 spec files, ~200+ individual test cases  
 **Integration tests:** 8 files — require a running database and external services
 
 ### Web (`packages/web`)
 
-| Test File | Expected Status | Notes |
-|-----------|-----------------|-------|
-| `__tests__/auth.test.tsx` | ✅ Pass | Login/register validation, mock-based |
-| `__tests__/booking.test.tsx` | ✅ Pass | Booking CRUD, error handling, mock-based |
-| `__tests__/error-handling.test.tsx` | ✅ Pass | API error mapping, rate limit, retry backoff |
-| `__tests__/forms.test.tsx` | ✅ Pass | Review, search, registration, booking form validation |
+| Test File                           | Expected Status | Notes                                                 |
+| ----------------------------------- | --------------- | ----------------------------------------------------- |
+| `__tests__/auth.test.tsx`           | ✅ Pass         | Login/register validation, mock-based                 |
+| `__tests__/booking.test.tsx`        | ✅ Pass         | Booking CRUD, error handling, mock-based              |
+| `__tests__/error-handling.test.tsx` | ✅ Pass         | API error mapping, rate limit, retry backoff          |
+| `__tests__/forms.test.tsx`          | ✅ Pass         | Review, search, registration, booking form validation |
 
 **Test count:** 4 files, ~25 individual test cases
 
 ### Mobile (`packages/mobile`)
 
-| Test File | Expected Status | Notes |
-|-----------|-----------------|-------|
-| `__tests__/auth.test.ts` | ✅ Pass | Login/register/logout, Keychain storage |
-| `__tests__/booking.test.ts` | ✅ Pass | Create/cancel/retrieve bookings |
-| `__tests__/push-notifications.test.ts` | ✅ Pass | FCM token, permission, navigation on tap |
+| Test File                              | Expected Status | Notes                                    |
+| -------------------------------------- | --------------- | ---------------------------------------- |
+| `__tests__/auth.test.ts`               | ✅ Pass         | Login/register/logout, Keychain storage  |
+| `__tests__/booking.test.ts`            | ✅ Pass         | Create/cancel/retrieve bookings          |
+| `__tests__/push-notifications.test.ts` | ✅ Pass         | FCM token, permission, navigation on tap |
 
 **Test count:** 3 files, ~15 individual test cases
 
@@ -236,13 +236,13 @@ Run these against a staging environment with production-like data volumes.
 
 The following features are partially implemented or have known gaps. These are documented in the requirements audit and should be addressed before or shortly after production launch.
 
-| # | Feature | Status | Impact |
-|---|---------|--------|--------|
-| 1 | **Wishlist backend persistence** | Frontend UI exists; backend storage not implemented | Wishlists lost on logout/device change |
-| 2 | **Booking confirmation PDF** | Receipt URL generated; PDF rendering is a stub | Travelers cannot download PDF receipts |
-| 3 | **Apple Pay / Google Pay (mobile)** | Card payments work; native wallet payments not integrated | Reduced mobile payment conversion |
-| 4 | **CSRF protection** | JWT-based auth used; no CSRF tokens on state-changing endpoints | Low risk for API-only clients; higher risk if cookie auth added |
-| 5 | **Real S3 image processing** | Image upload pipeline implemented; actual S3 bucket and Lambda processing not wired in staging | Images may not be resized/optimized in staging |
+| #   | Feature                             | Status                                                                                         | Impact                                                          |
+| --- | ----------------------------------- | ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| 1   | **Wishlist backend persistence**    | Frontend UI exists; backend storage not implemented                                            | Wishlists lost on logout/device change                          |
+| 2   | **Booking confirmation PDF**        | Receipt URL generated; PDF rendering is a stub                                                 | Travelers cannot download PDF receipts                          |
+| 3   | **Apple Pay / Google Pay (mobile)** | Card payments work; native wallet payments not integrated                                      | Reduced mobile payment conversion                               |
+| 4   | **CSRF protection**                 | JWT-based auth used; no CSRF tokens on state-changing endpoints                                | Low risk for API-only clients; higher risk if cookie auth added |
+| 5   | **Real S3 image processing**        | Image upload pipeline implemented; actual S3 bucket and Lambda processing not wired in staging | Images may not be resized/optimized in staging                  |
 
 ---
 

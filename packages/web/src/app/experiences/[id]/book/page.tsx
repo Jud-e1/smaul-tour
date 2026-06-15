@@ -25,7 +25,8 @@ export default function BookingPage() {
 
   useEffect(() => {
     if (!id) return;
-    experiencesApi.get(id)
+    experiencesApi
+      .get(id)
       .then(({ data }: { data: ExperienceSummary }) => setExperience(data))
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -97,7 +98,8 @@ export default function BookingPage() {
           <div className="mt-4 p-4 bg-amber-50 border border-amber-100 rounded-lg text-sm text-amber-800">
             <strong className="font-medium">Cancellation policy: </strong>
             <span className="capitalize">{experience.cancellationPolicy}</span>
-            {experience.cancellationPolicy === 'flexible' && ' — Full refund up to 24 hours before.'}
+            {experience.cancellationPolicy === 'flexible' &&
+              ' — Full refund up to 24 hours before.'}
             {experience.cancellationPolicy === 'moderate' && ' — Full refund up to 7 days before.'}
             {experience.cancellationPolicy === 'strict' && ' — Full refund up to 14 days before.'}
           </div>

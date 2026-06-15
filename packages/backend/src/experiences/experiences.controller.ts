@@ -15,12 +15,7 @@ import {
   UploadedFile,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ExperienceService } from './experiences.service';
 import { CreateExperienceDto } from './dto/create-experience.dto';
 import { UpdateExperienceDto } from './dto/update-experience.dto';
@@ -57,15 +52,18 @@ export class ExperiencesController {
     const searchQuery: ExperienceSearchQuery = {
       text: query.text,
       categories: query.categories,
-      priceRange: (query.minPrice !== undefined || query.maxPrice !== undefined)
-        ? { min: query.minPrice ?? 0, max: query.maxPrice ?? Number.MAX_SAFE_INTEGER }
-        : undefined,
-      durationRange: (query.minDuration !== undefined || query.maxDuration !== undefined)
-        ? { min: query.minDuration ?? 0, max: query.maxDuration ?? Number.MAX_SAFE_INTEGER }
-        : undefined,
-      location: (query.lat !== undefined && query.lng !== undefined && query.radiusKm !== undefined)
-        ? { lat: query.lat, lng: query.lng, radiusKm: query.radiusKm }
-        : undefined,
+      priceRange:
+        query.minPrice !== undefined || query.maxPrice !== undefined
+          ? { min: query.minPrice ?? 0, max: query.maxPrice ?? Number.MAX_SAFE_INTEGER }
+          : undefined,
+      durationRange:
+        query.minDuration !== undefined || query.maxDuration !== undefined
+          ? { min: query.minDuration ?? 0, max: query.maxDuration ?? Number.MAX_SAFE_INTEGER }
+          : undefined,
+      location:
+        query.lat !== undefined && query.lng !== undefined && query.radiusKm !== undefined
+          ? { lat: query.lat, lng: query.lng, radiusKm: query.radiusKm }
+          : undefined,
       minRating: query.minRating,
       sortBy: query.sortBy,
       sortOrder: query.sortOrder,
@@ -136,7 +134,11 @@ export class ExperiencesController {
   @ApiOperation({ summary: 'Set primary image for an experience (guide only)' })
   @ApiResponse({ status: 200, description: 'Primary image updated' })
   @ApiResponse({ status: 404, description: 'Experience or image not found' })
-  async setPrimaryImage(@Param('id') id: string, @Param('imageId') imageId: string, @Req() req: any) {
+  async setPrimaryImage(
+    @Param('id') id: string,
+    @Param('imageId') imageId: string,
+    @Req() req: any
+  ) {
     return this.experienceService.setPrimaryImage(id, req.user.id, imageId);
   }
 
@@ -144,7 +146,9 @@ export class ExperiencesController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get personalized experience recommendations for the authenticated user' })
+  @ApiOperation({
+    summary: 'Get personalized experience recommendations for the authenticated user',
+  })
   @ApiResponse({ status: 200, description: 'Personalized recommendations returned' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async getPersonalizedRecommendations(@Req() req: any) {
@@ -164,7 +168,9 @@ export class ExperiencesController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Calculate travel times between a list of locations (public)' })
   @ApiResponse({ status: 200, description: 'Travel times returned' })
-  async calculateTravelTimes(@Body() body: { locations: Array<{ id: string; lat: number; lng: number }> }) {
+  async calculateTravelTimes(
+    @Body() body: { locations: Array<{ id: string; lat: number; lng: number }> }
+  ) {
     return this.experienceService.calculateTravelTimes(body.locations);
   }
 
@@ -190,7 +196,7 @@ export class ExperiencesController {
   async updateAvailability(
     @Param('id') id: string,
     @Req() req: any,
-    @Body() body: { slots: AvailabilitySlotDto[] },
+    @Body() body: { slots: AvailabilitySlotDto[] }
   ) {
     return this.experienceService.updateAvailability(id, req.user.id, body.slots);
   }

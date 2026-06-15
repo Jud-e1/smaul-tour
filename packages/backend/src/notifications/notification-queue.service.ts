@@ -36,7 +36,9 @@ export class NotificationQueueService {
 
   constructor(
     private readonly configService: ConfigService,
-    @Optional() @Inject(NOTIFICATION_REDIS_CLIENT) private readonly redis: NotificationRedisClient | null,
+    @Optional()
+    @Inject(NOTIFICATION_REDIS_CLIENT)
+    private readonly redis: NotificationRedisClient | null
   ) {
     if (!redis) {
       this.logger.warn('Redis not available for notification queue. Using in-memory queue.');
@@ -49,7 +51,9 @@ export class NotificationQueueService {
     } else {
       this.inMemoryQueue.push(notification);
     }
-    this.logger.debug(`Enqueued notification ${notification.notificationId} (attempt ${notification.attempt})`);
+    this.logger.debug(
+      `Enqueued notification ${notification.notificationId} (attempt ${notification.attempt})`
+    );
   }
 
   async dequeue(): Promise<QueuedNotification | null> {

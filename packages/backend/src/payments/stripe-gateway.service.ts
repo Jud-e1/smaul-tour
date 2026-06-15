@@ -22,9 +22,10 @@ export class StripeGatewayService {
   private readonly logger = new Logger(StripeGatewayService.name);
 
   constructor(private readonly configService: ConfigService) {
-    const apiKey = this.configService.get<string>('STRIPE_SECRET_KEY')
-      ?? this.configService.get<string>('PAYMENT_API_KEY')
-      ?? '';
+    const apiKey =
+      this.configService.get<string>('STRIPE_SECRET_KEY') ??
+      this.configService.get<string>('PAYMENT_API_KEY') ??
+      '';
 
     this.stripe = new Stripe(apiKey, { apiVersion: '2023-10-16' });
   }
@@ -38,7 +39,7 @@ export class StripeGatewayService {
     amount: number,
     currency: string,
     paymentMethodId: string,
-    returnUrl: string,
+    returnUrl: string
   ): Promise<StripePaymentIntentResult> {
     try {
       const intent = await this.stripe.paymentIntents.create({
@@ -54,7 +55,7 @@ export class StripeGatewayService {
     } catch (error) {
       this.logger.error('Failed to create PaymentIntent', error);
       throw new InternalServerErrorException(
-        `Stripe error: ${(error as Stripe.errors.StripeError).message ?? 'unknown'}`,
+        `Stripe error: ${(error as Stripe.errors.StripeError).message ?? 'unknown'}`
       );
     }
   }
@@ -69,7 +70,7 @@ export class StripeGatewayService {
     } catch (error) {
       this.logger.error(`Failed to confirm PaymentIntent ${paymentIntentId}`, error);
       throw new InternalServerErrorException(
-        `Stripe error: ${(error as Stripe.errors.StripeError).message ?? 'unknown'}`,
+        `Stripe error: ${(error as Stripe.errors.StripeError).message ?? 'unknown'}`
       );
     }
   }
@@ -79,10 +80,7 @@ export class StripeGatewayService {
    * @param amount Optional partial refund amount in major currency units (e.g. 10.00 USD).
    *               Omit for a full refund.
    */
-  async createRefund(
-    paymentIntentId: string,
-    amount?: number,
-  ): Promise<StripeRefundResult> {
+  async createRefund(paymentIntentId: string, amount?: number): Promise<StripeRefundResult> {
     try {
       const params: Stripe.RefundCreateParams = { payment_intent: paymentIntentId };
       if (amount !== undefined) {
@@ -99,7 +97,7 @@ export class StripeGatewayService {
     } catch (error) {
       this.logger.error(`Failed to create refund for PaymentIntent ${paymentIntentId}`, error);
       throw new InternalServerErrorException(
-        `Stripe refund error: ${(error as Stripe.errors.StripeError).message ?? 'unknown'}`,
+        `Stripe refund error: ${(error as Stripe.errors.StripeError).message ?? 'unknown'}`
       );
     }
   }
@@ -122,10 +120,7 @@ export class StripeGatewayService {
     };
 
     // 3D Secure or other redirect required
-    if (
-      intent.status === 'requires_action' &&
-      intent.next_action?.type === 'redirect_to_url'
-    ) {
+    if (intent.status === 'requires_action' && intent.next_action?.type === 'redirect_to_url') {
       result.nextActionUrl = intent.next_action.redirect_to_url?.url ?? undefined;
     }
 

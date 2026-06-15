@@ -50,7 +50,10 @@ describe('Review Flow Integration', () => {
       expect(avgRating).toBeLessThanOrEqual(5);
 
       // Step 4: Update experience rating
-      mockExperiencesService.updateRating.mockResolvedValueOnce({ averageRating: 4.7, reviewCount: 10 });
+      mockExperiencesService.updateRating.mockResolvedValueOnce({
+        averageRating: 4.7,
+        reviewCount: 10,
+      });
       const updated = await mockExperiencesService.updateRating('exp-1', 4.7);
       expect(updated.averageRating).toBe(4.7);
 
@@ -70,9 +73,9 @@ describe('Review Flow Integration', () => {
         code: 'DUPLICATE_REVIEW',
         message: 'Review already submitted for this booking',
       });
-      await expect(
-        mockReviewsService.create({ bookingId: 'b1', rating: 4 })
-      ).rejects.toMatchObject({ code: 'DUPLICATE_REVIEW' });
+      await expect(mockReviewsService.create({ bookingId: 'b1', rating: 4 })).rejects.toMatchObject(
+        { code: 'DUPLICATE_REVIEW' }
+      );
     });
 
     it('validates rating range', () => {

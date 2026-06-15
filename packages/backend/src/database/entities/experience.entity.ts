@@ -1,4 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
+} from 'typeorm';
 import { User } from './user.entity';
 import { Image } from './image.entity';
 import { AvailabilitySlot } from './availability-slot.entity';
@@ -55,10 +64,10 @@ export class Experience {
   @Column({ type: 'uuid', nullable: true, name: 'primary_image_id' })
   primaryImageId!: string;
 
-  @Column({ 
-    type: 'enum', 
-    enum: ExperienceStatus, 
-    default: ExperienceStatus.PENDING_APPROVAL 
+  @Column({
+    type: 'enum',
+    enum: ExperienceStatus,
+    default: ExperienceStatus.PENDING_APPROVAL,
   })
   status!: ExperienceStatus;
 
@@ -68,11 +77,11 @@ export class Experience {
   @Column({ type: 'integer', default: 0, name: 'review_count' })
   reviewCount!: number;
 
-  @Column({ 
-    type: 'enum', 
-    enum: CancellationPolicy, 
+  @Column({
+    type: 'enum',
+    enum: CancellationPolicy,
     default: CancellationPolicy.MODERATE,
-    name: 'cancellation_policy'
+    name: 'cancellation_policy',
   })
   cancellationPolicy!: CancellationPolicy;
 
@@ -82,19 +91,19 @@ export class Experience {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt!: Date;
 
-  @ManyToOne(() => User, user => user.experiences)
+  @ManyToOne(() => User, (user) => user.experiences)
   @JoinColumn({ name: 'guide_id' })
   guide!: User;
 
-  @OneToMany(() => Image, image => image.experience)
+  @OneToMany(() => Image, (image) => image.experience)
   images!: Image[];
 
-  @OneToMany(() => AvailabilitySlot, slot => slot.experience)
+  @OneToMany(() => AvailabilitySlot, (slot) => slot.experience)
   availabilitySlots!: AvailabilitySlot[];
 
-  @OneToMany(() => Booking, booking => booking.experience)
+  @OneToMany(() => Booking, (booking) => booking.experience)
   bookings!: Booking[];
 
-  @OneToMany(() => Review, review => review.experience)
+  @OneToMany(() => Review, (review) => review.experience)
   reviews!: Review[];
 }

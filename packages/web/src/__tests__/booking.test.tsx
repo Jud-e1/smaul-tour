@@ -59,7 +59,9 @@ describe('Booking Flow', () => {
       mockCreate.mockRejectedValueOnce({
         response: { status: 409, data: { message: 'Slot no longer available' } },
       });
-      await expect(mockCreate({ experienceId: 'exp-1', slotId: 'slot-taken' })).rejects.toMatchObject({
+      await expect(
+        mockCreate({ experienceId: 'exp-1', slotId: 'slot-taken' })
+      ).rejects.toMatchObject({
         response: { status: 409 },
       });
     });
@@ -68,7 +70,9 @@ describe('Booking Flow', () => {
       mockCreate.mockRejectedValueOnce({
         response: { status: 402, data: { message: 'Payment failed' } },
       });
-      await expect(mockCreate({ experienceId: 'exp-1', paymentMethodId: 'pm_fail' })).rejects.toMatchObject({
+      await expect(
+        mockCreate({ experienceId: 'exp-1', paymentMethodId: 'pm_fail' })
+      ).rejects.toMatchObject({
         response: { status: 402 },
       });
     });

@@ -110,9 +110,11 @@ function makeMockDataSource(transactionFn?: (manager: any) => Promise<any>) {
   };
 
   return {
-    transaction: jest.fn().mockImplementation((cb: (m: any) => Promise<any>) =>
-      transactionFn ? transactionFn(manager) : cb(manager),
-    ),
+    transaction: jest
+      .fn()
+      .mockImplementation((cb: (m: any) => Promise<any>) =>
+        transactionFn ? transactionFn(manager) : cb(manager)
+      ),
     _manager: manager,
   };
 }
@@ -177,7 +179,8 @@ describe('BookingsService', () => {
       const savedBooking = makeBooking();
 
       const manager = {
-        createQueryBuilder: jest.fn()
+        createQueryBuilder: jest
+          .fn()
           .mockReturnValueOnce({ ...makeMockQb([experience]), setLock: jest.fn().mockReturnThis() })
           .mockReturnValueOnce({ ...makeMockQb([slot]), setLock: jest.fn().mockReturnThis() }),
         findOne: jest.fn().mockResolvedValue(null), // no duplicate reference
@@ -220,7 +223,7 @@ describe('BookingsService', () => {
           date: '2026-06-01',
           startTime: '09:00',
           participants: 1,
-        }),
+        })
       ).rejects.toThrow(NotFoundException);
     });
 
@@ -257,7 +260,7 @@ describe('BookingsService', () => {
           date: '2026-06-01',
           startTime: '09:00',
           participants: 1,
-        }),
+        })
       ).rejects.toThrow(BadRequestException);
     });
 
@@ -295,7 +298,7 @@ describe('BookingsService', () => {
           date: '2026-06-01',
           startTime: '09:00',
           participants: 1,
-        }),
+        })
       ).rejects.toThrow(ConflictException);
     });
 
@@ -327,7 +330,7 @@ describe('BookingsService', () => {
           date: '2026-06-01',
           startTime: '09:00',
           participants: 1,
-        }),
+        })
       ).rejects.toThrow(ConflictException);
     });
   });
@@ -453,7 +456,7 @@ describe('BookingsService', () => {
           userId: 'traveler-1',
           userRole: 'traveler',
           reason: 'Test',
-        }),
+        })
       ).rejects.toThrow(ConflictException);
     });
 
@@ -466,7 +469,7 @@ describe('BookingsService', () => {
           userId: 'traveler-1',
           userRole: 'traveler',
           reason: 'Test',
-        }),
+        })
       ).rejects.toThrow(NotFoundException);
     });
 
@@ -506,7 +509,11 @@ describe('BookingsService', () => {
     it('should mark booking as completed', async () => {
       const booking = makeBooking({ status: BookingStatus.CONFIRMED });
       bookingRepo.findOne.mockResolvedValue(booking);
-      bookingRepo.save.mockResolvedValue({ ...booking, status: BookingStatus.COMPLETED, completedAt: new Date() });
+      bookingRepo.save.mockResolvedValue({
+        ...booking,
+        status: BookingStatus.COMPLETED,
+        completedAt: new Date(),
+      });
 
       const result = await service.completeBooking('booking-1');
 
@@ -532,7 +539,7 @@ describe('BookingsService', () => {
       await service.completeBooking('booking-1');
 
       // Give the fire-and-forget a tick to run
-      await new Promise(r => setTimeout(r, 10));
+      await new Promise((r) => setTimeout(r, 10));
       expect(paymentRepo.save).toHaveBeenCalled();
     });
   });
@@ -541,13 +548,17 @@ describe('BookingsService', () => {
 
   describe('checkAvailability', () => {
     it('should return true when slot is available with capacity', async () => {
-      slotRepo.findOne.mockResolvedValue(makeSlot({ booked: 3, capacity: 10, status: SlotStatus.AVAILABLE }));
+      slotRepo.findOne.mockResolvedValue(
+        makeSlot({ booked: 3, capacity: 10, status: SlotStatus.AVAILABLE })
+      );
       const result = await service.checkAvailability('exp-1', '2026-06-01', '09:00');
       expect(result).toBe(true);
     });
 
     it('should return false when slot is fully booked', async () => {
-      slotRepo.findOne.mockResolvedValue(makeSlot({ booked: 10, capacity: 10, status: SlotStatus.BOOKED }));
+      slotRepo.findOne.mockResolvedValue(
+        makeSlot({ booked: 10, capacity: 10, status: SlotStatus.BOOKED })
+      );
       const result = await service.checkAvailability('exp-1', '2026-06-01', '09:00');
       expect(result).toBe(false);
     });
@@ -563,7 +574,10 @@ describe('BookingsService', () => {
 
   describe('getUserBookings', () => {
     it('should return bookings for a user', async () => {
-      const bookings = [makeBooking(), makeBooking({ id: 'booking-2', referenceNumber: 'XY98ZW76' })];
+      const bookings = [
+        makeBooking(),
+        makeBooking({ id: 'booking-2', referenceNumber: 'XY98ZW76' }),
+      ];
       const qb = {
         where: jest.fn().mockReturnThis(),
         andWhere: jest.fn().mockReturnThis(),
@@ -589,7 +603,10 @@ describe('BookingsService', () => {
 
       await service.getUserBookings('traveler-1', { groupBy: 'upcoming' });
 
-      expect(qb.andWhere).toHaveBeenCalledWith(expect.stringContaining('b.date'), expect.any(Object));
+      expect(qb.andWhere).toHaveBeenCalledWith(
+        expect.stringContaining('b.date'),
+        expect.any(Object)
+      );
     });
   });
 
@@ -637,7 +654,7 @@ describe('BookingsService', () => {
       expect(redis.setex).toHaveBeenCalledWith(
         'idempotency:booking:unique-key-abc',
         expect.any(Number),
-        expect.any(String),
+        expect.any(String)
       );
     });
   });

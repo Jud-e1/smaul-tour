@@ -36,18 +36,18 @@ export class UserProfile {
   @Column({ type: 'jsonb', nullable: true, name: 'travel_preferences' })
   travelPreferences!: string[] | null;
 
-  @Column({ 
-    type: 'enum', 
-    enum: GuideVerificationStatus, 
+  @Column({
+    type: 'enum',
+    enum: GuideVerificationStatus,
     nullable: true,
-    name: 'guide_verification_status'
+    name: 'guide_verification_status',
   })
   guideVerificationStatus!: GuideVerificationStatus;
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt!: Date;
 
-  @OneToOne(() => User, user => user.profile)
+  @OneToOne(() => User, (user) => user.profile)
   @JoinColumn({ name: 'user_id' })
   user!: User;
 }

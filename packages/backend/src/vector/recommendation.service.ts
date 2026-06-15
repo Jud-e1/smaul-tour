@@ -11,16 +11,16 @@ export class RecommendationService {
   constructor(
     @InjectDataSource() private readonly dataSource: DataSource,
     private readonly vectorDatabaseService: VectorDatabaseService,
-    private readonly embeddingService: EmbeddingService,
+    private readonly embeddingService: EmbeddingService
   ) {}
 
   async getSimilarExperiences(
     experienceId: string,
-    limit: number = 5,
+    limit: number = 5
   ): Promise<Array<{ experienceId: string; similarity: number }>> {
     const rows: Array<{ embedding: string }> = await this.dataSource.query(
       'SELECT embedding FROM experience_embeddings WHERE experience_id = $1',
-      [experienceId],
+      [experienceId]
     );
 
     if (!rows.length || !rows[0].embedding) {
@@ -38,21 +38,19 @@ export class RecommendationService {
     const results = await this.vectorDatabaseService.searchSimilarExperiences(
       embedding,
       0.7,
-      limit + 1,
+      limit + 1
     );
 
-    return results
-      .filter((r) => r.experienceId !== experienceId)
-      .slice(0, limit);
+    return results.filter((r) => r.experienceId !== experienceId).slice(0, limit);
   }
 
   async getPersonalizedRecommendations(
     userId: string,
-    limit: number = 10,
+    limit: number = 10
   ): Promise<Array<{ experienceId: string; similarity: number }>> {
     const rows: Array<{ embedding: string }> = await this.dataSource.query(
       'SELECT embedding FROM user_preference_embeddings WHERE user_id = $1',
-      [userId],
+      [userId]
     );
 
     if (!rows.length || !rows[0].embedding) {
@@ -66,22 +64,18 @@ export class RecommendationService {
       .split(',')
       .map(Number);
 
-    return this.vectorDatabaseService.searchSimilarExperiences(
-      embedding,
-      0.5,
-      limit,
-    );
+    return this.vectorDatabaseService.searchSimilarExperiences(embedding, 0.5, limit);
   }
 
   async updateUserPreferences(
     userId: string,
-    bookedExperience: { title: string; description: string; category: string[] },
+    bookedExperience: { title: string; description: string; category: string[] }
   ): Promise<void> {
     const newEmbedding = await this.embeddingService.generateExperienceEmbedding(bookedExperience);
 
     const rows: Array<{ embedding: string }> = await this.dataSource.query(
       'SELECT embedding FROM user_preference_embeddings WHERE user_id = $1',
-      [userId],
+      [userId]
     );
 
     let finalEmbedding: number[];

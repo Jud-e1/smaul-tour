@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Experience } from './experience.entity';
 
 @Entity('images')
@@ -27,7 +34,7 @@ export class Image {
   @CreateDateColumn({ name: 'uploaded_at' })
   uploadedAt!: Date;
 
-  @ManyToOne(() => Experience, experience => experience.images, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Experience, (experience) => experience.images, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'experience_id' })
   experience!: Experience;
 }

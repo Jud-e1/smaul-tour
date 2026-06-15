@@ -1,4 +1,12 @@
-import { Body, Controller, Get, NotImplementedException, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  NotImplementedException,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
@@ -17,7 +25,10 @@ export class AuthController {
 
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })
-  @ApiResponse({ status: 201, description: 'User registered; returns accessToken, refreshToken, and user object' })
+  @ApiResponse({
+    status: 201,
+    description: 'User registered; returns accessToken, refreshToken, and user object',
+  })
   @ApiResponse({ status: 400, description: 'Validation error' })
   @ApiResponse({ status: 409, description: 'Email already in use' })
   async register(@Body() dto: RegisterDto) {
@@ -78,7 +89,9 @@ export class AuthController {
   @ApiResponse({ status: 501, description: 'Not yet implemented' })
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async oauthMobile(@Body() _dto: OAuthDto) {
-    throw new NotImplementedException('Mobile OAuth token verification will be implemented with provider SDK');
+    throw new NotImplementedException(
+      'Mobile OAuth token verification will be implemented with provider SDK'
+    );
   }
 
   @Post('refresh')
@@ -91,7 +104,10 @@ export class AuthController {
 
   @Post('reset-password')
   @ApiOperation({ summary: 'Request a password reset email' })
-  @ApiResponse({ status: 200, description: 'Reset email sent (always returns 200 to prevent enumeration)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Reset email sent (always returns 200 to prevent enumeration)',
+  })
   async resetPassword(@Body() dto: ResetPasswordDto) {
     await this.authService.requestPasswordReset(dto.email);
   }

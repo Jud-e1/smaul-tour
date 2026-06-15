@@ -51,8 +51,18 @@ describe('Payment Escrow Flow Integration', () => {
 
       // Step 4: Verify transaction log
       const logs = [
-        { action: 'process', previousStatus: 'pending', newStatus: 'escrowed', timestamp: new Date() },
-        { action: 'release', previousStatus: 'escrowed', newStatus: 'released', timestamp: new Date() },
+        {
+          action: 'process',
+          previousStatus: 'pending',
+          newStatus: 'escrowed',
+          timestamp: new Date(),
+        },
+        {
+          action: 'release',
+          previousStatus: 'escrowed',
+          newStatus: 'released',
+          timestamp: new Date(),
+        },
       ];
       mockPaymentsService.getLogs.mockResolvedValueOnce(logs);
       const transactionLogs = await mockPaymentsService.getLogs('payment-1');
@@ -64,7 +74,10 @@ describe('Payment Escrow Flow Integration', () => {
     it('processes refund on guide cancellation', async () => {
       const refund = { status: 'refunded', amount: 100, currency: 'USD' };
       mockPaymentsService.refund.mockResolvedValueOnce(refund);
-      const result = await mockPaymentsService.refund('payment-1', { reason: 'guide_cancelled', amount: 100 });
+      const result = await mockPaymentsService.refund('payment-1', {
+        reason: 'guide_cancelled',
+        amount: 100,
+      });
       expect(result.status).toBe('refunded');
       expect(result.amount).toBe(100); // Full refund for guide cancellation
     });
@@ -72,12 +85,20 @@ describe('Payment Escrow Flow Integration', () => {
 
   describe('Cancellation policy enforcement', () => {
     it('calculates correct refund for flexible policy', () => {
-      const calculateRefund = (policy: string, hoursBeforeExperience: number, totalAmount: number) => {
+      const calculateRefund = (
+        policy: string,
+        hoursBeforeExperience: number,
+        totalAmount: number
+      ) => {
         if (policy === 'flexible') {
           return hoursBeforeExperience >= 24 ? totalAmount : totalAmount * 0.5;
         }
         if (policy === 'moderate') {
-          return hoursBeforeExperience >= 72 ? totalAmount : hoursBeforeExperience >= 24 ? totalAmount * 0.5 : 0;
+          return hoursBeforeExperience >= 72
+            ? totalAmount
+            : hoursBeforeExperience >= 24
+              ? totalAmount * 0.5
+              : 0;
         }
         if (policy === 'strict') {
           return hoursBeforeExperience >= 168 ? totalAmount * 0.5 : 0;

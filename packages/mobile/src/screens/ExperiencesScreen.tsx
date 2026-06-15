@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity, StyleSheet,
-  FlatList, ActivityIndicator, Image,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  FlatList,
+  ActivityIndicator,
+  Image,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -31,32 +37,35 @@ export default function ExperiencesScreen({ navigation }: Props) {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  const fetchExperiences = useCallback(async (reset = false) => {
-    if (loading) return;
-    setLoading(true);
-    try {
-      const currentPage = reset ? 1 : page;
-      const { data } = await experiencesApi.list({
-        search: search || undefined,
-        sort,
-        page: currentPage,
-        limit: 10,
-      });
-      const items: Experience[] = data.experiences || data;
-      if (reset) {
-        setExperiences(items);
-        setPage(2);
-      } else {
-        setExperiences((prev) => [...prev, ...items]);
-        setPage((p) => p + 1);
+  const fetchExperiences = useCallback(
+    async (reset = false) => {
+      if (loading) return;
+      setLoading(true);
+      try {
+        const currentPage = reset ? 1 : page;
+        const { data } = await experiencesApi.list({
+          search: search || undefined,
+          sort,
+          page: currentPage,
+          limit: 10,
+        });
+        const items: Experience[] = data.experiences || data;
+        if (reset) {
+          setExperiences(items);
+          setPage(2);
+        } else {
+          setExperiences((prev) => [...prev, ...items]);
+          setPage((p) => p + 1);
+        }
+        setHasMore(items.length === 10);
+      } catch {
+        // ignore
+      } finally {
+        setLoading(false);
       }
-      setHasMore(items.length === 10);
-    } catch {
-      // ignore
-    } finally {
-      setLoading(false);
-    }
-  }, [search, sort, page, loading]);
+    },
+    [search, sort, page, loading]
+  );
 
   useEffect(() => {
     fetchExperiences(true);
@@ -75,8 +84,12 @@ export default function ExperiencesScreen({ navigation }: Props) {
         </View>
       )}
       <View style={styles.cardContent}>
-        <Text style={styles.cardTitle} numberOfLines={2}>{item.title}</Text>
-        <Text style={styles.cardLocation} numberOfLines={1}>{item.location.address}</Text>
+        <Text style={styles.cardTitle} numberOfLines={2}>
+          {item.title}
+        </Text>
+        <Text style={styles.cardLocation} numberOfLines={1}>
+          {item.location.address}
+        </Text>
         <View style={styles.cardMeta}>
           <Text style={styles.cardRating}>⭐ {item.averageRating?.toFixed(1) || 'New'}</Text>
           <Text style={styles.cardDuration}>{item.duration}h</Text>
@@ -138,23 +151,50 @@ export default function ExperiencesScreen({ navigation }: Props) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F9FAFB' },
-  searchRow: { padding: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
+  searchRow: {
+    padding: 12,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
   searchInput: {
-    borderWidth: 1, borderColor: '#D1D5DB', borderRadius: 8, padding: 10,
-    fontSize: 15, backgroundColor: '#F9FAFB',
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    borderRadius: 8,
+    padding: 10,
+    fontSize: 15,
+    backgroundColor: '#F9FAFB',
   },
   sortRow: { flexDirection: 'row', padding: 8, backgroundColor: '#fff', gap: 6, flexWrap: 'wrap' },
-  sortBtn: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: 16, borderWidth: 1, borderColor: '#D1D5DB' },
+  sortBtn: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+  },
   sortBtnActive: { backgroundColor: '#2563EB', borderColor: '#2563EB' },
   sortBtnText: { fontSize: 12, color: '#6B7280' },
   sortBtnTextActive: { color: '#fff' },
   card: {
-    flexDirection: 'row', backgroundColor: '#fff', marginHorizontal: 12, marginTop: 10,
-    borderRadius: 10, overflow: 'hidden', elevation: 1, shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2,
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    marginHorizontal: 12,
+    marginTop: 10,
+    borderRadius: 10,
+    overflow: 'hidden',
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
   },
   cardImage: { width: 90, height: 90 },
-  cardImagePlaceholder: { backgroundColor: '#E5E7EB', alignItems: 'center', justifyContent: 'center' },
+  cardImagePlaceholder: {
+    backgroundColor: '#E5E7EB',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   placeholderText: { fontSize: 28 },
   cardContent: { flex: 1, padding: 10, justifyContent: 'space-between' },
   cardTitle: { fontSize: 14, fontWeight: '600', color: '#111827' },

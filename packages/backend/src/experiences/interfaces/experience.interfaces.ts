@@ -111,6 +111,10 @@ export interface IExperienceService {
   searchExperiences(query: ExperienceSearchQuery): Promise<ExperienceSearchResult>;
   uploadImage(experienceId: string, guideId: string, file: MulterFile): Promise<ImageDto>;
   setPrimaryImage(experienceId: string, guideId: string, imageId: string): Promise<void>;
-  updateAvailability(experienceId: string, guideId: string, slots: AvailabilitySlotDto[]): Promise<AvailabilityCalendarDto>;
+  updateAvailability(
+    experienceId: string,
+    guideId: string,
+    slots: AvailabilitySlotDto[]
+  ): Promise<AvailabilityCalendarDto>;
   getRecommendations(experienceId: string, limit: number): Promise<ExperienceDto[]>;
 }

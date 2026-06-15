@@ -3,8 +3,26 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import axios from 'axios';
 
 const SUPPORTED_CURRENCIES = [
-  'USD', 'EUR', 'GBP', 'JPY', 'AUD', 'CAD', 'CHF', 'CNY', 'HKD', 'NZD',
-  'SEK', 'KRW', 'SGD', 'NOK', 'MXN', 'INR', 'BRL', 'ZAR', 'TRY', 'AED',
+  'USD',
+  'EUR',
+  'GBP',
+  'JPY',
+  'AUD',
+  'CAD',
+  'CHF',
+  'CNY',
+  'HKD',
+  'NZD',
+  'SEK',
+  'KRW',
+  'SGD',
+  'NOK',
+  'MXN',
+  'INR',
+  'BRL',
+  'ZAR',
+  'TRY',
+  'AED',
 ];
 
 const API_URL = process.env.EXCHANGE_RATE_API_URL ?? 'https://open.er-api.com/v6/latest/USD';

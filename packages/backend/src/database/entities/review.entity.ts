@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { User } from './user.entity';
 import { Experience } from './experience.entity';
 import { Booking } from './booking.entity';
@@ -41,15 +49,15 @@ export class Review {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt!: Date;
 
-  @ManyToOne(() => Booking, booking => booking.reviews)
+  @ManyToOne(() => Booking, (booking) => booking.reviews)
   @JoinColumn({ name: 'booking_id' })
   booking!: Booking;
 
-  @ManyToOne(() => Experience, experience => experience.reviews)
+  @ManyToOne(() => Experience, (experience) => experience.reviews)
   @JoinColumn({ name: 'experience_id' })
   experience!: Experience;
 
-  @ManyToOne(() => User, user => user.reviews)
+  @ManyToOne(() => User, (user) => user.reviews)
   @JoinColumn({ name: 'traveler_id' })
   traveler!: User;
 

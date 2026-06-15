@@ -12,7 +12,7 @@ export class EscrowReleaseScheduler {
   constructor(
     @InjectRepository(PaymentEntity)
     private readonly paymentRepo: Repository<PaymentEntity>,
-    private readonly paymentsService: PaymentsService,
+    private readonly paymentsService: PaymentsService
   ) {}
 
   @Cron(CronExpression.EVERY_HOUR)
@@ -35,9 +35,13 @@ export class EscrowReleaseScheduler {
     for (const payment of eligiblePayments) {
       try {
         await this.paymentsService.releaseFunds(payment.id);
-        this.logger.log(`Auto-released payment ${payment.id} (escrowed at ${payment.escrowedAt?.toISOString()})`);
+        this.logger.log(
+          `Auto-released payment ${payment.id} (escrowed at ${payment.escrowedAt?.toISOString()})`
+        );
       } catch (error) {
-        this.logger.error(`Failed to auto-release payment ${payment.id}: ${(error as Error).message}`);
+        this.logger.error(
+          `Failed to auto-release payment ${payment.id}: ${(error as Error).message}`
+        );
       }
     }
   }

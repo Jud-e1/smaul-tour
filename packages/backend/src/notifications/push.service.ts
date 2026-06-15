@@ -17,7 +17,9 @@ export class PushService {
     this.apnsKeyId = this.configService.get<string>('APNS_KEY_ID');
 
     if (!this.fcmServerKey && !this.apnsKeyId) {
-      this.logger.warn('No push notification provider configured. Push notifications will be logged only.');
+      this.logger.warn(
+        'No push notification provider configured. Push notifications will be logged only.'
+      );
     }
   }
 
@@ -32,7 +34,7 @@ export class PushService {
         return await this.sendViaFCM(payload);
       } else {
         this.logger.log(
-          `[PUSH MOCK] Title: ${payload.title} | Body: ${payload.body} | Tokens: ${payload.deviceTokens.length}`,
+          `[PUSH MOCK] Title: ${payload.title} | Body: ${payload.body} | Tokens: ${payload.deviceTokens.length}`
         );
         return true;
       }

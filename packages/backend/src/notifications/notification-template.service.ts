@@ -90,7 +90,8 @@ export class NotificationTemplateService {
     return {
       subject: 'Guide Verification Approved',
       body: 'Congratulations! Your guide verification has been approved. You can now receive bookings.',
-      htmlBody: '<p>Congratulations! Your guide verification has been <strong>approved</strong>. You can now receive bookings.</p>',
+      htmlBody:
+        '<p>Congratulations! Your guide verification has been <strong>approved</strong>. You can now receive bookings.</p>',
     };
   }
 

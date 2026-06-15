@@ -29,9 +29,7 @@ describe('VectorDatabaseService', () => {
 
       await service.ensureSchema();
 
-      expect(mockDataSource.query).toHaveBeenCalledWith(
-        'CREATE EXTENSION IF NOT EXISTS vector',
-      );
+      expect(mockDataSource.query).toHaveBeenCalledWith('CREATE EXTENSION IF NOT EXISTS vector');
     });
 
     it('should create experience_embeddings and user_preference_embeddings tables', async () => {
@@ -39,9 +37,7 @@ describe('VectorDatabaseService', () => {
 
       await service.ensureSchema();
 
-      const calls: string[] = mockDataSource.query.mock.calls.map(
-        (c: string[]) => c[0] as string,
-      );
+      const calls: string[] = mockDataSource.query.mock.calls.map((c: string[]) => c[0] as string);
       expect(calls.some((sql) => sql.includes('experience_embeddings'))).toBe(true);
       expect(calls.some((sql) => sql.includes('user_preference_embeddings'))).toBe(true);
     });
@@ -124,7 +120,8 @@ describe('VectorDatabaseService', () => {
 
       const results = await service.searchSimilarExperiences([0.1, 0.2, 0.3], 0.7, 5);
 
-      const [sql, params] = mockDataSource.query.mock.calls[mockDataSource.query.mock.calls.length - 1];
+      const [sql, params] =
+        mockDataSource.query.mock.calls[mockDataSource.query.mock.calls.length - 1];
       expect(sql).toContain('<=>');
       expect(params[0]).toBe('[0.1,0.2,0.3]');
       expect(params[1]).toBe(0.7);

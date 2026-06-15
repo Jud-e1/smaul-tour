@@ -25,7 +25,7 @@ export class ItineraryExperience {
   @Column({ type: 'integer' })
   position!: number;
 
-  @ManyToOne(() => Itinerary, itinerary => itinerary.experiences, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Itinerary, (itinerary) => itinerary.experiences, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'itinerary_id' })
   itinerary!: Itinerary;
 

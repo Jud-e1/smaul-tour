@@ -10,13 +10,7 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-  ApiQuery,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { BookingsService } from './bookings.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { CancelBookingDto } from './dto/cancel-booking.dto';
@@ -98,12 +92,16 @@ export class UserBookingsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Get a user's bookings with optional filters" })
   @ApiResponse({ status: 200, description: 'Bookings returned' })
-  @ApiQuery({ name: 'status', required: false, enum: ['pending', 'confirmed', 'completed', 'cancelled', 'refunded'] })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    enum: ['pending', 'confirmed', 'completed', 'cancelled', 'refunded'],
+  })
   @ApiQuery({ name: 'groupBy', required: false, enum: ['upcoming', 'past', 'cancelled'] })
   async getUserBookings(
     @Param('id') id: string,
     @Query('status') status?: string,
-    @Query('groupBy') groupBy?: string,
+    @Query('groupBy') groupBy?: string
   ) {
     return this.bookingsService.getUserBookings(id, {
       status: status as any,
@@ -123,12 +121,16 @@ export class GuideBookingsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Get a guide's bookings with optional filters" })
   @ApiResponse({ status: 200, description: 'Bookings returned' })
-  @ApiQuery({ name: 'status', required: false, enum: ['pending', 'confirmed', 'completed', 'cancelled', 'refunded'] })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    enum: ['pending', 'confirmed', 'completed', 'cancelled', 'refunded'],
+  })
   @ApiQuery({ name: 'groupBy', required: false, enum: ['upcoming', 'past', 'cancelled'] })
   async getGuideBookings(
     @Param('id') id: string,
     @Query('status') status?: string,
-    @Query('groupBy') groupBy?: string,
+    @Query('groupBy') groupBy?: string
   ) {
     return this.bookingsService.getGuideBookings(id, {
       status: status as any,

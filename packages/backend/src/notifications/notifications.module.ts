@@ -3,7 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Notification } from '../database/entities/notification.entity';
 import { NotificationsService } from './notifications.service';
-import { NotificationsController, UserNotificationPreferencesController } from './notifications.controller';
+import {
+  NotificationsController,
+  UserNotificationPreferencesController,
+} from './notifications.controller';
 import { EmailService } from './email.service';
 import { PushService } from './push.service';
 import { NotificationTemplateService } from './notification-template.service';
@@ -13,10 +16,7 @@ import { ItineraryNotificationsService } from './itinerary-notifications.service
 import Redis from 'ioredis';
 
 @Module({
-  imports: [
-    ConfigModule,
-    TypeOrmModule.forFeature([Notification]),
-  ],
+  imports: [ConfigModule, TypeOrmModule.forFeature([Notification])],
   providers: [
     NotificationsService,
     EmailService,
@@ -41,10 +41,6 @@ import Redis from 'ioredis';
     },
   ],
   controllers: [NotificationsController, UserNotificationPreferencesController],
-  exports: [
-    NotificationsService,
-    BookingNotificationsService,
-    ItineraryNotificationsService,
-  ],
+  exports: [NotificationsService, BookingNotificationsService, ItineraryNotificationsService],
 })
 export class NotificationsModule {}

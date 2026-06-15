@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View, Text, ScrollView, TouchableOpacity, StyleSheet,
-  ActivityIndicator, Alert,
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
@@ -28,7 +33,10 @@ type Step = 'select' | 'payment' | 'confirmed';
 export default function BookingScreen({ navigation, route }: Props) {
   const { experienceId } = route.params;
   const { user } = useAuthStore();
-  const [experience, setExperience] = useState<{ title: string; price: { amount: number; currency: string } } | null>(null);
+  const [experience, setExperience] = useState<{
+    title: string;
+    price: { amount: number; currency: string };
+  } | null>(null);
   const [slots, setSlots] = useState<Slot[]>([]);
   const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
   const [participants, setParticipants] = useState(1);
@@ -70,7 +78,9 @@ export default function BookingScreen({ navigation, route }: Props) {
       setBooking(data);
       setStep('confirmed');
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Booking failed';
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        'Booking failed';
       Alert.alert('Error', msg);
     } finally {
       setProcessing(false);
@@ -147,14 +157,22 @@ export default function BookingScreen({ navigation, route }: Props) {
                 >
                   <View style={styles.slotInfo}>
                     <Text style={styles.slotDate}>
-                      {new Date(slot.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                      {new Date(slot.date).toLocaleDateString('en-US', {
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric',
+                      })}
                     </Text>
-                    <Text style={styles.slotTime}>{slot.startTime} – {slot.endTime}</Text>
+                    <Text style={styles.slotTime}>
+                      {slot.startTime} – {slot.endTime}
+                    </Text>
                     <Text style={styles.slotCapacity}>
                       {slot.availableCapacity > 0 ? `${slot.availableCapacity} spots left` : 'Full'}
                     </Text>
                   </View>
-                  <Text style={styles.slotPrice}>{slot.price.currency} {slot.price.amount}</Text>
+                  <Text style={styles.slotPrice}>
+                    {slot.price.currency} {slot.price.amount}
+                  </Text>
                 </TouchableOpacity>
               ))
             )}
@@ -179,7 +197,9 @@ export default function BookingScreen({ navigation, route }: Props) {
 
             <View style={styles.summaryBox}>
               <Text style={styles.summaryLabel}>Total</Text>
-              <Text style={styles.summaryValue}>{currency} {totalCost}</Text>
+              <Text style={styles.summaryValue}>
+                {currency} {totalCost}
+              </Text>
             </View>
 
             <TouchableOpacity style={styles.primaryBtn} onPress={handleProceedToPayment}>
@@ -200,11 +220,15 @@ export default function BookingScreen({ navigation, route }: Props) {
                   {new Date(selectedSlot.date).toLocaleDateString()} · {selectedSlot.startTime}
                 </Text>
               )}
-              <Text style={styles.summaryCardMeta}>{participants} participant{participants > 1 ? 's' : ''}</Text>
+              <Text style={styles.summaryCardMeta}>
+                {participants} participant{participants > 1 ? 's' : ''}
+              </Text>
               <View style={styles.summaryDivider} />
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>Total</Text>
-                <Text style={styles.summaryValue}>{currency} {totalCost}</Text>
+                <Text style={styles.summaryValue}>
+                  {currency} {totalCost}
+                </Text>
               </View>
             </View>
 
@@ -223,7 +247,9 @@ export default function BookingScreen({ navigation, route }: Props) {
               {processing ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={styles.primaryBtnText}>Confirm & Pay {currency} {totalCost}</Text>
+                <Text style={styles.primaryBtnText}>
+                  Confirm & Pay {currency} {totalCost}
+                </Text>
               )}
             </TouchableOpacity>
 
@@ -240,9 +266,24 @@ export default function BookingScreen({ navigation, route }: Props) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F9FAFB' },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  steps: { flexDirection: 'row', justifyContent: 'center', gap: 32, padding: 16, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
+  steps: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 32,
+    padding: 16,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
   stepItem: { alignItems: 'center', gap: 4 },
-  stepCircle: { width: 28, height: 28, borderRadius: 14, backgroundColor: '#E5E7EB', alignItems: 'center', justifyContent: 'center' },
+  stepCircle: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#E5E7EB',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   stepCircleActive: { backgroundColor: '#2563EB' },
   stepNum: { fontSize: 13, fontWeight: '600', color: '#9CA3AF' },
   stepNumActive: { color: '#fff' },
@@ -252,9 +293,15 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 16, fontWeight: '700', color: '#111827', marginBottom: 12 },
   noSlots: { color: '#9CA3AF', fontSize: 14, textAlign: 'center', padding: 24 },
   slotCard: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    backgroundColor: '#fff', borderRadius: 10, padding: 14, marginBottom: 8,
-    borderWidth: 1, borderColor: '#E5E7EB',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 14,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
   },
   slotCardSelected: { borderColor: '#2563EB', backgroundColor: '#EFF6FF' },
   slotInfo: { flex: 1 },
@@ -263,17 +310,56 @@ const styles = StyleSheet.create({
   slotCapacity: { fontSize: 12, color: '#9CA3AF', marginTop: 2 },
   slotPrice: { fontSize: 15, fontWeight: '700', color: '#2563EB' },
   participantsRow: { flexDirection: 'row', alignItems: 'center', gap: 16, marginBottom: 16 },
-  counterBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#E5E7EB', alignItems: 'center', justifyContent: 'center' },
+  counterBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#E5E7EB',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   counterBtnText: { fontSize: 20, color: '#374151', fontWeight: '600' },
-  participantsCount: { fontSize: 18, fontWeight: '700', color: '#111827', minWidth: 24, textAlign: 'center' },
-  summaryBox: { flexDirection: 'row', justifyContent: 'space-between', backgroundColor: '#EFF6FF', borderRadius: 8, padding: 12, marginBottom: 16 },
+  participantsCount: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111827',
+    minWidth: 24,
+    textAlign: 'center',
+  },
+  summaryBox: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: '#EFF6FF',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+  },
   summaryLabel: { fontSize: 14, color: '#374151' },
   summaryValue: { fontSize: 16, fontWeight: '700', color: '#1E40AF' },
-  primaryBtn: { backgroundColor: '#2563EB', borderRadius: 10, padding: 16, alignItems: 'center', marginBottom: 12 },
+  primaryBtn: {
+    backgroundColor: '#2563EB',
+    borderRadius: 10,
+    padding: 16,
+    alignItems: 'center',
+    marginBottom: 12,
+  },
   primaryBtnText: { color: '#fff', fontSize: 15, fontWeight: '600' },
-  secondaryBtn: { borderWidth: 1, borderColor: '#D1D5DB', borderRadius: 10, padding: 14, alignItems: 'center' },
+  secondaryBtn: {
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    borderRadius: 10,
+    padding: 14,
+    alignItems: 'center',
+  },
   secondaryBtnText: { color: '#374151', fontSize: 15 },
-  summaryCard: { backgroundColor: '#fff', borderRadius: 10, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#E5E7EB' },
+  summaryCard: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
   summaryCardTitle: { fontSize: 15, fontWeight: '600', color: '#111827', marginBottom: 4 },
   summaryCardMeta: { fontSize: 13, color: '#6B7280', marginBottom: 2 },
   summaryDivider: { height: 1, backgroundColor: '#E5E7EB', marginVertical: 10 },
@@ -282,9 +368,21 @@ const styles = StyleSheet.create({
   paymentNoteText: { fontSize: 13, color: '#92400E' },
   backBtn: { alignItems: 'center', padding: 8 },
   backBtnText: { color: '#6B7280', fontSize: 14 },
-  confirmedContainer: { flex: 1, padding: 32, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' },
+  confirmedContainer: {
+    flex: 1,
+    padding: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+  },
   confirmedIcon: { fontSize: 64, marginBottom: 16 },
   confirmedTitle: { fontSize: 24, fontWeight: '700', color: '#111827', marginBottom: 8 },
   confirmedRef: { fontSize: 16, color: '#2563EB', fontWeight: '600', marginBottom: 12 },
-  confirmedSub: { fontSize: 14, color: '#6B7280', textAlign: 'center', marginBottom: 32, lineHeight: 22 },
+  confirmedSub: {
+    fontSize: 14,
+    color: '#6B7280',
+    textAlign: 'center',
+    marginBottom: 32,
+    lineHeight: 22,
+  },
 });

@@ -1,17 +1,15 @@
-import {
-  Injectable,
-  NotFoundException,
-  ConflictException,
-  Optional,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, Optional, Logger } from '@nestjs/common';
 import { ImageStorageService } from './image-storage.service';
 import { LocationService } from './location.service';
 import { VectorSearchService } from '../vector/vector-search.service';
 import { RecommendationService } from '../vector/recommendation.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
-import { Experience, CancellationPolicy, ExperienceStatus } from '../database/entities/experience.entity';
+import {
+  Experience,
+  CancellationPolicy,
+  ExperienceStatus,
+} from '../database/entities/experience.entity';
 import { Image } from '../database/entities/image.entity';
 import { AvailabilitySlot, SlotStatus } from '../database/entities/availability-slot.entity';
 import { Booking, BookingStatus } from '../database/entities/booking.entity';
@@ -40,7 +38,7 @@ export class ExperienceService {
     private imageStorageService: ImageStorageService,
     private locationService: LocationService,
     @Optional() private readonly vectorSearchService?: VectorSearchService,
-    @Optional() private readonly recommendationService?: RecommendationService,
+    @Optional() private readonly recommendationService?: RecommendationService
   ) {}
 
   async createExperience(guideId: string, dto: CreateExperienceDto): Promise<ExperienceDto> {
@@ -64,13 +62,24 @@ export class ExperienceService {
     saved.availabilitySlots = [];
 
     this.vectorSearchService
-      ?.indexExperience({ id: saved.id, title: saved.title, description: saved.description, category: saved.category })
-      .catch(err => this.logger.warn(`Failed to index experience ${saved.id}: ${(err as Error).message}`));
+      ?.indexExperience({
+        id: saved.id,
+        title: saved.title,
+        description: saved.description,
+        category: saved.category,
+      })
+      .catch((err) =>
+        this.logger.warn(`Failed to index experience ${saved.id}: ${(err as Error).message}`)
+      );
 
     return this.mapToDto(saved);
   }
 
-  async updateExperience(id: string, guideId: string, dto: UpdateExperienceDto): Promise<ExperienceDto> {
+  async updateExperience(
+    id: string,
+    guideId: string,
+    dto: UpdateExperienceDto
+  ): Promise<ExperienceDto> {
     const experience = await this.experienceRepo.findOne({
       where: { id, guideId },
       relations: ['images', 'availabilitySlots'],
@@ -100,8 +109,15 @@ export class ExperienceService {
 
     if (dto.title !== undefined || dto.description !== undefined || dto.category !== undefined) {
       this.vectorSearchService
-        ?.indexExperience({ id: saved.id, title: saved.title, description: saved.description, category: saved.category })
-        .catch(err => this.logger.warn(`Failed to re-index experience ${saved.id}: ${(err as Error).message}`));
+        ?.indexExperience({
+          id: saved.id,
+          title: saved.title,
+          description: saved.description,
+          category: saved.category,
+        })
+        .catch((err) =>
+          this.logger.warn(`Failed to re-index experience ${saved.id}: ${(err as Error).message}`)
+        );
     }
 
     return this.mapToDto(saved);
@@ -129,7 +145,9 @@ export class ExperienceService {
 
     this.vectorSearchService
       ?.removeExperienceIndex(id)
-      .catch(err => this.logger.warn(`Failed to remove index for experience ${id}: ${(err as Error).message}`));
+      .catch((err) =>
+        this.logger.warn(`Failed to remove index for experience ${id}: ${(err as Error).message}`)
+      );
   }
 
   async getExperience(id: string): Promise<ExperienceDto> {
@@ -159,7 +177,10 @@ export class ExperienceService {
     this.imageStorageService.validateFile(file);
 
     const filename = this.imageStorageService.generateFilename(file.originalname, file.mimetype);
-    const { url, thumbnailUrl, mediumUrl } = await this.imageStorageService.processAndUpload(file, filename);
+    const { url, thumbnailUrl, mediumUrl } = await this.imageStorageService.processAndUpload(
+      file,
+      filename
+    );
 
     const image = this.imageRepo.create({
       experienceId,
@@ -200,13 +221,13 @@ export class ExperienceService {
   async updateAvailability(
     experienceId: string,
     guideId: string,
-    slots: AvailabilitySlotInputDto[],
+    slots: AvailabilitySlotInputDto[]
   ): Promise<AvailabilityCalendarDto> {
     const experience = await this.experienceRepo.findOne({ where: { id: experienceId, guideId } });
     if (!experience) throw new NotFoundException('Experience not found');
 
     await this.slotRepo.upsert(
-      slots.map(s => ({
+      slots.map((s) => ({
         experienceId,
         date: s.date,
         startTime: s.startTime,
@@ -214,7 +235,7 @@ export class ExperienceService {
         capacity: s.capacity,
         status: SlotStatus.AVAILABLE,
       })),
-      { conflictPaths: ['experienceId', 'date', 'startTime'], skipUpdateIfNoValuesChanged: true },
+      { conflictPaths: ['experienceId', 'date', 'startTime'], skipUpdateIfNoValuesChanged: true }
     );
 
     return this.getAvailability(experienceId);
@@ -241,16 +262,16 @@ export class ExperienceService {
   }
 
   async searchExperiences(query: ExperienceSearchQuery): Promise<ExperienceSearchResult> {
-    const qb = this.experienceRepo.createQueryBuilder('exp')
+    const qb = this.experienceRepo
+      .createQueryBuilder('exp')
       .leftJoinAndSelect('exp.images', 'images')
       .where('exp.status = :status', { status: ExperienceStatus.ACTIVE });
 
     // Text search on title and description
     if (query.text) {
-      qb.andWhere(
-        '(LOWER(exp.title) LIKE :text OR LOWER(exp.description) LIKE :text)',
-        { text: `%${query.text.toLowerCase()}%` }
-      );
+      qb.andWhere('(LOWER(exp.title) LIKE :text OR LOWER(exp.description) LIKE :text)', {
+        text: `%${query.text.toLowerCase()}%`,
+      });
     }
 
     // Category filter (array overlap)
@@ -296,9 +317,12 @@ export class ExperienceService {
     }
 
     // Sorting
-    const sortField = query.sortBy === 'price' ? 'exp.priceAmount'
-      : query.sortBy === 'rating' ? 'exp.averageRating'
-      : 'exp.reviewCount'; // popularity = review count
+    const sortField =
+      query.sortBy === 'price'
+        ? 'exp.priceAmount'
+        : query.sortBy === 'rating'
+          ? 'exp.averageRating'
+          : 'exp.reviewCount'; // popularity = review count
     const sortOrder = query.sortOrder === 'desc' ? 'DESC' : 'ASC';
     qb.orderBy(sortField, sortOrder);
 
@@ -310,7 +334,7 @@ export class ExperienceService {
     const [experiences, total] = await qb.getManyAndCount();
 
     return {
-      experiences: experiences.map(e => this.mapToDto(e)),
+      experiences: experiences.map((e) => this.mapToDto(e)),
       total,
       page,
       pageSize,
@@ -325,14 +349,18 @@ export class ExperienceService {
       const similar = await this.recommendationService.getSimilarExperiences(experienceId, limit);
       const dtos = await Promise.all(
         similar.map(({ experienceId: eid }) =>
-          this.experienceRepo.findOne({ where: { id: eid }, relations: ['images', 'availabilitySlots'] }),
-        ),
+          this.experienceRepo.findOne({
+            where: { id: eid },
+            relations: ['images', 'availabilitySlots'],
+          })
+        )
       );
-      return dtos.filter((e): e is Experience => e !== null).map(e => this.mapToDto(e));
+      return dtos.filter((e): e is Experience => e !== null).map((e) => this.mapToDto(e));
     }
 
     // Fallback: category-based matching
-    const similar = await this.experienceRepo.createQueryBuilder('exp')
+    const similar = await this.experienceRepo
+      .createQueryBuilder('exp')
       .leftJoinAndSelect('exp.images', 'images')
       .where('exp.id != :id', { id: experienceId })
       .andWhere('exp.status = :status', { status: ExperienceStatus.ACTIVE })
@@ -341,10 +369,13 @@ export class ExperienceService {
       .take(limit)
       .getMany();
 
-    return similar.map(e => this.mapToDto(e));
+    return similar.map((e) => this.mapToDto(e));
   }
 
-  async getPersonalizedRecommendations(userId: string, limit: number = 10): Promise<ExperienceDto[]> {
+  async getPersonalizedRecommendations(
+    userId: string,
+    limit: number = 10
+  ): Promise<ExperienceDto[]> {
     if (!this.recommendationService) {
       return [];
     }
@@ -352,20 +383,21 @@ export class ExperienceService {
     const results = await this.recommendationService.getPersonalizedRecommendations(userId, limit);
     const dtos = await Promise.all(
       results.map(({ experienceId }) =>
-        this.experienceRepo.findOne({ where: { id: experienceId }, relations: ['images', 'availabilitySlots'] }),
-      ),
+        this.experienceRepo.findOne({
+          where: { id: experienceId },
+          relations: ['images', 'availabilitySlots'],
+        })
+      )
     );
-    return dtos.filter((e): e is Experience => e !== null).map(e => this.mapToDto(e));
+    return dtos.filter((e): e is Experience => e !== null).map((e) => this.mapToDto(e));
   }
 
-  async calculateTravelTimes(
-    locations: Array<{ id: string; lat: number; lng: number }>,
-  ) {
+  async calculateTravelTimes(locations: Array<{ id: string; lat: number; lng: number }>) {
     return this.locationService.calculateTravelTimes(locations);
   }
 
   mapToDto(experience: Experience): ExperienceDto {
-    const images: ImageDto[] = (experience.images ?? []).map(img => ({
+    const images: ImageDto[] = (experience.images ?? []).map((img) => ({
       id: img.id,
       url: img.url,
       thumbnailUrl: img.thumbnailUrl,
@@ -374,7 +406,7 @@ export class ExperienceService {
       sizeBytes: img.sizeBytes,
     }));
 
-    const slots: AvailabilitySlotDto[] = (experience.availabilitySlots ?? []).map(slot => ({
+    const slots: AvailabilitySlotDto[] = (experience.availabilitySlots ?? []).map((slot) => ({
       id: slot.id,
       date: slot.date instanceof Date ? slot.date.toISOString().split('T')[0] : String(slot.date),
       startTime: slot.startTime,

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { tripPlannerApi } from '@/lib/api';
 import { useAuthStore } from '@/store/auth';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -83,7 +84,10 @@ export default function TripPlannerPage() {
   }, [searchParams, user]);
 
   const generate = async (text: string) => {
-    if (!user) { router.push('/login'); return; }
+    if (!user) {
+      router.push('/login');
+      return;
+    }
     if (!text.trim()) return;
     setLoading(true);
     setError('');
@@ -151,7 +155,9 @@ export default function TripPlannerPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">AI Trip Planner</h1>
-        <p className="text-gray-500 mb-8">Describe your ideal trip and get a personalized itinerary</p>
+        <p className="text-gray-500 mb-8">
+          Describe your ideal trip and get a personalized itinerary
+        </p>
 
         {/* Natural language input */}
         <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
@@ -167,7 +173,11 @@ export default function TripPlannerPage() {
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
             aria-label="Trip description"
           />
-          {error && <p className="text-red-500 text-sm mt-2" role="alert">{error}</p>}
+          {error && (
+            <p className="text-red-500 text-sm mt-2" role="alert">
+              {error}
+            </p>
+          )}
           <button
             onClick={() => generate(input)}
             disabled={loading || !input.trim()}
@@ -176,13 +186,31 @@ export default function TripPlannerPage() {
           >
             {loading && !itinerary ? (
               <span className="flex items-center gap-2">
-                <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                <svg
+                  className="animate-spin w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                  />
                 </svg>
                 Generating...
               </span>
-            ) : 'Generate Itinerary'}
+            ) : (
+              'Generate Itinerary'
+            )}
           </button>
         </div>
 
@@ -222,7 +250,10 @@ export default function TripPlannerPage() {
               {/* Experience list */}
               <div className="space-y-3">
                 {itinerary.experiences.map((rec, i) => (
-                  <div key={rec.experienceId} className="flex gap-4 p-4 border border-gray-100 rounded-lg">
+                  <div
+                    key={rec.experienceId}
+                    className="flex gap-4 p-4 border border-gray-100 rounded-lg"
+                  >
                     <div className="w-8 h-8 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-sm font-bold shrink-0">
                       {i + 1}
                     </div>
@@ -253,7 +284,9 @@ export default function TripPlannerPage() {
                             </span>
                           </div>
                           {rec.experience?.location?.address && (
-                            <p className="text-xs text-gray-400 mt-0.5">{rec.experience.location.address}</p>
+                            <p className="text-xs text-gray-400 mt-0.5">
+                              {rec.experience.location.address}
+                            </p>
                           )}
                           <p className="text-sm text-gray-600 mt-1">{rec.reasoning}</p>
                         </div>
@@ -293,13 +326,31 @@ export default function TripPlannerPage() {
                 >
                   {loading ? (
                     <span className="flex items-center gap-1.5">
-                      <svg className="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                      <svg
+                        className="animate-spin w-3.5 h-3.5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                        />
                       </svg>
                       Updating...
                     </span>
-                  ) : 'Update'}
+                  ) : (
+                    'Update'
+                  )}
                 </button>
               </div>
             </div>

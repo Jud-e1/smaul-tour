@@ -2,17 +2,21 @@
  * Push notification handling tests
  */
 
-jest.mock('@react-native-firebase/messaging', () => {
-  const mockMessaging = {
-    requestPermission: jest.fn().mockResolvedValue(1),
-    getToken: jest.fn().mockResolvedValue('mock-fcm-token-abc123'),
-    onMessage: jest.fn().mockReturnValue(() => {}),
-    onNotificationOpenedApp: jest.fn().mockReturnValue(() => {}),
-    getInitialNotification: jest.fn().mockResolvedValue(null),
-    setBackgroundMessageHandler: jest.fn(),
-  };
-  return { default: () => mockMessaging };
-}, { virtual: true });
+jest.mock(
+  '@react-native-firebase/messaging',
+  () => {
+    const mockMessaging = {
+      requestPermission: jest.fn().mockResolvedValue(1),
+      getToken: jest.fn().mockResolvedValue('mock-fcm-token-abc123'),
+      onMessage: jest.fn().mockReturnValue(() => {}),
+      onNotificationOpenedApp: jest.fn().mockReturnValue(() => {}),
+      getInitialNotification: jest.fn().mockResolvedValue(null),
+      setBackgroundMessageHandler: jest.fn(),
+    };
+    return { default: () => mockMessaging };
+  },
+  { virtual: true }
+);
 
 jest.mock('react-native', () => ({
   Platform: { OS: 'android' },

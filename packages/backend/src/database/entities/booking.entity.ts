@@ -1,4 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
+} from 'typeorm';
 import { User } from './user.entity';
 import { Experience } from './experience.entity';
 import { Payment } from './payment.entity';
@@ -72,21 +81,21 @@ export class Booking {
   @Column({ type: 'text', nullable: true, name: 'cancellation_reason' })
   cancellationReason: string;
 
-  @ManyToOne(() => User, user => user.bookingsAsTraveler)
+  @ManyToOne(() => User, (user) => user.bookingsAsTraveler)
   @JoinColumn({ name: 'traveler_id' })
   traveler: User;
 
-  @ManyToOne(() => User, user => user.bookingsAsGuide)
+  @ManyToOne(() => User, (user) => user.bookingsAsGuide)
   @JoinColumn({ name: 'guide_id' })
   guide: User;
 
-  @ManyToOne(() => Experience, experience => experience.bookings)
+  @ManyToOne(() => Experience, (experience) => experience.bookings)
   @JoinColumn({ name: 'experience_id' })
   experience: Experience;
 
-  @OneToMany(() => Payment, payment => payment.booking)
+  @OneToMany(() => Payment, (payment) => payment.booking)
   payments: Payment[];
 
-  @OneToMany(() => Review, review => review.booking)
+  @OneToMany(() => Review, (review) => review.booking)
   reviews: Review[];
 }

@@ -60,41 +60,49 @@ export class BookingNotificationsService {
     };
 
     // Notify traveler
-    await this.notificationsService.sendNotification({
-      userId: data.travelerId,
-      type: 'booking_confirmed',
-      channels: travelerChannels,
-      priority: 'high',
-      subject: '',
-      body: '',
-      status: 'pending',
-      data: {
-        ...notificationData,
-        userEmail: data.travelerEmail,
-        deviceTokens: data.travelerDeviceTokens ?? [],
-      },
-    }).catch(err =>
-      this.logger.error(`Failed to send booking confirmation to traveler ${data.travelerId}: ${(err as Error).message}`),
-    );
+    await this.notificationsService
+      .sendNotification({
+        userId: data.travelerId,
+        type: 'booking_confirmed',
+        channels: travelerChannels,
+        priority: 'high',
+        subject: '',
+        body: '',
+        status: 'pending',
+        data: {
+          ...notificationData,
+          userEmail: data.travelerEmail,
+          deviceTokens: data.travelerDeviceTokens ?? [],
+        },
+      })
+      .catch((err) =>
+        this.logger.error(
+          `Failed to send booking confirmation to traveler ${data.travelerId}: ${(err as Error).message}`
+        )
+      );
 
     // Notify guide (new booking notification)
-    await this.notificationsService.sendNotification({
-      userId: data.guideId,
-      type: 'new_booking',
-      channels: guideChannels,
-      priority: 'high',
-      subject: '',
-      body: '',
-      status: 'pending',
-      data: {
-        ...notificationData,
-        travelerName: data.travelerName ?? 'A traveler',
-        userEmail: data.guideEmail,
-        deviceTokens: data.guideDeviceTokens ?? [],
-      },
-    }).catch(err =>
-      this.logger.error(`Failed to send new booking notification to guide ${data.guideId}: ${(err as Error).message}`),
-    );
+    await this.notificationsService
+      .sendNotification({
+        userId: data.guideId,
+        type: 'new_booking',
+        channels: guideChannels,
+        priority: 'high',
+        subject: '',
+        body: '',
+        status: 'pending',
+        data: {
+          ...notificationData,
+          travelerName: data.travelerName ?? 'A traveler',
+          userEmail: data.guideEmail,
+          deviceTokens: data.guideDeviceTokens ?? [],
+        },
+      })
+      .catch((err) =>
+        this.logger.error(
+          `Failed to send new booking notification to guide ${data.guideId}: ${(err as Error).message}`
+        )
+      );
   }
 
   /**
@@ -115,40 +123,48 @@ export class BookingNotificationsService {
     };
 
     // Notify traveler
-    await this.notificationsService.sendNotification({
-      userId: data.travelerId,
-      type: 'booking_cancelled',
-      channels,
-      priority: 'high',
-      subject: '',
-      body: '',
-      status: 'pending',
-      data: {
-        ...notificationData,
-        userEmail: data.travelerEmail,
-        deviceTokens: data.travelerDeviceTokens ?? [],
-      },
-    }).catch(err =>
-      this.logger.error(`Failed to send cancellation to traveler ${data.travelerId}: ${(err as Error).message}`),
-    );
+    await this.notificationsService
+      .sendNotification({
+        userId: data.travelerId,
+        type: 'booking_cancelled',
+        channels,
+        priority: 'high',
+        subject: '',
+        body: '',
+        status: 'pending',
+        data: {
+          ...notificationData,
+          userEmail: data.travelerEmail,
+          deviceTokens: data.travelerDeviceTokens ?? [],
+        },
+      })
+      .catch((err) =>
+        this.logger.error(
+          `Failed to send cancellation to traveler ${data.travelerId}: ${(err as Error).message}`
+        )
+      );
 
     // Notify guide
-    await this.notificationsService.sendNotification({
-      userId: data.guideId,
-      type: 'booking_cancelled',
-      channels,
-      priority: 'high',
-      subject: '',
-      body: '',
-      status: 'pending',
-      data: {
-        ...notificationData,
-        userEmail: data.guideEmail,
-        deviceTokens: data.guideDeviceTokens ?? [],
-      },
-    }).catch(err =>
-      this.logger.error(`Failed to send cancellation to guide ${data.guideId}: ${(err as Error).message}`),
-    );
+    await this.notificationsService
+      .sendNotification({
+        userId: data.guideId,
+        type: 'booking_cancelled',
+        channels,
+        priority: 'high',
+        subject: '',
+        body: '',
+        status: 'pending',
+        data: {
+          ...notificationData,
+          userEmail: data.guideEmail,
+          deviceTokens: data.guideDeviceTokens ?? [],
+        },
+      })
+      .catch((err) =>
+        this.logger.error(
+          `Failed to send cancellation to guide ${data.guideId}: ${(err as Error).message}`
+        )
+      );
   }
 
   /**
@@ -156,26 +172,30 @@ export class BookingNotificationsService {
    * Requirement 10.3
    */
   async sendPaymentConfirmation(data: PaymentNotificationData): Promise<void> {
-    await this.notificationsService.sendNotification({
-      userId: data.travelerId,
-      type: 'payment_received',
-      channels: ['email', 'in_app'],
-      priority: 'high',
-      subject: '',
-      body: '',
-      status: 'pending',
-      data: {
-        paymentId: data.paymentId,
-        transactionId: data.transactionId,
-        amount: data.amount,
-        currency: data.currency,
-        bookingId: data.bookingId,
-        experienceName: data.experienceName,
-        userEmail: data.travelerEmail,
-        deviceTokens: data.travelerDeviceTokens ?? [],
-      },
-    }).catch(err =>
-      this.logger.error(`Failed to send payment confirmation to traveler ${data.travelerId}: ${(err as Error).message}`),
-    );
+    await this.notificationsService
+      .sendNotification({
+        userId: data.travelerId,
+        type: 'payment_received',
+        channels: ['email', 'in_app'],
+        priority: 'high',
+        subject: '',
+        body: '',
+        status: 'pending',
+        data: {
+          paymentId: data.paymentId,
+          transactionId: data.transactionId,
+          amount: data.amount,
+          currency: data.currency,
+          bookingId: data.bookingId,
+          experienceName: data.experienceName,
+          userEmail: data.travelerEmail,
+          deviceTokens: data.travelerDeviceTokens ?? [],
+        },
+      })
+      .catch((err) =>
+        this.logger.error(
+          `Failed to send payment confirmation to traveler ${data.travelerId}: ${(err as Error).message}`
+        )
+      );
   }
 }

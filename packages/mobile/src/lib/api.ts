@@ -30,10 +30,13 @@ api.interceptors.response.use(
       try {
         const creds = await Keychain.getGenericPassword({ service: 'refresh_token' });
         if (creds) {
-          const { data } = await axios.post(`${API_URL}/auth/refresh`, { refreshToken: creds.password });
+          const { data } = await axios.post(`${API_URL}/auth/refresh`, {
+            refreshToken: creds.password,
+          });
           await Keychain.setGenericPassword('token', data.accessToken, { service: 'access_token' });
           if (original.headers) {
-            (original.headers as Record<string, string>).Authorization = `Bearer ${data.accessToken}`;
+            (original.headers as Record<string, string>).Authorization =
+              `Bearer ${data.accessToken}`;
           }
           return api(original);
         }
@@ -49,8 +52,13 @@ api.interceptors.response.use(
 export default api;
 
 export const authApi = {
-  register: (data: { email: string; password: string; role: 'traveler' | 'guide'; firstName: string; lastName: string }) =>
-    api.post('/auth/register', data),
+  register: (data: {
+    email: string;
+    password: string;
+    role: 'traveler' | 'guide';
+    firstName: string;
+    lastName: string;
+  }) => api.post('/auth/register', data),
   login: (data: { email: string; password: string }) => api.post('/auth/login', data),
   loginOAuth: (data: { provider: string; accessToken: string }) => api.post('/auth/oauth', data),
   resetPassword: (email: string) => api.post('/auth/reset-password', { email }),
@@ -60,19 +68,22 @@ export const authApi = {
 export const experiencesApi = {
   list: (params?: Record<string, unknown>) => api.get('/experiences', { params }),
   get: (id: string) => api.get(`/experiences/${id}`),
-  getReviews: (id: string, params?: Record<string, unknown>) => api.get(`/experiences/${id}/reviews`, { params }),
+  getReviews: (id: string, params?: Record<string, unknown>) =>
+    api.get(`/experiences/${id}/reviews`, { params }),
   getRecommendations: (id: string) => api.get(`/experiences/${id}/recommendations`),
 };
 
 export const bookingsApi = {
   create: (data: unknown) => api.post('/bookings', data),
-  getUserBookings: (userId: string, params?: Record<string, unknown>) => api.get(`/users/${userId}/bookings`, { params }),
+  getUserBookings: (userId: string, params?: Record<string, unknown>) =>
+    api.get(`/users/${userId}/bookings`, { params }),
   cancel: (id: string, reason: string) => api.post(`/bookings/${id}/cancel`, { reason }),
 };
 
 export const tripPlannerApi = {
   generate: (data: { naturalLanguageInput: string }) => api.post('/trip-planner/generate', data),
-  modify: (id: string, modification: string) => api.put(`/trip-planner/itineraries/${id}`, { modification }),
+  modify: (id: string, modification: string) =>
+    api.put(`/trip-planner/itineraries/${id}`, { modification }),
   getItineraries: () => api.get('/trip-planner/itineraries'),
   getItinerary: (id: string) => api.get(`/trip-planner/itineraries/${id}`),
 };

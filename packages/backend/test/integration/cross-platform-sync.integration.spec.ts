@@ -60,7 +60,10 @@ describe('Cross-Platform Data Synchronization', () => {
       };
 
       mockExperiencesService.create.mockResolvedValueOnce(experience);
-      const created = await mockExperiencesService.create({ title: 'Mobile Created Tour', guideId: 'guide-1' });
+      const created = await mockExperiencesService.create({
+        title: 'Mobile Created Tour',
+        guideId: 'guide-1',
+      });
       expect(created.id).toBe('exp-sync-1');
 
       mockExperiencesService.findById.mockResolvedValueOnce(experience);
@@ -84,7 +87,9 @@ describe('Cross-Platform Data Synchronization', () => {
 
       mockNotificationsService.getUserNotifications.mockResolvedValueOnce([notification]);
       const notifications = await mockNotificationsService.getUserNotifications('user-1');
-      expect(notifications.some((n: { type: string }) => n.type === 'booking_confirmed')).toBe(true);
+      expect(notifications.some((n: { type: string }) => n.type === 'booking_confirmed')).toBe(
+        true
+      );
     });
 
     it('notification is delivered within 30 seconds', async () => {

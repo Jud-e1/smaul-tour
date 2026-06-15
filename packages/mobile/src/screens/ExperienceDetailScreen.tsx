@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View, Text, ScrollView, TouchableOpacity, StyleSheet,
-  Image, ActivityIndicator, FlatList, Dimensions,
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  ActivityIndicator,
+  FlatList,
+  Dimensions,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
@@ -124,7 +131,9 @@ export default function ExperienceDetailScreen({ navigation, route }: Props) {
         </View>
 
         <View style={styles.metaRow}>
-          <Text style={styles.meta}>⭐ {experience.averageRating?.toFixed(1) || 'New'} ({experience.reviewCount})</Text>
+          <Text style={styles.meta}>
+            ⭐ {experience.averageRating?.toFixed(1) || 'New'} ({experience.reviewCount})
+          </Text>
           <Text style={styles.meta}>⏱ {experience.duration}h</Text>
           <Text style={styles.meta}>📍 {experience.location.address}</Text>
         </View>
@@ -136,7 +145,10 @@ export default function ExperienceDetailScreen({ navigation, route }: Props) {
           <Text style={styles.sectionTitle}>Your Guide</Text>
           <View style={styles.guideRow}>
             {experience.guide.profile.profilePhotoUrl ? (
-              <Image source={{ uri: experience.guide.profile.profilePhotoUrl }} style={styles.guideAvatar} />
+              <Image
+                source={{ uri: experience.guide.profile.profilePhotoUrl }}
+                style={styles.guideAvatar}
+              />
             ) : (
               <View style={[styles.guideAvatar, styles.guideAvatarPlaceholder]}>
                 <Text style={{ fontSize: 20 }}>👤</Text>
@@ -152,7 +164,9 @@ export default function ExperienceDetailScreen({ navigation, route }: Props) {
                 )}
               </View>
               {experience.guide.profile.bio && (
-                <Text style={styles.guideBio} numberOfLines={2}>{experience.guide.profile.bio}</Text>
+                <Text style={styles.guideBio} numberOfLines={2}>
+                  {experience.guide.profile.bio}
+                </Text>
               )}
             </View>
           </View>
@@ -200,14 +214,21 @@ export default function ExperienceDetailScreen({ navigation, route }: Props) {
                   onPress={() => navigation.push('ExperienceDetail', { id: item.id })}
                 >
                   {item.primaryImage?.thumbnailUrl ? (
-                    <Image source={{ uri: item.primaryImage.thumbnailUrl }} style={styles.recImage} />
+                    <Image
+                      source={{ uri: item.primaryImage.thumbnailUrl }}
+                      style={styles.recImage}
+                    />
                   ) : (
                     <View style={[styles.recImage, styles.recImagePlaceholder]}>
                       <Text>🗺️</Text>
                     </View>
                   )}
-                  <Text style={styles.recTitle} numberOfLines={2}>{item.title}</Text>
-                  <Text style={styles.recPrice}>{item.price.currency} {item.price.amount}</Text>
+                  <Text style={styles.recTitle} numberOfLines={2}>
+                    {item.title}
+                  </Text>
+                  <Text style={styles.recPrice}>
+                    {item.price.currency} {item.price.amount}
+                  </Text>
                 </TouchableOpacity>
               )}
             />
@@ -223,11 +244,22 @@ const styles = StyleSheet.create({
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   heroImage: { width, height: 240 },
   heroPlaceholder: { backgroundColor: '#E5E7EB', alignItems: 'center', justifyContent: 'center' },
-  imageDots: { flexDirection: 'row', justifyContent: 'center', gap: 4, marginTop: -20, paddingBottom: 8 },
+  imageDots: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 4,
+    marginTop: -20,
+    paddingBottom: 8,
+  },
   dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.5)' },
   dotActive: { backgroundColor: '#fff' },
   content: { padding: 16 },
-  titleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 },
+  titleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 8,
+  },
   title: { fontSize: 20, fontWeight: '700', color: '#111827', flex: 1, marginRight: 8 },
   price: { fontSize: 18, fontWeight: '700', color: '#2563EB' },
   metaRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 },
@@ -237,12 +269,29 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 16, fontWeight: '700', color: '#111827', marginBottom: 12 },
   guideRow: { flexDirection: 'row', gap: 12, alignItems: 'flex-start' },
   guideAvatar: { width: 48, height: 48, borderRadius: 24 },
-  guideAvatarPlaceholder: { backgroundColor: '#E5E7EB', alignItems: 'center', justifyContent: 'center' },
+  guideAvatarPlaceholder: {
+    backgroundColor: '#E5E7EB',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   guideNameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   guideName: { fontSize: 15, fontWeight: '600', color: '#111827' },
-  verifiedBadge: { fontSize: 11, color: '#059669', backgroundColor: '#D1FAE5', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 10 },
+  verifiedBadge: {
+    fontSize: 11,
+    color: '#059669',
+    backgroundColor: '#D1FAE5',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 10,
+  },
   guideBio: { fontSize: 13, color: '#6B7280', marginTop: 2 },
-  bookBtn: { backgroundColor: '#2563EB', borderRadius: 10, padding: 16, alignItems: 'center', marginBottom: 20 },
+  bookBtn: {
+    backgroundColor: '#2563EB',
+    borderRadius: 10,
+    padding: 16,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
   bookBtnText: { color: '#fff', fontSize: 16, fontWeight: '600' },
   reviewCard: { backgroundColor: '#F9FAFB', borderRadius: 8, padding: 12, marginBottom: 8 },
   reviewHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 },
@@ -252,7 +301,11 @@ const styles = StyleSheet.create({
   reviewDate: { fontSize: 11, color: '#9CA3AF' },
   recCard: { width: 140, marginRight: 12 },
   recImage: { width: 140, height: 90, borderRadius: 8, marginBottom: 6 },
-  recImagePlaceholder: { backgroundColor: '#E5E7EB', alignItems: 'center', justifyContent: 'center' },
+  recImagePlaceholder: {
+    backgroundColor: '#E5E7EB',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   recTitle: { fontSize: 13, fontWeight: '500', color: '#111827' },
   recPrice: { fontSize: 12, color: '#2563EB', fontWeight: '600', marginTop: 2 },
 });

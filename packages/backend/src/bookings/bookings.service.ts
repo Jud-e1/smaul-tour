@@ -27,7 +27,13 @@ export const REDIS_CLIENT = 'REDIS_CLIENT';
 /** Minimal Redis interface so we can mock in tests without the full ioredis type */
 export interface RedisClient {
   get(key: string): Promise<string | null>;
-  set(key: string, value: string, mode: string, duration: number, flag: string): Promise<string | null>;
+  set(
+    key: string,
+    value: string,
+    mode: string,
+    duration: number,
+    flag: string
+  ): Promise<string | null>;
   setex(key: string, seconds: number, value: string): Promise<string>;
   del(key: string): Promise<number>;
 }
@@ -45,7 +51,7 @@ export class BookingsService {
     @InjectRepository(Payment) private paymentRepo: Repository<Payment>,
     private dataSource: DataSource,
     @Optional() @Inject(REDIS_CLIENT) private redis: RedisClient | null,
-    @Optional() private readonly bookingNotificationsService: BookingNotificationsService | null,
+    @Optional() private readonly bookingNotificationsService: BookingNotificationsService | null
   ) {}
 
   async createBooking(request: BookingRequest): Promise<BookingDto> {
@@ -65,7 +71,9 @@ export class BookingsService {
     if (this.redis) {
       const acquired = await this.redis.set(lockKey, lockValue, 'PX', this.LOCK_TTL, 'NX');
       if (!acquired) {
-        throw new ConflictException('Another booking is being processed for this slot. Please try again.');
+        throw new ConflictException(
+          'Another booking is being processed for this slot. Please try again.'
+        );
       }
       lockAcquired = true;
     }
@@ -103,7 +111,7 @@ export class BookingsService {
         const remaining = slot.capacity - slot.booked;
         if (remaining < request.participants) {
           throw new ConflictException(
-            `Not enough capacity. Only ${remaining} spot(s) remaining for this slot.`,
+            `Not enough capacity. Only ${remaining} spot(s) remaining for this slot.`
           );
         }
 
@@ -145,23 +153,27 @@ export class BookingsService {
         await this.redis.setex(
           `idempotency:booking:${request.idempotencyKey}`,
           this.IDEMPOTENCY_TTL,
-          JSON.stringify(dto),
+          JSON.stringify(dto)
         );
       }
 
       // Send booking confirmation notifications (fire-and-forget)
       if (this.bookingNotificationsService) {
-        const experience = await this.experienceRepo.findOne({ where: { id: booking.experienceId } });
-        this.bookingNotificationsService.sendBookingConfirmation({
-          bookingId: booking.id,
-          referenceNumber: booking.referenceNumber,
-          experienceName: experience?.title ?? 'Experience',
-          date: dto.date,
-          travelerId: booking.travelerId,
-          guideId: booking.guideId,
-        }).catch(err =>
-          this.logger.warn(`Booking confirmation notification failed: ${(err as Error).message}`),
-        );
+        const experience = await this.experienceRepo.findOne({
+          where: { id: booking.experienceId },
+        });
+        this.bookingNotificationsService
+          .sendBookingConfirmation({
+            bookingId: booking.id,
+            referenceNumber: booking.referenceNumber,
+            experienceName: experience?.title ?? 'Experience',
+            date: dto.date,
+            travelerId: booking.travelerId,
+            guideId: booking.guideId,
+          })
+          .catch((err) =>
+            this.logger.warn(`Booking confirmation notification failed: ${(err as Error).message}`)
+          );
       }
 
       return dto;
@@ -183,7 +195,8 @@ export class BookingsService {
   }
 
   async getUserBookings(userId: string, filters?: BookingListFilters): Promise<BookingDto[]> {
-    const qb = this.bookingRepo.createQueryBuilder('b')
+    const qb = this.bookingRepo
+      .createQueryBuilder('b')
       .where('b.travelerId = :userId', { userId })
       .orderBy('b.date', 'ASC')
       .addOrderBy('b.startTime', 'ASC');
@@ -191,11 +204,12 @@ export class BookingsService {
     this.applyBookingFilters(qb, filters);
 
     const bookings = await qb.getMany();
-    return bookings.map(b => this.mapToDto(b));
+    return bookings.map((b) => this.mapToDto(b));
   }
 
   async getGuideBookings(guideId: string, filters?: BookingListFilters): Promise<BookingDto[]> {
-    const qb = this.bookingRepo.createQueryBuilder('b')
+    const qb = this.bookingRepo
+      .createQueryBuilder('b')
       .where('b.guideId = :guideId', { guideId })
       .orderBy('b.date', 'ASC')
       .addOrderBy('b.startTime', 'ASC');
@@ -203,7 +217,7 @@ export class BookingsService {
     this.applyBookingFilters(qb, filters);
 
     const bookings = await qb.getMany();
-    return bookings.map(b => this.mapToDto(b));
+    return bookings.map((b) => this.mapToDto(b));
   }
 
   async cancelBooking(request: CancellationRequest): Promise<CancellationResult> {
@@ -230,7 +244,7 @@ export class BookingsService {
 
     const { refundPercentage, message } = this.calculateRefund(
       booking,
-      request.userRole === 'guide',
+      request.userRole === 'guide'
     );
 
     const refundAmount = Number(booking.totalAmount) * (refundPercentage / 100);
@@ -263,19 +277,24 @@ export class BookingsService {
     // Send cancellation notifications (fire-and-forget)
     if (this.bookingNotificationsService) {
       const experience = await this.experienceRepo.findOne({ where: { id: booking.experienceId } });
-      this.bookingNotificationsService.sendBookingCancellation({
-        bookingId: booking.id,
-        referenceNumber: booking.referenceNumber,
-        experienceName: experience?.title ?? 'Experience',
-        date: booking.date instanceof Date ? booking.date.toISOString().split('T')[0] : String(booking.date),
-        travelerId: booking.travelerId,
-        guideId: booking.guideId,
-        refundAmount,
-        refundCurrency: booking.totalCurrency,
-        cancellationReason: request.reason,
-      }).catch(err =>
-        this.logger.warn(`Booking cancellation notification failed: ${(err as Error).message}`),
-      );
+      this.bookingNotificationsService
+        .sendBookingCancellation({
+          bookingId: booking.id,
+          referenceNumber: booking.referenceNumber,
+          experienceName: experience?.title ?? 'Experience',
+          date:
+            booking.date instanceof Date
+              ? booking.date.toISOString().split('T')[0]
+              : String(booking.date),
+          travelerId: booking.travelerId,
+          guideId: booking.guideId,
+          refundAmount,
+          refundCurrency: booking.totalCurrency,
+          cancellationReason: request.reason,
+        })
+        .catch((err) =>
+          this.logger.warn(`Booking cancellation notification failed: ${(err as Error).message}`)
+        );
     }
 
     return {
@@ -301,8 +320,10 @@ export class BookingsService {
 
     // Trigger payment release (fire-and-forget; payment service handles this)
     if (booking.paymentId) {
-      this.triggerPaymentRelease(booking.paymentId).catch(err =>
-        this.logger.warn(`Failed to trigger payment release for booking ${bookingId}: ${(err as Error).message}`),
+      this.triggerPaymentRelease(booking.paymentId).catch((err) =>
+        this.logger.warn(
+          `Failed to trigger payment release for booking ${bookingId}: ${(err as Error).message}`
+        )
       );
     }
 
@@ -328,8 +349,9 @@ export class BookingsService {
     } else if (filters.groupBy) {
       const now = new Date();
       if (filters.groupBy === 'upcoming') {
-        qb.andWhere('b.date >= :now', { now })
-          .andWhere('b.status IN (:...statuses)', { statuses: [BookingStatus.CONFIRMED, BookingStatus.PENDING] });
+        qb.andWhere('b.date >= :now', { now }).andWhere('b.status IN (:...statuses)', {
+          statuses: [BookingStatus.CONFIRMED, BookingStatus.PENDING],
+        });
       } else if (filters.groupBy === 'past') {
         qb.andWhere('b.status = :status', { status: BookingStatus.COMPLETED });
       } else if (filters.groupBy === 'cancelled') {
@@ -342,11 +364,14 @@ export class BookingsService {
 
   private calculateRefund(
     booking: Booking,
-    isCancelledByGuide: boolean,
+    isCancelledByGuide: boolean
   ): { refundPercentage: number; message: string } {
     // Guide cancellation always results in full refund
     if (isCancelledByGuide) {
-      return { refundPercentage: 100, message: 'Full refund issued as guide cancelled the booking.' };
+      return {
+        refundPercentage: 100,
+        message: 'Full refund issued as guide cancelled the booking.',
+      };
     }
 
     const now = new Date();
@@ -413,9 +438,10 @@ export class BookingsService {
       travelerId: booking.travelerId,
       experienceId: booking.experienceId,
       guideId: booking.guideId,
-      date: booking.date instanceof Date
-        ? booking.date.toISOString().split('T')[0]
-        : String(booking.date),
+      date:
+        booking.date instanceof Date
+          ? booking.date.toISOString().split('T')[0]
+          : String(booking.date),
       startTime: booking.startTime,
       endTime: booking.endTime,
       participants: booking.participants,

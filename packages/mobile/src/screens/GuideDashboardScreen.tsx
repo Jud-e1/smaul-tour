@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View, Text, ScrollView, TouchableOpacity, StyleSheet,
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
   ActivityIndicator,
 } from 'react-native';
 import { experiencesApi, bookingsApi } from '../lib/api';
@@ -95,7 +99,9 @@ export default function GuideDashboardScreen() {
             style={[styles.tabBtn, tab === t.key && styles.tabBtnActive]}
             onPress={() => setTab(t.key)}
           >
-            <Text style={[styles.tabBtnText, tab === t.key && styles.tabBtnTextActive]}>{t.label}</Text>
+            <Text style={[styles.tabBtnText, tab === t.key && styles.tabBtnTextActive]}>
+              {t.label}
+            </Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -114,7 +120,12 @@ export default function GuideDashboardScreen() {
                     <View key={exp.id} style={styles.card}>
                       <View style={styles.cardHeader}>
                         <Text style={styles.cardTitle}>{exp.title}</Text>
-                        <View style={[styles.badge, exp.status === 'approved' ? styles.badgeGreen : styles.badgeGray]}>
+                        <View
+                          style={[
+                            styles.badge,
+                            exp.status === 'approved' ? styles.badgeGreen : styles.badgeGray,
+                          ]}
+                        >
                           <Text style={styles.badgeText}>{exp.status}</Text>
                         </View>
                       </View>
@@ -141,16 +152,24 @@ export default function GuideDashboardScreen() {
                     <View key={b.id} style={styles.card}>
                       <View style={styles.cardHeader}>
                         <Text style={styles.cardTitle}>{b.travelerName}</Text>
-                        <View style={[styles.badge, b.status === 'confirmed' ? styles.badgeGreen : styles.badgeGray]}>
+                        <View
+                          style={[
+                            styles.badge,
+                            b.status === 'confirmed' ? styles.badgeGreen : styles.badgeGray,
+                          ]}
+                        >
                           <Text style={styles.badgeText}>{b.status}</Text>
                         </View>
                       </View>
                       <Text style={styles.metaText}>
-                        {new Date(b.date).toLocaleDateString()} · {b.participants} participant{b.participants > 1 ? 's' : ''}
+                        {new Date(b.date).toLocaleDateString()} · {b.participants} participant
+                        {b.participants > 1 ? 's' : ''}
                       </Text>
                       <View style={styles.cardFooter}>
                         <Text style={styles.refText}>Ref: {b.referenceNumber}</Text>
-                        <Text style={styles.amountText}>{b.currency} {b.totalAmount}</Text>
+                        <Text style={styles.amountText}>
+                          {b.currency} {b.totalAmount}
+                        </Text>
                       </View>
                     </View>
                   ))
@@ -171,7 +190,9 @@ export default function GuideDashboardScreen() {
                         <Text>{'⭐'.repeat(r.rating)}</Text>
                       </View>
                       {r.comment && <Text style={styles.reviewComment}>{r.comment}</Text>}
-                      <Text style={styles.reviewDate}>{new Date(r.createdAt).toLocaleDateString()}</Text>
+                      <Text style={styles.reviewDate}>
+                        {new Date(r.createdAt).toLocaleDateString()}
+                      </Text>
                     </View>
                   ))
                 )}
@@ -182,15 +203,28 @@ export default function GuideDashboardScreen() {
               <View style={styles.profileSection}>
                 <View style={styles.profileAvatar}>
                   <Text style={styles.profileAvatarText}>
-                    {user.profile.firstName.charAt(0)}{user.profile.lastName.charAt(0)}
+                    {user.profile.firstName.charAt(0)}
+                    {user.profile.lastName.charAt(0)}
                   </Text>
                 </View>
-                <Text style={styles.profileName}>{user.profile.firstName} {user.profile.lastName}</Text>
+                <Text style={styles.profileName}>
+                  {user.profile.firstName} {user.profile.lastName}
+                </Text>
                 <Text style={styles.profileEmail}>{user.email}</Text>
                 {user.profile.guideVerificationStatus && (
-                  <View style={[styles.badge, user.profile.guideVerificationStatus === 'approved' ? styles.badgeGreen : styles.badgeGray, { marginBottom: 16 }]}>
+                  <View
+                    style={[
+                      styles.badge,
+                      user.profile.guideVerificationStatus === 'approved'
+                        ? styles.badgeGreen
+                        : styles.badgeGray,
+                      { marginBottom: 16 },
+                    ]}
+                  >
                     <Text style={styles.badgeText}>
-                      {user.profile.guideVerificationStatus === 'approved' ? '✓ Verified Guide' : user.profile.guideVerificationStatus}
+                      {user.profile.guideVerificationStatus === 'approved'
+                        ? '✓ Verified Guide'
+                        : user.profile.guideVerificationStatus}
                     </Text>
                   </View>
                 )}
@@ -208,15 +242,33 @@ export default function GuideDashboardScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F9FAFB' },
-  tabBar: { flexDirection: 'row', backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
+  tabBar: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
   tabBtn: { flex: 1, paddingVertical: 12, alignItems: 'center' },
   tabBtnActive: { borderBottomWidth: 2, borderBottomColor: '#2563EB' },
   tabBtnText: { fontSize: 12, color: '#9CA3AF', fontWeight: '500' },
   tabBtnTextActive: { color: '#2563EB', fontWeight: '600' },
   content: { flex: 1 },
   emptyText: { textAlign: 'center', color: '#9CA3AF', fontSize: 14, padding: 48 },
-  card: { backgroundColor: '#fff', marginHorizontal: 12, marginTop: 8, borderRadius: 10, padding: 14, borderWidth: 1, borderColor: '#E5E7EB' },
-  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 },
+  card: {
+    backgroundColor: '#fff',
+    marginHorizontal: 12,
+    marginTop: 8,
+    borderRadius: 10,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 6,
+  },
   cardTitle: { fontSize: 14, fontWeight: '600', color: '#111827', flex: 1, marginRight: 8 },
   badge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10 },
   badgeGreen: { backgroundColor: '#D1FAE5' },
@@ -233,10 +285,24 @@ const styles = StyleSheet.create({
   reviewComment: { fontSize: 13, color: '#6B7280', marginBottom: 4 },
   reviewDate: { fontSize: 11, color: '#9CA3AF' },
   profileSection: { padding: 24, alignItems: 'center' },
-  profileAvatar: { width: 72, height: 72, borderRadius: 36, backgroundColor: '#2563EB', alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
+  profileAvatar: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: '#2563EB',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
   profileAvatarText: { color: '#fff', fontSize: 24, fontWeight: '700' },
   profileName: { fontSize: 20, fontWeight: '700', color: '#111827', marginBottom: 4 },
   profileEmail: { fontSize: 14, color: '#6B7280', marginBottom: 16 },
-  logoutBtn: { borderWidth: 1, borderColor: '#DC2626', borderRadius: 10, paddingHorizontal: 24, paddingVertical: 10 },
+  logoutBtn: {
+    borderWidth: 1,
+    borderColor: '#DC2626',
+    borderRadius: 10,
+    paddingHorizontal: 24,
+    paddingVertical: 10,
+  },
   logoutBtnText: { color: '#DC2626', fontSize: 14, fontWeight: '600' },
 });

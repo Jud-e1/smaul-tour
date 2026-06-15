@@ -54,7 +54,10 @@ describe('Performance Tests', () => {
   describe('Concurrent Request Handling', () => {
     it('handles multiple concurrent booking attempts without double-booking', async () => {
       const availableSlots = new Set(['slot-1']);
-      const bookSlot = async (slotId: string, userId: string): Promise<{ success: boolean; userId: string }> => {
+      const bookSlot = async (
+        slotId: string,
+        userId: string
+      ): Promise<{ success: boolean; userId: string }> => {
         if (availableSlots.has(slotId)) {
           availableSlots.delete(slotId);
           return { success: true, userId };

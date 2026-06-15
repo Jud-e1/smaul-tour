@@ -193,7 +193,9 @@ describe('ExperienceService', () => {
       const updated = makeExperience({ title: 'Updated Title', images: [], availabilitySlots: [] });
       mockExperienceRepo.save.mockResolvedValue(updated);
 
-      const result = await service.updateExperience('exp-uuid-1', 'guide-uuid-1', { title: 'Updated Title' });
+      const result = await service.updateExperience('exp-uuid-1', 'guide-uuid-1', {
+        title: 'Updated Title',
+      });
 
       expect(result.title).toBe('Updated Title');
       expect(mockExperienceRepo.save).toHaveBeenCalledTimes(1);
@@ -203,7 +205,7 @@ describe('ExperienceService', () => {
       mockExperienceRepo.findOne.mockResolvedValue(null);
 
       await expect(
-        service.updateExperience('exp-uuid-1', 'wrong-guide', { title: 'X' }),
+        service.updateExperience('exp-uuid-1', 'wrong-guide', { title: 'X' })
       ).rejects.toThrow(NotFoundException);
     });
   });
@@ -223,14 +225,18 @@ describe('ExperienceService', () => {
     it('should throw NotFoundException when experience not found', async () => {
       mockExperienceRepo.findOne.mockResolvedValue(null);
 
-      await expect(service.deleteExperience('exp-uuid-1', 'guide-uuid-1')).rejects.toThrow(NotFoundException);
+      await expect(service.deleteExperience('exp-uuid-1', 'guide-uuid-1')).rejects.toThrow(
+        NotFoundException
+      );
     });
 
     it('should throw ConflictException when active bookings exist', async () => {
       mockExperienceRepo.findOne.mockResolvedValue(makeExperience());
       mockBookingRepo.count.mockResolvedValue(2);
 
-      await expect(service.deleteExperience('exp-uuid-1', 'guide-uuid-1')).rejects.toThrow(ConflictException);
+      await expect(service.deleteExperience('exp-uuid-1', 'guide-uuid-1')).rejects.toThrow(
+        ConflictException
+      );
     });
   });
 
@@ -262,7 +268,11 @@ describe('ExperienceService', () => {
     const baseQuery = { page: 1, pageSize: 10 };
 
     it('should call createQueryBuilder and return paginated results', async () => {
-      const exp = makeExperience({ status: ExperienceStatus.ACTIVE, images: [], availabilitySlots: [] });
+      const exp = makeExperience({
+        status: ExperienceStatus.ACTIVE,
+        images: [],
+        availabilitySlots: [],
+      });
       mockQueryBuilder.getManyAndCount.mockResolvedValue([[exp], 1]);
 
       const result = await service.searchExperiences(baseQuery as any);
@@ -281,7 +291,7 @@ describe('ExperienceService', () => {
 
       expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
         expect.stringContaining('LOWER(exp.title)'),
-        expect.objectContaining({ text: '%walking%' }),
+        expect.objectContaining({ text: '%walking%' })
       );
     });
 
@@ -290,10 +300,9 @@ describe('ExperienceService', () => {
 
       await service.searchExperiences(baseQuery as any);
 
-      expect(mockQueryBuilder.where).toHaveBeenCalledWith(
-        'exp.status = :status',
-        { status: ExperienceStatus.ACTIVE },
-      );
+      expect(mockQueryBuilder.where).toHaveBeenCalledWith('exp.status = :status', {
+        status: ExperienceStatus.ACTIVE,
+      });
     });
   });
 
@@ -313,7 +322,7 @@ describe('ExperienceService', () => {
       mockExperienceRepo.findOne.mockResolvedValue(null);
 
       await expect(
-        service.uploadImage('exp-uuid-1', 'guide-uuid-1', mockFile as any),
+        service.uploadImage('exp-uuid-1', 'guide-uuid-1', mockFile as any)
       ).rejects.toThrow(NotFoundException);
     });
 
@@ -322,7 +331,7 @@ describe('ExperienceService', () => {
       mockExperienceRepo.findOne.mockResolvedValue(makeExperience({ images }));
 
       await expect(
-        service.uploadImage('exp-uuid-1', 'guide-uuid-1', mockFile as any),
+        service.uploadImage('exp-uuid-1', 'guide-uuid-1', mockFile as any)
       ).rejects.toThrow(ConflictException);
     });
 
@@ -365,7 +374,7 @@ describe('ExperienceService', () => {
       await service.uploadImage('exp-uuid-1', 'guide-uuid-1', mockFile as any);
 
       expect(mockExperienceRepo.save).toHaveBeenCalledWith(
-        expect.objectContaining({ primaryImageId: 'first-img-id' }),
+        expect.objectContaining({ primaryImageId: 'first-img-id' })
       );
     });
   });
@@ -373,15 +382,13 @@ describe('ExperienceService', () => {
   // ─── updateAvailability() ─────────────────────────────────────────────────
 
   describe('updateAvailability', () => {
-    const slots = [
-      { date: '2024-07-15', startTime: '09:00', endTime: '11:00', capacity: 10 },
-    ];
+    const slots = [{ date: '2024-07-15', startTime: '09:00', endTime: '11:00', capacity: 10 }];
 
     it('should throw NotFoundException when experience not found', async () => {
       mockExperienceRepo.findOne.mockResolvedValue(null);
 
       await expect(
-        service.updateAvailability('exp-uuid-1', 'guide-uuid-1', slots as any),
+        service.updateAvailability('exp-uuid-1', 'guide-uuid-1', slots as any)
       ).rejects.toThrow(NotFoundException);
     });
 
@@ -402,7 +409,7 @@ describe('ExperienceService', () => {
             capacity: 10,
           }),
         ]),
-        expect.objectContaining({ conflictPaths: ['experienceId', 'date', 'startTime'] }),
+        expect.objectContaining({ conflictPaths: ['experienceId', 'date', 'startTime'] })
       );
     });
 
