@@ -67,42 +67,78 @@ function AvailabilityCalendar({ slots }: { slots: AvailabilitySlot[] }) {
   }, {});
 
   const days = buildCalendarDays(viewYear, viewMonth);
-  const monthName = new Date(viewYear, viewMonth).toLocaleString('default', { month: 'long', year: 'numeric' });
+  const monthName = new Date(viewYear, viewMonth).toLocaleString('default', {
+    month: 'long',
+    year: 'numeric',
+  });
 
   const prevMonth = () => {
-    if (viewMonth === 0) { setViewYear((y) => y - 1); setViewMonth(11); }
-    else setViewMonth((m) => m - 1);
+    if (viewMonth === 0) {
+      setViewYear((y) => y - 1);
+      setViewMonth(11);
+    } else setViewMonth((m) => m - 1);
   };
   const nextMonth = () => {
-    if (viewMonth === 11) { setViewYear((y) => y + 1); setViewMonth(0); }
-    else setViewMonth((m) => m + 1);
+    if (viewMonth === 11) {
+      setViewYear((y) => y + 1);
+      setViewMonth(0);
+    } else setViewMonth((m) => m + 1);
   };
 
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <button onClick={prevMonth} className="p-1.5 rounded-full hover:bg-gray-100" aria-label="Previous month">
-          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        <button
+          onClick={prevMonth}
+          className="p-1.5 rounded-full hover:bg-gray-100"
+          aria-label="Previous month"
+        >
+          <svg
+            className="w-4 h-4 text-gray-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
         </button>
         <span className="font-medium text-gray-800 text-sm">{monthName}</span>
-        <button onClick={nextMonth} className="p-1.5 rounded-full hover:bg-gray-100" aria-label="Next month">
-          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button
+          onClick={nextMonth}
+          className="p-1.5 rounded-full hover:bg-gray-100"
+          aria-label="Next month"
+        >
+          <svg
+            className="w-4 h-4 text-gray-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </button>
       </div>
       <div className="grid grid-cols-7 text-center text-xs text-gray-400 mb-1">
-        {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(d => <div key={d} className="py-1">{d}</div>)}
+        {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map((d) => (
+          <div key={d} className="py-1">
+            {d}
+          </div>
+        ))}
       </div>
       <div className="grid grid-cols-7 gap-0.5 text-center text-xs">
         {days.map((day, i) => {
           if (!day) return <div key={`e-${i}`} />;
           const dateStr = toDateStr(viewYear, viewMonth, day);
           const daySlots = slotsByDate[dateStr] || [];
-          const hasAvailable = daySlots.some(s => s.status === 'available' && s.booked < s.capacity);
-          const hasBooked = daySlots.some(s => s.status === 'booked' || s.booked >= s.capacity);
+          const hasAvailable = daySlots.some(
+            (s) => s.status === 'available' && s.booked < s.capacity
+          );
+          const hasBooked = daySlots.some((s) => s.status === 'booked' || s.booked >= s.capacity);
           const isPast = new Date(dateStr) < new Date(today.toDateString());
           let cls = 'w-8 h-8 mx-auto flex items-center justify-center rounded-full ';
           if (isPast) cls += 'text-gray-300';
@@ -117,8 +153,14 @@ function AvailabilityCalendar({ slots }: { slots: AvailabilitySlot[] }) {
         })}
       </div>
       <div className="flex items-center gap-4 mt-3 text-xs text-gray-400">
-        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-100 inline-block" />Available</span>
-        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-gray-100 inline-block" />Unavailable</span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-100 inline-block" />
+          Available
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-gray-100 inline-block" />
+          Unavailable
+        </span>
       </div>
     </div>
   );
@@ -145,26 +187,37 @@ export default function ExperienceDetailPage() {
       experiencesApi.get(id),
       experiencesApi.getReviews(id, { page: 1, pageSize: REVIEWS_PER_PAGE }),
       experiencesApi.getRecommendations(id),
-    ]).then(([expRes, reviewsRes, recsRes]) => {
-      setExperience(expRes.data);
-      setReviews(reviewsRes.data?.reviews || []);
-      setReviewTotal(reviewsRes.data?.total || 0);
-      setRecommendations(recsRes.data?.experiences || []);
-    }).catch(() => {}).finally(() => setLoading(false));
+    ])
+      .then(([expRes, reviewsRes, recsRes]) => {
+        setExperience(expRes.data);
+        setReviews(reviewsRes.data?.reviews || []);
+        setReviewTotal(reviewsRes.data?.total || 0);
+        setRecommendations(recsRes.data?.experiences || []);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, [id]);
 
   const loadMoreReviews = async () => {
     if (!id) return;
     const nextPage = reviewPage + 1;
     try {
-      const { data } = await experiencesApi.getReviews(id, { page: nextPage, pageSize: REVIEWS_PER_PAGE });
+      const { data } = await experiencesApi.getReviews(id, {
+        page: nextPage,
+        pageSize: REVIEWS_PER_PAGE,
+      });
       setReviews((prev) => [...prev, ...(data?.reviews || [])]);
       setReviewPage(nextPage);
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   };
 
   const toggleWishlist = async () => {
-    if (!user) { router.push('/login'); return; }
+    if (!user) {
+      router.push('/login');
+      return;
+    }
     if (wishlisted) await userApi.removeFromWishlist(user.id, id).catch(() => {});
     else await userApi.addToWishlist(user.id, id).catch(() => {});
     setWishlisted(!wishlisted);
@@ -192,7 +245,9 @@ export default function ExperienceDetailPage() {
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <p className="text-gray-500 mb-3">Experience not found.</p>
-          <Link href="/experiences" className="text-[#FF385C] hover:underline text-sm font-medium">Browse experiences</Link>
+          <Link href="/experiences" className="text-[#FF385C] hover:underline text-sm font-medium">
+            Browse experiences
+          </Link>
         </div>
       </div>
     );
@@ -205,7 +260,6 @@ export default function ExperienceDetailPage() {
 
   return (
     <div className="min-h-screen bg-white">
-
       {/* Full-bleed photo hero with grid overlay */}
       <div className="relative">
         {/* Main hero image */}
@@ -214,8 +268,18 @@ export default function ExperienceDetailPage() {
             <Image src={heroImg} alt={experience.title} fill className="object-cover" priority />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-              <svg className="w-20 h-20 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              <svg
+                className="w-20 h-20 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1}
+                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
               </svg>
             </div>
           )}
@@ -227,8 +291,18 @@ export default function ExperienceDetailPage() {
             className="absolute top-4 left-4 bg-white rounded-full p-2 shadow-md hover:shadow-lg transition-shadow"
             aria-label="Back"
           >
-            <svg className="w-4 h-4 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            <svg
+              className="w-4 h-4 text-gray-800"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
           </Link>
 
@@ -239,9 +313,18 @@ export default function ExperienceDetailPage() {
               className="bg-white rounded-full p-2 shadow-md hover:shadow-lg transition-shadow"
               aria-label={wishlisted ? 'Remove from wishlist' : 'Save'}
             >
-              <svg className={`w-4 h-4 ${wishlisted ? 'text-[#FF385C] fill-[#FF385C]' : 'text-gray-800'}`}
-                fill={wishlisted ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              <svg
+                className={`w-4 h-4 ${wishlisted ? 'text-[#FF385C] fill-[#FF385C]' : 'text-gray-800'}`}
+                fill={wishlisted ? 'currentColor' : 'none'}
+                stroke="currentColor"
+                strokeWidth={2}
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                />
               </svg>
             </button>
           </div>
@@ -255,7 +338,13 @@ export default function ExperienceDetailPage() {
                   onClick={() => setActiveImage(i)}
                   className={`w-12 h-8 rounded-lg overflow-hidden border-2 transition-all ${i === activeImage ? 'border-white scale-110' : 'border-white/50 opacity-70'}`}
                 >
-                  <Image src={img.thumbnailUrl || img.url} alt="" width={48} height={32} className="object-cover w-full h-full" />
+                  <Image
+                    src={img.thumbnailUrl || img.url}
+                    alt=""
+                    width={48}
+                    height={32}
+                    className="object-cover w-full h-full"
+                  />
                 </button>
               ))}
               {images.length > 6 && (
@@ -274,18 +363,23 @@ export default function ExperienceDetailPage() {
       {/* Content */}
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-
           {/* Left: main info */}
           <div className="lg:col-span-2 space-y-8">
-
             {/* Title + meta */}
             <div>
               <div className="flex flex-wrap gap-2 mb-3">
                 {experience.category?.map((cat) => (
-                  <span key={cat} className="text-xs font-medium bg-gray-100 text-gray-600 px-3 py-1 rounded-full">{cat}</span>
+                  <span
+                    key={cat}
+                    className="text-xs font-medium bg-gray-100 text-gray-600 px-3 py-1 rounded-full"
+                  >
+                    {cat}
+                  </span>
                 ))}
               </div>
-              <h1 className="text-3xl font-bold text-gray-900 leading-tight mb-3">{experience.title}</h1>
+              <h1 className="text-3xl font-bold text-gray-900 leading-tight mb-3">
+                {experience.title}
+              </h1>
               <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
                 {experience.averageRating > 0 && (
                   <span className="flex items-center gap-1 font-semibold text-gray-900">
@@ -297,15 +391,40 @@ export default function ExperienceDetailPage() {
                   </span>
                 )}
                 <span className="flex items-center gap-1">
-                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="w-4 h-4 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                   {experience.duration} hours
                 </span>
                 <span className="flex items-center gap-1">
-                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <svg
+                    className="w-4 h-4 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
                   </svg>
                   {experience.location.address}
                 </span>
@@ -319,7 +438,13 @@ export default function ExperienceDetailPage() {
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 rounded-full bg-gray-200 overflow-hidden shrink-0 ring-2 ring-gray-100">
                   {experience.guide.profile?.profilePhotoUrl ? (
-                    <Image src={experience.guide.profile.profilePhotoUrl} alt="Guide" width={56} height={56} className="object-cover" />
+                    <Image
+                      src={experience.guide.profile.profilePhotoUrl}
+                      alt="Guide"
+                      width={56}
+                      height={56}
+                      className="object-cover"
+                    />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-500 text-xl font-bold bg-gradient-to-br from-gray-200 to-gray-300">
                       {experience.guide.profile?.firstName?.[0]}
@@ -342,7 +467,9 @@ export default function ExperienceDetailPage() {
                     )}
                   </div>
                   {experience.guide.profile?.bio && (
-                    <p className="text-sm text-gray-500 mt-0.5 line-clamp-2">{experience.guide.profile.bio}</p>
+                    <p className="text-sm text-gray-500 mt-0.5 line-clamp-2">
+                      {experience.guide.profile.bio}
+                    </p>
                   )}
                 </div>
               </div>
@@ -361,11 +488,17 @@ export default function ExperienceDetailPage() {
               {[
                 { icon: '🕐', label: 'Duration', value: `${experience.duration} hours` },
                 { icon: '📍', label: 'Location', value: experience.location.address },
-                { icon: '🔄', label: 'Cancellation', value: experience.cancellationPolicy || 'Flexible' },
+                {
+                  icon: '🔄',
+                  label: 'Cancellation',
+                  value: experience.cancellationPolicy || 'Flexible',
+                },
               ].map((h) => (
                 <div key={h.label} className="bg-gray-50 rounded-2xl p-4">
                   <p className="text-xl mb-1">{h.icon}</p>
-                  <p className="text-xs text-gray-400 font-medium uppercase tracking-wide">{h.label}</p>
+                  <p className="text-xs text-gray-400 font-medium uppercase tracking-wide">
+                    {h.label}
+                  </p>
                   <p className="text-sm font-semibold text-gray-800 mt-0.5 capitalize">{h.value}</p>
                 </div>
               ))}
@@ -380,7 +513,8 @@ export default function ExperienceDetailPage() {
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                 </svg>
                 <h2 className="text-xl font-semibold text-gray-900">
-                  {experience.averageRating > 0 ? `${experience.averageRating.toFixed(2)} · ` : ''}{reviewTotal} review{reviewTotal !== 1 ? 's' : ''}
+                  {experience.averageRating > 0 ? `${experience.averageRating.toFixed(2)} · ` : ''}
+                  {reviewTotal} review{reviewTotal !== 1 ? 's' : ''}
                 </h2>
               </div>
               {reviews.length === 0 ? (
@@ -395,13 +529,24 @@ export default function ExperienceDetailPage() {
                         </div>
                         <div>
                           <p className="text-sm font-semibold text-gray-900">
-                            {review.traveler?.profile ? `${review.traveler.profile.firstName} ${review.traveler.profile.lastName}` : 'Traveler'}
+                            {review.traveler?.profile
+                              ? `${review.traveler.profile.firstName} ${review.traveler.profile.lastName}`
+                              : 'Traveler'}
                           </p>
-                          <p className="text-xs text-gray-400">{new Date(review.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
+                          <p className="text-xs text-gray-400">
+                            {new Date(review.createdAt).toLocaleDateString('en-US', {
+                              month: 'long',
+                              year: 'numeric',
+                            })}
+                          </p>
                         </div>
                       </div>
                       <StarRating value={review.rating} readonly size="sm" />
-                      {review.comment && <p className="text-sm text-gray-600 mt-1.5 leading-relaxed">{review.comment}</p>}
+                      {review.comment && (
+                        <p className="text-sm text-gray-600 mt-1.5 leading-relaxed">
+                          {review.comment}
+                        </p>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -426,15 +571,33 @@ export default function ExperienceDetailPage() {
                   <iframe
                     title="Location"
                     src={`https://www.openstreetmap.org/export/embed.html?bbox=${experience.location.longitude - 0.01},${experience.location.latitude - 0.01},${experience.location.longitude + 0.01},${experience.location.latitude + 0.01}&layer=mapnik&marker=${experience.location.latitude},${experience.location.longitude}`}
-                    width="100%" height="100%" style={{ border: 0 }} loading="lazy"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    loading="lazy"
                   />
                 </div>
               ) : (
                 <div className="rounded-2xl bg-gray-50 h-48 flex items-center justify-center border border-gray-100">
                   <div className="text-center text-gray-400">
-                    <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <svg
+                      className="w-8 h-8 mx-auto mb-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
                     </svg>
                     <p className="text-sm">{experience.location.address}</p>
                   </div>
@@ -473,9 +636,13 @@ export default function ExperienceDetailPage() {
                   <svg className="w-4 h-4 text-[#FF385C]" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                   </svg>
-                  <span className="font-semibold text-gray-900">{experience.averageRating.toFixed(2)}</span>
+                  <span className="font-semibold text-gray-900">
+                    {experience.averageRating.toFixed(2)}
+                  </span>
                   <span className="text-gray-400">·</span>
-                  <span className="text-gray-500 underline cursor-pointer">{reviewTotal} reviews</span>
+                  <span className="text-gray-500 underline cursor-pointer">
+                    {reviewTotal} reviews
+                  </span>
                 </div>
               )}
 
@@ -507,7 +674,12 @@ export default function ExperienceDetailPage() {
                 className="mb-6 flex items-center gap-2 text-white hover:text-gray-300 transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
                 Close
               </button>

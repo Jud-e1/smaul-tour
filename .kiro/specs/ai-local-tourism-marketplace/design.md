@@ -14,6 +14,7 @@ The AI-Powered Local Tourism Marketplace is a comprehensive platform connecting 
 ### System Boundaries
 
 The platform includes:
+
 - Web application (Next.js, React, TypeScript, TailwindCSS)
 - Mobile applications (React Native or Flutter for iOS and Android)
 - Backend API services (Node.js with NestJS or Express)
@@ -25,11 +26,11 @@ The platform includes:
 - Multi-channel notification system
 
 The platform excludes:
+
 - Physical tour operations
 - Travel insurance services
 - Flight or accommodation booking
 - Currency exchange services (uses third-party rates)
-
 
 ## Architecture
 
@@ -44,11 +45,11 @@ graph TB
         IOS[iOS App<br/>React Native/Flutter]
         AND[Android App<br/>React Native/Flutter]
     end
-    
+
     subgraph "API Gateway Layer"
         GW[API Gateway<br/>Rate Limiting, Auth]
     end
-    
+
     subgraph "Application Services"
         AUTH[Auth Service<br/>OAuth, JWT]
         TRIP[AI Trip Planner<br/>LLM Integration]
@@ -58,14 +59,14 @@ graph TB
         NOTIF[Notification Service<br/>Multi-channel]
         ADMIN[Admin Service<br/>Moderation]
     end
-    
+
     subgraph "Data Layer"
         PG[(PostgreSQL<br/>Transactional Data)]
         VDB[(Vector DB<br/>Embeddings)]
         CACHE[(Redis<br/>Cache)]
         S3[Cloud Storage<br/>Images]
     end
-    
+
     subgraph "External Services"
         LLM[LLM API<br/>OpenAI/Anthropic]
         STRIPE[Payment Gateway<br/>Stripe]
@@ -73,11 +74,11 @@ graph TB
         EMAIL[Email Service<br/>SendGrid]
         PUSH[Push Service<br/>FCM/APNS]
     end
-    
+
     WEB --> GW
     IOS --> GW
     AND --> GW
-    
+
     GW --> AUTH
     GW --> TRIP
     GW --> EXP
@@ -85,7 +86,7 @@ graph TB
     GW --> PAY
     GW --> NOTIF
     GW --> ADMIN
-    
+
     TRIP --> LLM
     TRIP --> VDB
     EXP --> VDB
@@ -99,7 +100,7 @@ graph TB
     NOTIF --> PUSH
     AUTH --> PG
     ADMIN --> PG
-    
+
     EXP --> MAP
 ```
 
@@ -115,46 +116,51 @@ graph TB
 
 5. **Repository Pattern**: Data access abstraction for testability and maintainability
 
-
 ### Technology Stack Rationale
 
 **Frontend (Web)**
+
 - Next.js: Server-side rendering for SEO, API routes for BFF pattern, excellent developer experience
 - React: Component reusability, large ecosystem, team familiarity
 - TypeScript: Type safety reduces runtime errors, better IDE support
 - TailwindCSS: Rapid UI development, consistent design system, small bundle size
 
 **Frontend (Mobile)**
+
 - React Native: Code sharing with web (React), single codebase for iOS/Android, large community
 - Alternative: Flutter for better performance and native feel, but separate codebase from web
 
 **Backend**
+
 - Node.js: JavaScript/TypeScript consistency across stack, excellent async I/O for API workloads
 - NestJS: Structured architecture, built-in dependency injection, TypeScript-first, decorator-based routing
 - Alternative: Express for simplicity, but NestJS provides better structure for large applications
 
 **Database**
+
 - PostgreSQL: ACID compliance for financial transactions, JSON support, excellent performance, mature ecosystem
 - Vector Database (Pinecone/Weaviate/pgvector): Semantic search for AI recommendations, embedding storage
 - Redis: Session storage, caching, rate limiting counters
 
 **AI/ML**
+
 - LLM API (OpenAI/Anthropic): Natural language understanding for trip planning
 - Embedding models: Semantic similarity for experience recommendations
 - Vector database: Fast similarity search at scale
 
 **Infrastructure**
+
 - Docker: Consistent environments, easy deployment
 - AWS/GCP: Managed services reduce operational overhead
 - CDN (CloudFront/Cloud CDN): Fast static asset delivery globally
 - Load Balancer: Horizontal scaling, health checks
-
 
 ## Components and Interfaces
 
 ### 1. AI Trip Planner Service
 
 **Responsibilities:**
+
 - Parse natural language trip requests
 - Extract trip parameters (duration, budget, preferences, activity types)
 - Query vector database for relevant experiences
@@ -204,6 +210,7 @@ interface AITripPlannerService {
 ```
 
 **Implementation Details:**
+
 - LLM prompt engineering for parameter extraction
 - Structured output parsing with validation
 - Vector similarity search with threshold filtering (>0.7)
@@ -211,10 +218,10 @@ interface AITripPlannerService {
 - Budget constraint satisfaction
 - Caching of embeddings for performance
 
-
 ### 2. Experience Service
 
 **Responsibilities:**
+
 - CRUD operations for experience listings
 - Image upload and management
 - Availability calendar management
@@ -285,11 +292,15 @@ interface ExperienceSearchQuery {
 }
 
 interface ExperienceService {
-  createExperience(experience: Omit<Experience, 'id' | 'createdAt' | 'updatedAt'>): Promise<Experience>;
+  createExperience(
+    experience: Omit<Experience, 'id' | 'createdAt' | 'updatedAt'>
+  ): Promise<Experience>;
   updateExperience(id: string, updates: Partial<Experience>): Promise<Experience>;
   deleteExperience(id: string): Promise<void>;
   getExperience(id: string): Promise<Experience>;
-  searchExperiences(query: ExperienceSearchQuery): Promise<{ experiences: Experience[]; total: number }>;
+  searchExperiences(
+    query: ExperienceSearchQuery
+  ): Promise<{ experiences: Experience[]; total: number }>;
   uploadImage(experienceId: string, file: Buffer, filename: string): Promise<Image>;
   updateAvailability(experienceId: string, slots: AvailabilitySlot[]): Promise<void>;
   getRecommendations(experienceId: string, limit: number): Promise<Experience[]>;
@@ -297,6 +308,7 @@ interface ExperienceService {
 ```
 
 **Implementation Details:**
+
 - PostgreSQL for transactional data
 - Vector database for semantic search and recommendations
 - Cloud storage (S3) for images with CDN
@@ -305,10 +317,10 @@ interface ExperienceService {
 - Full-text search on title and description
 - Geospatial queries using PostGIS extension
 
-
 ### 3. Booking Service
 
 **Responsibilities:**
+
 - Create and manage bookings
 - Verify availability before booking
 - Handle concurrent booking requests
@@ -372,6 +384,7 @@ interface BookingService {
 ```
 
 **Implementation Details:**
+
 - Database transactions for atomic booking creation
 - Row-level locking to prevent double-booking
 - Redis distributed lock for high-concurrency scenarios
@@ -380,10 +393,10 @@ interface BookingService {
 - Event emission for downstream processing (notifications, payments)
 - Idempotency keys for duplicate request handling
 
-
 ### 4. Payment Service (Escrow System)
 
 **Responsibilities:**
+
 - Process payments through payment gateway
 - Hold funds in escrow until experience completion
 - Release funds to guides
@@ -453,6 +466,7 @@ interface PaymentService {
 ```
 
 **Implementation Details:**
+
 - Payment gateway integration (Stripe or similar)
 - State machine for payment status transitions
 - Automatic fund release 24 hours after experience completion
@@ -463,16 +477,17 @@ interface PaymentService {
 - PCI compliance: no card data stored in platform database
 
 **Escrow State Machine:**
+
 ```
 pending → authorized → captured → escrowed → released
                                          ↓
                                     refunded
 ```
 
-
 ### 5. Notification Service
 
 **Responsibilities:**
+
 - Send notifications via multiple channels (email, push, in-app)
 - Manage user notification preferences
 - Queue and retry failed notifications
@@ -484,8 +499,13 @@ pending → authorized → captured → escrowed → released
 interface Notification {
   id: string;
   userId: string;
-  type: 'booking_confirmed' | 'booking_cancelled' | 'payment_received' | 
-        'itinerary_generated' | 'review_received' | 'verification_approved';
+  type:
+    | 'booking_confirmed'
+    | 'booking_cancelled'
+    | 'payment_received'
+    | 'itinerary_generated'
+    | 'review_received'
+    | 'verification_approved';
   channels: ('email' | 'push' | 'in_app')[];
   priority: 'high' | 'normal' | 'low';
   subject: string;
@@ -521,12 +541,16 @@ interface NotificationService {
   sendNotification(notification: Omit<Notification, 'id' | 'createdAt'>): Promise<Notification>;
   getUserNotifications(userId: string, filters?: { unreadOnly?: boolean }): Promise<Notification[]>;
   markAsRead(notificationId: string): Promise<void>;
-  updatePreferences(userId: string, preferences: Partial<NotificationPreferences>): Promise<NotificationPreferences>;
+  updatePreferences(
+    userId: string,
+    preferences: Partial<NotificationPreferences>
+  ): Promise<NotificationPreferences>;
   getPreferences(userId: string): Promise<NotificationPreferences>;
 }
 ```
 
 **Implementation Details:**
+
 - Message queue (Redis/RabbitMQ) for asynchronous processing
 - Email service integration (SendGrid, AWS SES)
 - Push notification services (FCM for Android, APNS for iOS)
@@ -536,10 +560,10 @@ interface NotificationService {
 - Rate limiting to prevent spam
 - Preference checking before sending
 
-
 ### 6. Authentication and Authorization Service
 
 **Responsibilities:**
+
 - User registration and login
 - OAuth integration (Google, Facebook)
 - JWT token generation and validation
@@ -607,6 +631,7 @@ interface AuthService {
 ```
 
 **Implementation Details:**
+
 - Password hashing with bcrypt (cost factor 12)
 - JWT with RS256 signing algorithm
 - Access token expiry: 1 hour
@@ -617,10 +642,10 @@ interface AuthService {
 - RBAC with resource-action permissions
 - Session management with Redis for token blacklisting
 
-
 ### 7. Review and Rating Service
 
 **Responsibilities:**
+
 - Manage experience reviews and ratings
 - Calculate average ratings
 - Moderate inappropriate content
@@ -644,7 +669,11 @@ interface Review {
 
 interface ReviewService {
   createReview(review: Omit<Review, 'id' | 'createdAt' | 'updatedAt' | 'status'>): Promise<Review>;
-  getExperienceReviews(experienceId: string, page: number, pageSize: number): Promise<{ reviews: Review[]; total: number }>;
+  getExperienceReviews(
+    experienceId: string,
+    page: number,
+    pageSize: number
+  ): Promise<{ reviews: Review[]; total: number }>;
   getGuideReviews(guideId: string): Promise<Review[]>;
   flagReview(reviewId: string, reason: string): Promise<void>;
   removeReview(reviewId: string, adminId: string): Promise<void>;
@@ -653,6 +682,7 @@ interface ReviewService {
 ```
 
 **Implementation Details:**
+
 - Review submission window: 30 days after experience completion
 - One review per booking constraint enforced at database level
 - Average rating recalculation on review submission
@@ -660,10 +690,10 @@ interface ReviewService {
 - Character limit: 1000 characters
 - Reviews ordered by most recent first
 
-
 ### 8. Admin Service
 
 **Responsibilities:**
+
 - Guide verification management
 - Content moderation
 - User account management
@@ -729,6 +759,7 @@ interface AdminService {
 ```
 
 **Implementation Details:**
+
 - Admin actions logged for accountability
 - Verification document storage with secure access
 - Trust badge assignment based on verification status
@@ -736,10 +767,10 @@ interface AdminService {
 - Account flagging for guides with <3.0 average rating
 - Metrics aggregation with caching for performance
 
-
 ### 9. Configuration Parser and Serialization
 
 **Responsibilities:**
+
 - Parse configuration files (JSON, YAML)
 - Validate configuration structure and types
 - Serialize configuration objects back to files
@@ -795,6 +826,7 @@ interface JSONSerializer {
 ```
 
 **Implementation Details:**
+
 - JSON parsing with error handling and line number reporting
 - YAML parsing using js-yaml library
 - Type validation for all configuration values
@@ -802,12 +834,12 @@ interface JSONSerializer {
 - Schema validation using JSON Schema or Zod
 - Round-trip property: parse(serialize(config)) === config
 
-
 ## Data Models
 
 ### Database Schema (PostgreSQL)
 
 **Users Table**
+
 ```sql
 CREATE TABLE users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -827,6 +859,7 @@ CREATE INDEX idx_users_role ON users(role);
 ```
 
 **User Profiles Table**
+
 ```sql
 CREATE TABLE user_profiles (
   user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
@@ -844,6 +877,7 @@ CREATE TABLE user_profiles (
 ```
 
 **Experiences Table**
+
 ```sql
 CREATE TABLE experiences (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -873,6 +907,7 @@ CREATE INDEX idx_experiences_location ON experiences USING GIST(ll_to_earth(loca
 ```
 
 **Images Table**
+
 ```sql
 CREATE TABLE images (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -889,6 +924,7 @@ CREATE INDEX idx_images_experience_id ON images(experience_id);
 ```
 
 **Availability Slots Table**
+
 ```sql
 CREATE TABLE availability_slots (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -907,6 +943,7 @@ CREATE INDEX idx_availability_experience_date ON availability_slots(experience_i
 ```
 
 **Bookings Table**
+
 ```sql
 CREATE TABLE bookings (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -937,8 +974,8 @@ CREATE INDEX idx_bookings_status ON bookings(status);
 CREATE INDEX idx_bookings_date ON bookings(date);
 ```
 
-
 **Payments Table**
+
 ```sql
 CREATE TABLE payments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -965,6 +1002,7 @@ CREATE INDEX idx_payments_status ON payments(status);
 ```
 
 **Transaction Logs Table**
+
 ```sql
 CREATE TABLE transaction_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -983,6 +1021,7 @@ CREATE INDEX idx_transaction_logs_timestamp ON transaction_logs(timestamp);
 ```
 
 **Reviews Table**
+
 ```sql
 CREATE TABLE reviews (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1003,6 +1042,7 @@ CREATE INDEX idx_reviews_status ON reviews(status);
 ```
 
 **Itineraries Table**
+
 ```sql
 CREATE TABLE itineraries (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1017,6 +1057,7 @@ CREATE INDEX idx_itineraries_user_id ON itineraries(user_id);
 ```
 
 **Itinerary Experiences Table**
+
 ```sql
 CREATE TABLE itinerary_experiences (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1032,6 +1073,7 @@ CREATE INDEX idx_itinerary_experiences_itinerary_id ON itinerary_experiences(iti
 ```
 
 **Notifications Table**
+
 ```sql
 CREATE TABLE notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1054,6 +1096,7 @@ CREATE INDEX idx_notifications_created_at ON notifications(created_at DESC);
 ```
 
 **Verification Requests Table**
+
 ```sql
 CREATE TABLE verification_requests (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1070,6 +1113,7 @@ CREATE INDEX idx_verification_requests_status ON verification_requests(status);
 ```
 
 **Verification Documents Table**
+
 ```sql
 CREATE TABLE verification_documents (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1083,6 +1127,7 @@ CREATE INDEX idx_verification_documents_request_id ON verification_documents(ver
 ```
 
 **Audit Logs Table**
+
 ```sql
 CREATE TABLE audit_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1099,10 +1144,10 @@ CREATE INDEX idx_audit_logs_timestamp ON audit_logs(timestamp DESC);
 CREATE INDEX idx_audit_logs_resource ON audit_logs(resource_type, resource_id);
 ```
 
-
 ### Vector Database Schema
 
 **Experience Embeddings Collection**
+
 ```typescript
 interface ExperienceEmbedding {
   id: string; // matches experience.id
@@ -1122,6 +1167,7 @@ interface ExperienceEmbedding {
 ```
 
 **User Preference Embeddings Collection**
+
 ```typescript
 interface UserPreferenceEmbedding {
   id: string; // user.id
@@ -1139,6 +1185,7 @@ interface UserPreferenceEmbedding {
 ### Redis Cache Schema
 
 **Session Storage**
+
 ```
 Key: session:{userId}
 Value: { accessToken, refreshToken, expiresAt }
@@ -1146,6 +1193,7 @@ TTL: 1 hour
 ```
 
 **Rate Limiting**
+
 ```
 Key: ratelimit:{ip}:{endpoint}
 Value: request count
@@ -1153,6 +1201,7 @@ TTL: 1 hour
 ```
 
 **Availability Lock**
+
 ```
 Key: booking:lock:{experienceId}:{date}:{time}
 Value: {userId, timestamp}
@@ -1160,9 +1209,9 @@ TTL: 5 minutes
 ```
 
 **Experience Cache**
+
 ```
 Key: experience:{id}
 Value: JSON serialized Experience object
 TTL: 5 minutes
 ```
-

@@ -31,7 +31,7 @@ export class MetricsAggregationScheduler {
       const metrics = await this.adminService.getMetrics(startOfYesterday, endOfYesterday);
       this.logger.log(
         `Daily metrics aggregated: ${metrics.totalBookings} bookings, ` +
-          `revenue ${metrics.totalRevenue.amount} ${metrics.totalRevenue.currency}`,
+          `revenue ${metrics.totalRevenue.amount} ${metrics.totalRevenue.currency}`
       );
     } catch (error) {
       this.logger.error('Failed to aggregate daily metrics', (error as Error).message);
@@ -57,7 +57,7 @@ export class MetricsAggregationScheduler {
       this.logger.log(
         `Weekly metrics aggregated: ${metrics.totalBookings} bookings, ` +
           `${metrics.totalUsers} total users, ` +
-          `revenue ${metrics.totalRevenue.amount} ${metrics.totalRevenue.currency}`,
+          `revenue ${metrics.totalRevenue.amount} ${metrics.totalRevenue.currency}`
       );
     } catch (error) {
       this.logger.error('Failed to aggregate weekly metrics', (error as Error).message);

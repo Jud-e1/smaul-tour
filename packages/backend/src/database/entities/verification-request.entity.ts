@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
+} from 'typeorm';
 import { User } from './user.entity';
 import { VerificationDocument } from './verification-document.entity';
 
@@ -39,6 +47,6 @@ export class VerificationRequest {
   @JoinColumn({ name: 'reviewed_by' })
   reviewer!: User;
 
-  @OneToMany(() => VerificationDocument, document => document.verificationRequest)
+  @OneToMany(() => VerificationDocument, (document) => document.verificationRequest)
   documents!: VerificationDocument[];
 }

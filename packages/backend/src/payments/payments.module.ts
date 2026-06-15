@@ -11,10 +11,14 @@ import { ReceiptService } from './receipt.service';
 import { CurrencyService } from './currency.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Payment, TransactionLog]),
+  imports: [TypeOrmModule.forFeature([Payment, TransactionLog])],
+  providers: [
+    PaymentsService,
+    StripeGatewayService,
+    EscrowReleaseScheduler,
+    ReceiptService,
+    CurrencyService,
   ],
-  providers: [PaymentsService, StripeGatewayService, EscrowReleaseScheduler, ReceiptService, CurrencyService],
   controllers: [PaymentsController, WebhookController],
   exports: [PaymentsService, StripeGatewayService, CurrencyService],
 })

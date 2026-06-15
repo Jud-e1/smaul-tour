@@ -45,7 +45,13 @@ export default function ReviewForm({ bookingId, experienceId, onSuccess }: Revie
     return (
       <div className="text-center py-8">
         <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-          <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg
+            className="w-6 h-6 text-green-600"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
         </div>
@@ -73,24 +79,29 @@ export default function ReviewForm({ bookingId, experienceId, onSuccess }: Revie
       {/* Comment */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Comment{' '}
-          <span className="text-gray-400 font-normal">(optional)</span>
+          Comment <span className="text-gray-400 font-normal">(optional)</span>
         </label>
         <textarea
           value={comment}
-          onChange={(e: { target: HTMLTextAreaElement }) => setComment(e.target.value.slice(0, MAX_CHARS))}
+          onChange={(e: { target: HTMLTextAreaElement }) =>
+            setComment(e.target.value.slice(0, MAX_CHARS))
+          }
           rows={4}
           placeholder="Share your experience..."
           className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
         />
-        <p className={`text-xs mt-1 text-right ${comment.length >= MAX_CHARS ? 'text-red-500' : 'text-gray-400'}`}>
+        <p
+          className={`text-xs mt-1 text-right ${comment.length >= MAX_CHARS ? 'text-red-500' : 'text-gray-400'}`}
+        >
           {comment.length}/{MAX_CHARS}
         </p>
       </div>
 
       {/* Error */}
       {error && (
-        <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>
+        <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+          {error}
+        </p>
       )}
 
       {/* Submit */}

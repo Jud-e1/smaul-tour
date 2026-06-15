@@ -18,12 +18,14 @@ describe('RateLimitGuard - unit logic', () => {
    */
   const { RateLimitGuard } = require('./rate-limit.guard');
 
-  function makeContext(overrides: {
-    ip?: string;
-    userId?: string;
-    path?: string;
-    headers?: Record<string, string>;
-  } = {}) {
+  function makeContext(
+    overrides: {
+      ip?: string;
+      userId?: string;
+      path?: string;
+      headers?: Record<string, string>;
+    } = {}
+  ) {
     const headers: Record<string, string> = { ...(overrides.headers ?? {}) };
     const req: any = {
       ip: overrides.ip ?? '1.2.3.4',
@@ -34,7 +36,9 @@ describe('RateLimitGuard - unit logic', () => {
     };
     const res: any = {
       _headers: {} as Record<string, string>,
-      setHeader(name: string, value: string) { this._headers[name] = value; },
+      setHeader(name: string, value: string) {
+        this._headers[name] = value;
+      },
     };
     return {
       switchToHttp: () => ({
@@ -46,7 +50,7 @@ describe('RateLimitGuard - unit logic', () => {
   }
 
   function makeGuard(whitelist = '') {
-    const configService = { get: (_key: string, def: string) => def === '' ? whitelist : def };
+    const configService = { get: (_key: string, def: string) => (def === '' ? whitelist : def) };
     return new RateLimitGuard(configService);
   }
 
@@ -120,7 +124,11 @@ describe('RateLimitGuard - unit logic', () => {
     }
 
     // First violation
-    try { guard.canActivate(ctx); } catch { /* expected */ }
+    try {
+      guard.canActivate(ctx);
+    } catch {
+      /* expected */
+    }
     const record1 = guard.getRecord('ip:10.0.0.6');
     expect(record1?.violations).toBe(1);
     expect(record1?.backoffUntil).toBeDefined();

@@ -45,7 +45,7 @@ describe('VectorSearchService', () => {
       expect(mockVectorDatabaseService.searchSimilarExperiences).toHaveBeenCalledWith(
         embedding,
         0.7,
-        10,
+        10
       );
       expect(result).toEqual(searchResults);
     });
@@ -59,7 +59,7 @@ describe('VectorSearchService', () => {
       expect(mockVectorDatabaseService.searchSimilarExperiences).toHaveBeenCalledWith(
         [0.1],
         0.8,
-        5,
+        5
       );
     });
   });
@@ -87,7 +87,7 @@ describe('VectorSearchService', () => {
       });
       expect(mockVectorDatabaseService.upsertExperienceEmbedding).toHaveBeenCalledWith(
         'exp-1',
-        embedding,
+        embedding
       );
     });
   });

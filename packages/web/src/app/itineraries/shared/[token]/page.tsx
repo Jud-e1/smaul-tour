@@ -82,7 +82,10 @@ export default function SharedItineraryPage() {
           {itinerary.parameters.preferences?.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-2">
               {itinerary.parameters.preferences.map((p) => (
-                <span key={p} className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">
+                <span
+                  key={p}
+                  className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full"
+                >
                   {p}
                 </span>
               ))}
@@ -104,7 +107,9 @@ export default function SharedItineraryPage() {
                   {exp.suggestedDate && (
                     <div className="text-sm text-gray-500 mt-0.5">
                       {new Date(exp.suggestedDate).toLocaleDateString('en-US', {
-                        weekday: 'short', month: 'short', day: 'numeric',
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric',
                       })}
                     </div>
                   )}
@@ -112,7 +117,9 @@ export default function SharedItineraryPage() {
                     <div className="flex items-center gap-3 text-sm text-gray-600 mt-1">
                       <span>{exp.experience.duration}h</span>
                       <span>·</span>
-                      <span>{exp.experience.price.currency} {exp.experience.price.amount}</span>
+                      <span>
+                        {exp.experience.price.currency} {exp.experience.price.amount}
+                      </span>
                       {exp.experience.location?.address && (
                         <>
                           <span>·</span>

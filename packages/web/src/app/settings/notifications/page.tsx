@@ -185,9 +185,7 @@ export default function NotificationPreferencesPage() {
 
             <div className="p-4 flex items-center justify-between border-t border-gray-100">
               {error && <p className="text-sm text-red-600">{error}</p>}
-              {saved && !error && (
-                <p className="text-sm text-green-600">Preferences saved.</p>
-              )}
+              {saved && !error && <p className="text-sm text-green-600">Preferences saved.</p>}
               {!error && !saved && <span />}
               <button
                 onClick={handleSave}

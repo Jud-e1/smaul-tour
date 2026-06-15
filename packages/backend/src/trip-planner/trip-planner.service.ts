@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  Optional,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, Optional } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Itinerary as ItineraryEntity } from '../database/entities/itinerary.entity';
@@ -32,7 +27,7 @@ export class TripPlannerService {
     private readonly experienceRepo: Repository<Experience>,
     private readonly vectorSearchService: VectorSearchService,
     private readonly llmParserService: LlmParserService,
-    @Optional() private readonly itineraryNotificationsService: ItineraryNotificationsService | null,
+    @Optional() private readonly itineraryNotificationsService: ItineraryNotificationsService | null
   ) {}
 
   async parseRequest(request: TripRequest): Promise<TripParameters> {
@@ -44,7 +39,11 @@ export class TripPlannerService {
 
     const recommendations = this.buildRecommendations(experiences, params);
 
-    const totalCost = this.calculateTotalCost(recommendations, experiences, params.budget?.currency ?? 'USD');
+    const totalCost = this.calculateTotalCost(
+      recommendations,
+      experiences,
+      params.budget?.currency ?? 'USD'
+    );
 
     const entity = this.itineraryRepo.create({
       userId,
@@ -63,22 +62,24 @@ export class TripPlannerService {
           suggestedDate: rec.suggestedDate,
           reasoning: rec.reasoning,
           position: idx + 1,
-        }),
+        })
       );
       await this.itineraryExpRepo.save(expEntities);
     }
 
     // Send itinerary generated notification (fire-and-forget)
     if (this.itineraryNotificationsService) {
-      this.itineraryNotificationsService.sendItineraryGenerated({
-        itineraryId: saved.id,
-        userId,
-        experienceCount: recommendations.length,
-        totalCost: totalCost.amount,
-        currency: totalCost.currency,
-      }).catch(err =>
-        this.logger.warn(`Itinerary notification failed: ${(err as Error).message}`),
-      );
+      this.itineraryNotificationsService
+        .sendItineraryGenerated({
+          itineraryId: saved.id,
+          userId,
+          experienceCount: recommendations.length,
+          totalCost: totalCost.amount,
+          currency: totalCost.currency,
+        })
+        .catch((err) =>
+          this.logger.warn(`Itinerary notification failed: ${(err as Error).message}`)
+        );
     }
 
     return {
@@ -91,7 +92,11 @@ export class TripPlannerService {
     };
   }
 
-  async modifyItinerary(itineraryId: string, userId: string, modification: string): Promise<Itinerary> {
+  async modifyItinerary(
+    itineraryId: string,
+    userId: string,
+    modification: string
+  ): Promise<Itinerary> {
     const existing = await this.itineraryRepo.findOne({
       where: { id: itineraryId, userId },
       relations: ['experiences'],
@@ -107,8 +112,10 @@ export class TripPlannerService {
     const modParams = await this.llmParserService.parseTripRequest(modification);
     const mergedParams: TripParameters = {
       ...existingParams,
-      preferences: modParams.preferences.length > 0 ? modParams.preferences : existingParams.preferences,
-      activityTypes: modParams.activityTypes.length > 0 ? modParams.activityTypes : existingParams.activityTypes,
+      preferences:
+        modParams.preferences.length > 0 ? modParams.preferences : existingParams.preferences,
+      activityTypes:
+        modParams.activityTypes.length > 0 ? modParams.activityTypes : existingParams.activityTypes,
       ...(modParams.duration && { duration: modParams.duration }),
       ...(modParams.budget && { budget: modParams.budget }),
       ...(modParams.location && { location: modParams.location }),
@@ -120,7 +127,11 @@ export class TripPlannerService {
 
     const experiences = await this.findMatchingExperiences(mergedParams);
     const recommendations = this.buildRecommendations(experiences, mergedParams);
-    const totalCost = this.calculateTotalCost(recommendations, experiences, mergedParams.budget?.currency ?? 'USD');
+    const totalCost = this.calculateTotalCost(
+      recommendations,
+      experiences,
+      mergedParams.budget?.currency ?? 'USD'
+    );
 
     existing.parameters = mergedParams as unknown as Record<string, unknown>;
     existing.totalCostAmount = totalCost.amount;
@@ -136,7 +147,7 @@ export class TripPlannerService {
           suggestedDate: rec.suggestedDate,
           reasoning: rec.reasoning,
           position: idx + 1,
-        }),
+        })
       );
       await this.itineraryExpRepo.save(expEntities);
     }
@@ -198,17 +209,19 @@ export class TripPlannerService {
         vectorResults = await this.vectorSearchService.semanticSearchExperiences(
           searchTerms,
           0.5,
-          20,
+          20
         );
       } catch (err) {
-        this.logger.warn(`Vector search failed, falling back to DB search: ${(err as Error).message}`);
+        this.logger.warn(
+          `Vector search failed, falling back to DB search: ${(err as Error).message}`
+        );
       }
     }
 
     let experiences: Experience[] = [];
 
     if (vectorResults.length > 0) {
-      const ids = vectorResults.map(r => r.experienceId);
+      const ids = vectorResults.map((r) => r.experienceId);
       experiences = await this.experienceRepo
         .createQueryBuilder('exp')
         .where('exp.id IN (:...ids)', { ids })
@@ -230,7 +243,8 @@ export class TripPlannerService {
     // Apply budget filter
     if (params.budget) {
       experiences = experiences.filter(
-        e => Number(e.priceAmount) >= params.budget!.min && Number(e.priceAmount) <= params.budget!.max,
+        (e) =>
+          Number(e.priceAmount) >= params.budget!.min && Number(e.priceAmount) <= params.budget!.max
       );
     }
 
@@ -256,8 +270,10 @@ export class TripPlannerService {
 
       for (let i = 0; i < remaining.length; i++) {
         const dist = this.haversineKm(
-          Number(last.locationLat), Number(last.locationLng),
-          Number(remaining[i].locationLat), Number(remaining[i].locationLng),
+          Number(last.locationLat),
+          Number(last.locationLng),
+          Number(remaining[i].locationLat),
+          Number(remaining[i].locationLng)
         );
         if (dist < minDist) {
           minDist = dist;
@@ -284,7 +300,7 @@ export class TripPlannerService {
 
   private buildRecommendations(
     experiences: Experience[],
-    params: TripParameters,
+    params: TripParameters
   ): ExperienceRecommendation[] {
     const maxExperiences = Math.max(3, (params.duration ?? 1) * 2);
     const selected = experiences.slice(0, maxExperiences);
@@ -294,14 +310,16 @@ export class TripPlannerService {
         ? new Date(new Date(params.dates.start).getTime() + idx * 24 * 60 * 60 * 1000)
         : undefined;
 
-      const matchedPrefs = [...(params.preferences ?? []), ...(params.activityTypes ?? [])].filter(p =>
-        exp.category.some(c => c.toLowerCase().includes(p.toLowerCase())) ||
-        exp.title.toLowerCase().includes(p.toLowerCase()),
+      const matchedPrefs = [...(params.preferences ?? []), ...(params.activityTypes ?? [])].filter(
+        (p) =>
+          exp.category.some((c) => c.toLowerCase().includes(p.toLowerCase())) ||
+          exp.title.toLowerCase().includes(p.toLowerCase())
       );
 
-      const reasoning = matchedPrefs.length > 0
-        ? `Matches your interest in ${matchedPrefs.join(', ')}`
-        : `Highly rated ${exp.category[0] ?? 'experience'} in the area`;
+      const reasoning =
+        matchedPrefs.length > 0
+          ? `Matches your interest in ${matchedPrefs.join(', ')}`
+          : `Highly rated ${exp.category[0] ?? 'experience'} in the area`;
 
       return {
         experienceId: exp.id,
@@ -315,9 +333,9 @@ export class TripPlannerService {
   private calculateTotalCost(
     recommendations: ExperienceRecommendation[],
     experiences: Experience[],
-    currency: string,
+    currency: string
   ): { amount: number; currency: string } {
-    const expMap = new Map(experiences.map(e => [e.id, e]));
+    const expMap = new Map(experiences.map((e) => [e.id, e]));
     const total = recommendations.reduce((sum, rec) => {
       const exp = expMap.get(rec.experienceId);
       return sum + (exp ? Number(exp.priceAmount) : 0);
@@ -331,7 +349,7 @@ export class TripPlannerService {
 
     const recommendations: ExperienceRecommendation[] = itineraryExps
       .sort((a, b) => a.position - b.position)
-      .map(ie => ({
+      .map((ie) => ({
         experienceId: ie.experienceId,
         relevanceScore: Number(ie.relevanceScore ?? 0),
         suggestedDate: ie.suggestedDate ?? undefined,

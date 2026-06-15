@@ -19,18 +19,18 @@
 
 ## Prerequisites
 
-| Tool | Version | Purpose |
-|------|---------|---------|
-| Node.js | >= 20.x | Backend and web builds |
-| npm | >= 10.x | Package management (workspaces) |
-| Docker | >= 24.x | Local services and image builds |
-| Docker Compose | >= 2.x | Local dev orchestration |
-| AWS CLI | >= 2.x | ECS / ECR / S3 operations |
-| Terraform | >= 1.5.0 | Infrastructure provisioning |
-| Fastlane | latest | iOS / Android automated releases |
-| Xcode | >= 15 | iOS builds (macOS only) |
-| Android Studio | latest | Android builds |
-| Vercel CLI | latest | Web deployments to Vercel |
+| Tool           | Version  | Purpose                          |
+| -------------- | -------- | -------------------------------- |
+| Node.js        | >= 20.x  | Backend and web builds           |
+| npm            | >= 10.x  | Package management (workspaces)  |
+| Docker         | >= 24.x  | Local services and image builds  |
+| Docker Compose | >= 2.x   | Local dev orchestration          |
+| AWS CLI        | >= 2.x   | ECS / ECR / S3 operations        |
+| Terraform      | >= 1.5.0 | Infrastructure provisioning      |
+| Fastlane       | latest   | iOS / Android automated releases |
+| Xcode          | >= 15    | iOS builds (macOS only)          |
+| Android Studio | latest   | Android builds                   |
+| Vercel CLI     | latest   | Web deployments to Vercel        |
 
 Install AWS CLI and configure credentials:
 
@@ -56,107 +56,107 @@ cp packages/backend/.env.example packages/backend/.env
 
 #### Server
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `NODE_ENV` | Yes | `development` | Runtime environment (`development`, `production`, `test`) |
-| `PORT` | No | `3000` | HTTP port the API listens on |
+| Variable   | Required | Default       | Description                                               |
+| ---------- | -------- | ------------- | --------------------------------------------------------- |
+| `NODE_ENV` | Yes      | `development` | Runtime environment (`development`, `production`, `test`) |
+| `PORT`     | No       | `3000`        | HTTP port the API listens on                              |
 
 #### Database (PostgreSQL)
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `DB_HOST` | Yes | `localhost` | PostgreSQL host |
-| `DB_PORT` | No | `5432` | PostgreSQL port |
-| `DB_NAME` | Yes | `tourism_marketplace` | Database name |
-| `DB_USER` | Yes | `postgres` | Database user |
-| `DB_PASSWORD` | Yes | `postgres` | Database password — **change in production** |
-| `DB_POOL_SIZE` | No | `20` | Connection pool size |
+| Variable       | Required | Default               | Description                                  |
+| -------------- | -------- | --------------------- | -------------------------------------------- |
+| `DB_HOST`      | Yes      | `localhost`           | PostgreSQL host                              |
+| `DB_PORT`      | No       | `5432`                | PostgreSQL port                              |
+| `DB_NAME`      | Yes      | `tourism_marketplace` | Database name                                |
+| `DB_USER`      | Yes      | `postgres`            | Database user                                |
+| `DB_PASSWORD`  | Yes      | `postgres`            | Database password — **change in production** |
+| `DB_POOL_SIZE` | No       | `20`                  | Connection pool size                         |
 
 #### Redis
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `REDIS_HOST` | Yes | `localhost` | Redis host |
-| `REDIS_PORT` | No | `6379` | Redis port |
-| `REDIS_PASSWORD` | No | _(empty)_ | Redis password (required in production) |
+| Variable         | Required | Default     | Description                             |
+| ---------------- | -------- | ----------- | --------------------------------------- |
+| `REDIS_HOST`     | Yes      | `localhost` | Redis host                              |
+| `REDIS_PORT`     | No       | `6379`      | Redis port                              |
+| `REDIS_PASSWORD` | No       | _(empty)_   | Redis password (required in production) |
 
 #### LLM / AI
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `LLM_PROVIDER` | Yes | `openai` | LLM provider (`openai`) |
-| `LLM_API_KEY` | Yes | — | OpenAI API key |
-| `LLM_MODEL` | No | `gpt-4` | Model name (e.g. `gpt-4`, `gpt-3.5-turbo`) |
-| `LLM_MAX_TOKENS` | No | `2000` | Max tokens per LLM request |
+| Variable         | Required | Default  | Description                                |
+| ---------------- | -------- | -------- | ------------------------------------------ |
+| `LLM_PROVIDER`   | Yes      | `openai` | LLM provider (`openai`)                    |
+| `LLM_API_KEY`    | Yes      | —        | OpenAI API key                             |
+| `LLM_MODEL`      | No       | `gpt-4`  | Model name (e.g. `gpt-4`, `gpt-3.5-turbo`) |
+| `LLM_MAX_TOKENS` | No       | `2000`   | Max tokens per LLM request                 |
 
 #### Vector Database
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `VECTOR_DB_PROVIDER` | Yes | `pinecone` | Vector DB provider (`pinecone`) |
-| `VECTOR_DB_API_KEY` | Yes | — | Pinecone API key |
-| `VECTOR_DB_ENVIRONMENT` | Yes | `us-west1-gcp` | Pinecone environment |
-| `VECTOR_DB_INDEX` | Yes | `tourism-experiences` | Pinecone index name |
+| Variable                | Required | Default               | Description                     |
+| ----------------------- | -------- | --------------------- | ------------------------------- |
+| `VECTOR_DB_PROVIDER`    | Yes      | `pinecone`            | Vector DB provider (`pinecone`) |
+| `VECTOR_DB_API_KEY`     | Yes      | —                     | Pinecone API key                |
+| `VECTOR_DB_ENVIRONMENT` | Yes      | `us-west1-gcp`        | Pinecone environment            |
+| `VECTOR_DB_INDEX`       | Yes      | `tourism-experiences` | Pinecone index name             |
 
 #### Payments (Stripe)
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `STRIPE_SECRET_KEY` | Yes | — | Stripe secret key (`sk_live_...` in production) |
-| `STRIPE_WEBHOOK_SECRET` | Yes | — | Stripe webhook signing secret (`whsec_...`) |
-| `PAYMENT_PROVIDER` | No | `stripe` | Payment provider identifier |
-| `PAYMENT_API_KEY` | No | — | Alias for `STRIPE_SECRET_KEY` |
-| `PAYMENT_WEBHOOK_SECRET` | No | — | Alias for `STRIPE_WEBHOOK_SECRET` |
+| Variable                 | Required | Default  | Description                                     |
+| ------------------------ | -------- | -------- | ----------------------------------------------- |
+| `STRIPE_SECRET_KEY`      | Yes      | —        | Stripe secret key (`sk_live_...` in production) |
+| `STRIPE_WEBHOOK_SECRET`  | Yes      | —        | Stripe webhook signing secret (`whsec_...`)     |
+| `PAYMENT_PROVIDER`       | No       | `stripe` | Payment provider identifier                     |
+| `PAYMENT_API_KEY`        | No       | —        | Alias for `STRIPE_SECRET_KEY`                   |
+| `PAYMENT_WEBHOOK_SECRET` | No       | —        | Alias for `STRIPE_WEBHOOK_SECRET`               |
 
 #### JWT / Auth
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `JWT_SECRET` | Yes | — | JWT signing secret — **must be changed in production** |
-| `JWT_EXPIRES_IN` | No | `3600` | Access token TTL in seconds (1 hour) |
-| `JWT_REFRESH_SECRET` | Yes | — | Refresh token signing secret |
-| `JWT_REFRESH_EXPIRES_IN` | No | `2592000` | Refresh token TTL in seconds (30 days) |
+| Variable                 | Required | Default   | Description                                            |
+| ------------------------ | -------- | --------- | ------------------------------------------------------ |
+| `JWT_SECRET`             | Yes      | —         | JWT signing secret — **must be changed in production** |
+| `JWT_EXPIRES_IN`         | No       | `3600`    | Access token TTL in seconds (1 hour)                   |
+| `JWT_REFRESH_SECRET`     | Yes      | —         | Refresh token signing secret                           |
+| `JWT_REFRESH_EXPIRES_IN` | No       | `2592000` | Refresh token TTL in seconds (30 days)                 |
 
 #### OAuth
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `GOOGLE_CLIENT_ID` | No | — | Google OAuth client ID |
-| `GOOGLE_CLIENT_SECRET` | No | — | Google OAuth client secret |
-| `FACEBOOK_APP_ID` | No | — | Facebook app ID |
-| `FACEBOOK_APP_SECRET` | No | — | Facebook app secret |
+| Variable               | Required | Default | Description                |
+| ---------------------- | -------- | ------- | -------------------------- |
+| `GOOGLE_CLIENT_ID`     | No       | —       | Google OAuth client ID     |
+| `GOOGLE_CLIENT_SECRET` | No       | —       | Google OAuth client secret |
+| `FACEBOOK_APP_ID`      | No       | —       | Facebook app ID            |
+| `FACEBOOK_APP_SECRET`  | No       | —       | Facebook app secret        |
 
 #### Email (SendGrid)
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `EMAIL_PROVIDER` | No | `sendgrid` | Email provider |
-| `EMAIL_API_KEY` | Yes | — | SendGrid API key |
-| `EMAIL_FROM` | No | `noreply@tourismmarketplace.com` | Sender address |
+| Variable         | Required | Default                          | Description      |
+| ---------------- | -------- | -------------------------------- | ---------------- |
+| `EMAIL_PROVIDER` | No       | `sendgrid`                       | Email provider   |
+| `EMAIL_API_KEY`  | Yes      | —                                | SendGrid API key |
+| `EMAIL_FROM`     | No       | `noreply@tourismmarketplace.com` | Sender address   |
 
 #### Cloud Storage (S3)
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `STORAGE_PROVIDER` | No | `s3` | Storage provider |
-| `STORAGE_BUCKET` | Yes | `tourism-marketplace-images` | S3 bucket name |
-| `STORAGE_REGION` | No | `us-east-1` | S3 bucket region |
-| `AWS_ACCESS_KEY_ID` | Yes | — | AWS access key (use IAM role in ECS) |
-| `AWS_SECRET_ACCESS_KEY` | Yes | — | AWS secret key (use IAM role in ECS) |
+| Variable                | Required | Default                      | Description                          |
+| ----------------------- | -------- | ---------------------------- | ------------------------------------ |
+| `STORAGE_PROVIDER`      | No       | `s3`                         | Storage provider                     |
+| `STORAGE_BUCKET`        | Yes      | `tourism-marketplace-images` | S3 bucket name                       |
+| `STORAGE_REGION`        | No       | `us-east-1`                  | S3 bucket region                     |
+| `AWS_ACCESS_KEY_ID`     | Yes      | —                            | AWS access key (use IAM role in ECS) |
+| `AWS_SECRET_ACCESS_KEY` | Yes      | —                            | AWS secret key (use IAM role in ECS) |
 
 #### Maps & Currency
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `MAPS_API_KEY` | Yes | — | Google Maps API key |
-| `EXCHANGE_RATE_API_URL` | No | `https://open.er-api.com/v6/latest/USD` | Exchange rate API endpoint |
+| Variable                | Required | Default                                 | Description                |
+| ----------------------- | -------- | --------------------------------------- | -------------------------- |
+| `MAPS_API_KEY`          | Yes      | —                                       | Google Maps API key        |
+| `EXCHANGE_RATE_API_URL` | No       | `https://open.er-api.com/v6/latest/USD` | Exchange rate API endpoint |
 
 #### Frontend URLs
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `WEB_URL` | No | `http://localhost:3001` | Web app URL (used in email links) |
-| `MOBILE_DEEP_LINK_SCHEME` | No | `tourismmarketplace` | Deep link URI scheme for mobile |
+| Variable                  | Required | Default                 | Description                       |
+| ------------------------- | -------- | ----------------------- | --------------------------------- |
+| `WEB_URL`                 | No       | `http://localhost:3001` | Web app URL (used in email links) |
+| `MOBILE_DEEP_LINK_SCHEME` | No       | `tourismmarketplace`    | Deep link URI scheme for mobile   |
 
 ---
 
@@ -166,11 +166,11 @@ cp packages/backend/.env.example packages/backend/.env
 cp packages/web/.env.example packages/web/.env.local
 ```
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `NEXT_PUBLIC_API_URL` | Yes | `http://localhost:3000` | Backend API base URL |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Yes | — | Stripe publishable key (`pk_live_...` in production) |
-| `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | Yes | — | Google Maps API key for the web client |
+| Variable                             | Required | Default                 | Description                                          |
+| ------------------------------------ | -------- | ----------------------- | ---------------------------------------------------- |
+| `NEXT_PUBLIC_API_URL`                | Yes      | `http://localhost:3000` | Backend API base URL                                 |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Yes      | —                       | Stripe publishable key (`pk_live_...` in production) |
+| `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`    | Yes      | —                       | Google Maps API key for the web client               |
 
 ---
 
@@ -197,6 +197,7 @@ docker-compose up -d
 ```
 
 This starts:
+
 - PostgreSQL on port `5432`
 - Redis on port `6379`
 - pgvector (PostgreSQL + pgvector extension) on port `5433`
@@ -254,13 +255,13 @@ The deploy script builds a Docker image, pushes it to ECR, runs migrations, and 
 
 **Required environment variables for the script:**
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `AWS_REGION` | `us-east-1` | AWS region |
-| `ECR_REPO` | `tourism-marketplace/backend` | ECR repository name |
-| `ECS_CLUSTER` | `tourism-marketplace` | ECS cluster name |
-| `ECS_SERVICE` | `tourism-marketplace-backend` | ECS service name |
-| `IMAGE_TAG` | `latest` | Docker image tag (use git SHA in CI) |
+| Variable      | Default                       | Description                          |
+| ------------- | ----------------------------- | ------------------------------------ |
+| `AWS_REGION`  | `us-east-1`                   | AWS region                           |
+| `ECR_REPO`    | `tourism-marketplace/backend` | ECR repository name                  |
+| `ECS_CLUSTER` | `tourism-marketplace`         | ECS cluster name                     |
+| `ECS_SERVICE` | `tourism-marketplace-backend` | ECS service name                     |
+| `IMAGE_TAG`   | `latest`                      | Docker image tag (use git SHA in CI) |
 
 **Deploy:**
 
@@ -353,6 +354,7 @@ fastlane ios ios_release
 ```
 
 Manual steps (without Fastlane):
+
 1. `cd ios && pod install && cd ..`
 2. Open `ios/TourismMarketplace.xcworkspace` in Xcode
 3. Set signing team and bundle identifier
@@ -367,6 +369,7 @@ fastlane android android_release
 ```
 
 Manual steps (without Fastlane):
+
 1. `cd android && ./gradlew bundleRelease`
 2. Sign the AAB: `android/app/build/outputs/bundle/release/app-release.aab`
 3. Upload to Google Play Console and submit for review
@@ -393,6 +396,7 @@ terraform apply -var="db_password=<secure-password>"
 State is stored in S3: `s3://tourism-marketplace-tfstate/prod/terraform.tfstate`
 
 Key resources provisioned:
+
 - RDS PostgreSQL 15.4 (`db.t3.medium`, Multi-AZ, 7-day backups)
 - ElastiCache Redis (`cache.t3.medium`, 2 nodes, encryption at rest and in transit)
 - S3 bucket for images (versioning + AES-256 encryption)
@@ -448,6 +452,7 @@ pg_restore \
 ### Automated backups (AWS RDS)
 
 RDS is configured (via Terraform) with:
+
 - **Automated daily snapshots** retained for 7 days
 - **Backup window**: 03:00–04:00 UTC
 - **Maintenance window**: Monday 04:00–05:00 UTC
@@ -616,6 +621,7 @@ For a full restore from a snapshot, see [Point-in-time recovery](#point-in-time-
 ### Mobile rollback
 
 Mobile releases cannot be automatically rolled back once published. Options:
+
 - **iOS**: Submit a new build via App Store Connect. Expedited review can be requested for critical issues.
 - **Android**: Use Google Play Console to halt a staged rollout or publish a new release.
 
@@ -629,26 +635,26 @@ All scheduled jobs run inside the backend ECS service using NestJS `@nestjs/sche
 
 **File**: `packages/backend/src/payments/escrow-release.scheduler.ts`
 
-| Schedule | Cron | Description |
-|----------|------|-------------|
+| Schedule   | Cron        | Description                                                                                           |
+| ---------- | ----------- | ----------------------------------------------------------------------------------------------------- |
 | Every hour | `0 * * * *` | Finds payments in `ESCROWED` status older than 24 hours and automatically releases funds to the guide |
 
 ### Exchange rate refresh
 
 **File**: `packages/backend/src/payments/currency.service.ts`
 
-| Schedule | Cron | Description |
-|----------|------|-------------|
+| Schedule          | Cron        | Description                                                                                    |
+| ----------------- | ----------- | ---------------------------------------------------------------------------------------------- |
 | Daily at midnight | `0 0 * * *` | Fetches latest USD exchange rates from `EXCHANGE_RATE_API_URL` and updates the in-memory cache |
 
 ### Metrics aggregation
 
 **File**: `packages/backend/src/admin/metrics-aggregation.scheduler.ts`
 
-| Schedule | Cron | Description |
-|----------|------|-------------|
-| Daily at 1:00 AM | `0 1 * * *` | Aggregates previous day's bookings and revenue metrics; pre-warms the admin dashboard cache |
-| Weekly on Sunday at 2:00 AM | `0 2 * * 0` | Aggregates the past 7 days of metrics |
+| Schedule                    | Cron        | Description                                                                                 |
+| --------------------------- | ----------- | ------------------------------------------------------------------------------------------- |
+| Daily at 1:00 AM            | `0 1 * * *` | Aggregates previous day's bookings and revenue metrics; pre-warms the admin dashboard cache |
+| Weekly on Sunday at 2:00 AM | `0 2 * * 0` | Aggregates the past 7 days of metrics                                                       |
 
 ### Verifying scheduled jobs are running
 

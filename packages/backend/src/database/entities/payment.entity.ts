@@ -1,4 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
+} from 'typeorm';
 import { User } from './user.entity';
 import { Booking } from './booking.entity';
 import { TransactionLog } from './transaction-log.entity';
@@ -66,7 +75,7 @@ export class Payment {
   @Column({ type: 'timestamp', nullable: true, name: 'refunded_at' })
   refundedAt!: Date;
 
-  @ManyToOne(() => Booking, booking => booking.payments)
+  @ManyToOne(() => Booking, (booking) => booking.payments)
   @JoinColumn({ name: 'booking_id' })
   booking!: Booking;
 
@@ -78,6 +87,6 @@ export class Payment {
   @JoinColumn({ name: 'guide_id' })
   guide!: User;
 
-  @OneToMany(() => TransactionLog, log => log.payment)
+  @OneToMany(() => TransactionLog, (log) => log.payment)
   transactionLogs!: TransactionLog[];
 }

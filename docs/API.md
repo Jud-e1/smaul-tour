@@ -30,9 +30,9 @@ POST /auth/refresh
 
 ## Base URL & Versioning
 
-| Environment | Base URL |
-|-------------|----------|
-| Local dev   | `http://localhost:3000` |
+| Environment | Base URL                     |
+| ----------- | ---------------------------- |
+| Local dev   | `http://localhost:3000`      |
 | Production  | `https://api.yourdomain.com` |
 
 All paths below are relative to the base URL. The API is currently at v1 (no prefix).
@@ -76,15 +76,15 @@ All errors follow this shape (from the global `HttpExceptionFilter`):
 
 Common status codes:
 
-| Code | Meaning |
-|------|---------|
-| 400  | Validation error / bad request |
-| 401  | Missing or invalid token |
-| 403  | Insufficient role |
-| 404  | Resource not found |
+| Code | Meaning                               |
+| ---- | ------------------------------------- |
+| 400  | Validation error / bad request        |
+| 401  | Missing or invalid token              |
+| 403  | Insufficient role                     |
+| 404  | Resource not found                    |
 | 409  | Conflict (duplicate, slot full, etc.) |
-| 429  | Rate limit exceeded |
-| 500  | Internal server error |
+| 429  | Rate limit exceeded                   |
+| 500  | Internal server error                 |
 
 ---
 
@@ -92,11 +92,11 @@ Common status codes:
 
 Rate limit headers are returned on every response:
 
-| Header | Description |
-|--------|-------------|
-| `X-RateLimit-Limit` | Max requests per window |
-| `X-RateLimit-Remaining` | Requests remaining |
-| `X-RateLimit-Reset` | Unix timestamp when the window resets |
+| Header                  | Description                           |
+| ----------------------- | ------------------------------------- |
+| `X-RateLimit-Limit`     | Max requests per window               |
+| `X-RateLimit-Remaining` | Requests remaining                    |
+| `X-RateLimit-Reset`     | Unix timestamp when the window resets |
 
 When the limit is exceeded the API returns `429 Too Many Requests`.
 
@@ -106,20 +106,21 @@ When the limit is exceeded the API returns `429 Too Many Requests`.
 
 ### Auth — `/auth`
 
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| POST | `/auth/register` | No | Register a new user |
-| POST | `/auth/login` | No | Login with email + password |
-| GET | `/auth/google` | No | Redirect to Google OAuth |
-| GET | `/auth/google/callback` | No | Google OAuth callback |
-| GET | `/auth/facebook` | No | Redirect to Facebook OAuth |
-| GET | `/auth/facebook/callback` | No | Facebook OAuth callback |
-| POST | `/auth/oauth` | No | Mobile OAuth (stub) |
-| POST | `/auth/refresh` | No | Refresh access token |
-| POST | `/auth/reset-password` | No | Request password reset email |
-| POST | `/auth/change-password` | No | Set new password via reset token |
+| Method | Path                      | Auth | Description                      |
+| ------ | ------------------------- | ---- | -------------------------------- |
+| POST   | `/auth/register`          | No   | Register a new user              |
+| POST   | `/auth/login`             | No   | Login with email + password      |
+| GET    | `/auth/google`            | No   | Redirect to Google OAuth         |
+| GET    | `/auth/google/callback`   | No   | Google OAuth callback            |
+| GET    | `/auth/facebook`          | No   | Redirect to Facebook OAuth       |
+| GET    | `/auth/facebook/callback` | No   | Facebook OAuth callback          |
+| POST   | `/auth/oauth`             | No   | Mobile OAuth (stub)              |
+| POST   | `/auth/refresh`           | No   | Refresh access token             |
+| POST   | `/auth/reset-password`    | No   | Request password reset email     |
+| POST   | `/auth/change-password`   | No   | Set new password via reset token |
 
 **Register request:**
+
 ```json
 {
   "email": "user@example.com",
@@ -131,6 +132,7 @@ When the limit is exceeded the API returns `429 Too Many Requests`.
 ```
 
 **Login / Register response:**
+
 ```json
 {
   "accessToken": "eyJ...",
@@ -143,50 +145,51 @@ When the limit is exceeded the API returns `429 Too Many Requests`.
 
 ### Experiences — `/experiences`
 
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| GET | `/experiences` | No | Search / list experiences |
-| GET | `/experiences/:id` | No | Get experience by ID |
-| POST | `/experiences` | Guide | Create experience |
-| PUT | `/experiences/:id` | Guide | Update own experience |
-| DELETE | `/experiences/:id` | Guide | Delete own experience |
-| POST | `/experiences/:id/images` | Guide | Upload image (multipart/form-data, field: `file`) |
-| PUT | `/experiences/:id/images/:imageId/primary` | Guide | Set primary image |
-| GET | `/experiences/:id/availability` | No | Get availability calendar |
-| PUT | `/experiences/:id/availability` | Guide | Update availability slots |
-| GET | `/experiences/recommendations/personalized` | Bearer | Personalized recommendations |
-| GET | `/experiences/:id/recommendations` | No | Similar experiences |
-| POST | `/experiences/travel-times` | No | Calculate travel times between locations |
-| GET | `/experiences/:id/reviews` | Bearer | Paginated reviews for an experience |
+| Method | Path                                        | Auth   | Description                                       |
+| ------ | ------------------------------------------- | ------ | ------------------------------------------------- |
+| GET    | `/experiences`                              | No     | Search / list experiences                         |
+| GET    | `/experiences/:id`                          | No     | Get experience by ID                              |
+| POST   | `/experiences`                              | Guide  | Create experience                                 |
+| PUT    | `/experiences/:id`                          | Guide  | Update own experience                             |
+| DELETE | `/experiences/:id`                          | Guide  | Delete own experience                             |
+| POST   | `/experiences/:id/images`                   | Guide  | Upload image (multipart/form-data, field: `file`) |
+| PUT    | `/experiences/:id/images/:imageId/primary`  | Guide  | Set primary image                                 |
+| GET    | `/experiences/:id/availability`             | No     | Get availability calendar                         |
+| PUT    | `/experiences/:id/availability`             | Guide  | Update availability slots                         |
+| GET    | `/experiences/recommendations/personalized` | Bearer | Personalized recommendations                      |
+| GET    | `/experiences/:id/recommendations`          | No     | Similar experiences                               |
+| POST   | `/experiences/travel-times`                 | No     | Calculate travel times between locations          |
+| GET    | `/experiences/:id/reviews`                  | Bearer | Paginated reviews for an experience               |
 
 **Search query parameters:**
 
-| Param | Type | Description |
-|-------|------|-------------|
-| `text` | string | Full-text search |
-| `categories` | string[] | Filter by category tags |
-| `minPrice` / `maxPrice` | number | Price range (USD) |
-| `minDuration` / `maxDuration` | number | Duration range (hours) |
-| `lat`, `lng`, `radiusKm` | number | Geo filter |
-| `minRating` | number (0–5) | Minimum average rating |
-| `sortBy` | `price` \| `rating` \| `popularity` | Sort field |
-| `sortOrder` | `asc` \| `desc` | Sort direction |
-| `page` / `pageSize` | number | Pagination (default 1 / 20) |
+| Param                         | Type                                | Description                 |
+| ----------------------------- | ----------------------------------- | --------------------------- |
+| `text`                        | string                              | Full-text search            |
+| `categories`                  | string[]                            | Filter by category tags     |
+| `minPrice` / `maxPrice`       | number                              | Price range (USD)           |
+| `minDuration` / `maxDuration` | number                              | Duration range (hours)      |
+| `lat`, `lng`, `radiusKm`      | number                              | Geo filter                  |
+| `minRating`                   | number (0–5)                        | Minimum average rating      |
+| `sortBy`                      | `price` \| `rating` \| `popularity` | Sort field                  |
+| `sortOrder`                   | `asc` \| `desc`                     | Sort direction              |
+| `page` / `pageSize`           | number                              | Pagination (default 1 / 20) |
 
 ---
 
 ### Bookings — `/bookings`, `/users/:id/bookings`, `/guides/:id/bookings`
 
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| POST | `/bookings` | Traveler | Create a booking |
-| GET | `/bookings/:id` | Bearer | Get booking by ID |
-| POST | `/bookings/:id/cancel` | Bearer | Cancel a booking |
-| POST | `/bookings/:id/complete` | Guide / Admin | Mark booking as completed |
-| GET | `/users/:id/bookings` | Bearer | List bookings for a traveler |
-| GET | `/guides/:id/bookings` | Bearer | List bookings for a guide |
+| Method | Path                     | Auth          | Description                  |
+| ------ | ------------------------ | ------------- | ---------------------------- |
+| POST   | `/bookings`              | Traveler      | Create a booking             |
+| GET    | `/bookings/:id`          | Bearer        | Get booking by ID            |
+| POST   | `/bookings/:id/cancel`   | Bearer        | Cancel a booking             |
+| POST   | `/bookings/:id/complete` | Guide / Admin | Mark booking as completed    |
+| GET    | `/users/:id/bookings`    | Bearer        | List bookings for a traveler |
+| GET    | `/guides/:id/bookings`   | Bearer        | List bookings for a guide    |
 
 **Create booking request:**
+
 ```json
 {
   "experienceId": "uuid",
@@ -203,24 +206,25 @@ When the limit is exceeded the API returns `429 Too Many Requests`.
 
 ### Payments — `/payments`
 
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| GET | `/payments/currencies` | Bearer | List supported currencies |
-| POST | `/payments` | Bearer | Process a payment |
-| GET | `/payments/:id` | Bearer | Get payment details |
-| GET | `/payments/:id/transactions` | Bearer | Transaction log |
-| GET | `/payments/:id/receipt` | Bearer | Generate receipt |
-| POST | `/payments/:id/escrow` | Bearer | Place funds in escrow |
-| POST | `/payments/:id/release` | Bearer | Release escrowed funds to guide |
-| POST | `/payments/:id/refund` | Bearer | Refund a payment |
-| POST | `/payments/:id/confirm` | Bearer | Confirm a pending payment |
-| POST | `/webhooks/stripe` | No (signature) | Stripe webhook receiver |
+| Method | Path                         | Auth           | Description                     |
+| ------ | ---------------------------- | -------------- | ------------------------------- |
+| GET    | `/payments/currencies`       | Bearer         | List supported currencies       |
+| POST   | `/payments`                  | Bearer         | Process a payment               |
+| GET    | `/payments/:id`              | Bearer         | Get payment details             |
+| GET    | `/payments/:id/transactions` | Bearer         | Transaction log                 |
+| GET    | `/payments/:id/receipt`      | Bearer         | Generate receipt                |
+| POST   | `/payments/:id/escrow`       | Bearer         | Place funds in escrow           |
+| POST   | `/payments/:id/release`      | Bearer         | Release escrowed funds to guide |
+| POST   | `/payments/:id/refund`       | Bearer         | Refund a payment                |
+| POST   | `/payments/:id/confirm`      | Bearer         | Confirm a pending payment       |
+| POST   | `/webhooks/stripe`           | No (signature) | Stripe webhook receiver         |
 
 **Process payment request:**
+
 ```json
 {
   "bookingId": "uuid",
-  "amount": 150.00,
+  "amount": 150.0,
   "currency": "USD",
   "paymentMethodId": "pm_stripe_id"
 }
@@ -232,20 +236,22 @@ When the limit is exceeded the API returns `429 Too Many Requests`.
 
 ### Trip Planner — `/trip-planner`
 
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| POST | `/trip-planner/parse` | Bearer | Parse natural language into trip parameters |
-| POST | `/trip-planner/generate` | Bearer | Generate itinerary from parameters |
-| GET | `/trip-planner/itineraries` | Bearer | List user's saved itineraries |
-| GET | `/trip-planner/itineraries/:id` | Bearer | Get a specific itinerary |
-| PUT | `/trip-planner/itineraries/:id` | Bearer | Modify itinerary with natural language |
+| Method | Path                            | Auth   | Description                                 |
+| ------ | ------------------------------- | ------ | ------------------------------------------- |
+| POST   | `/trip-planner/parse`           | Bearer | Parse natural language into trip parameters |
+| POST   | `/trip-planner/generate`        | Bearer | Generate itinerary from parameters          |
+| GET    | `/trip-planner/itineraries`     | Bearer | List user's saved itineraries               |
+| GET    | `/trip-planner/itineraries/:id` | Bearer | Get a specific itinerary                    |
+| PUT    | `/trip-planner/itineraries/:id` | Bearer | Modify itinerary with natural language      |
 
 **Parse request:**
+
 ```json
 { "naturalLanguageInput": "3-day food and culture trip in Tokyo, budget $500" }
 ```
 
 **Generate request:**
+
 ```json
 {
   "parameters": {
@@ -258,6 +264,7 @@ When the limit is exceeded the API returns `429 Too Many Requests`.
 ```
 
 **Modify request:**
+
 ```json
 { "modification": "Add a sushi-making class on day 2" }
 ```
@@ -266,16 +273,17 @@ When the limit is exceeded the API returns `429 Too Many Requests`.
 
 ### Notifications — `/notifications`, `/users/:id/notification-preferences`
 
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| GET | `/notifications` | Bearer | List user's notifications |
-| POST | `/notifications/:id/read` | Bearer | Mark notification as read |
-| GET | `/users/:id/notification-preferences` | Bearer | Get notification preferences |
-| PUT | `/users/:id/notification-preferences` | Bearer | Update notification preferences |
+| Method | Path                                  | Auth   | Description                     |
+| ------ | ------------------------------------- | ------ | ------------------------------- |
+| GET    | `/notifications`                      | Bearer | List user's notifications       |
+| POST   | `/notifications/:id/read`             | Bearer | Mark notification as read       |
+| GET    | `/users/:id/notification-preferences` | Bearer | Get notification preferences    |
+| PUT    | `/users/:id/notification-preferences` | Bearer | Update notification preferences |
 
 **List query params:** `unreadOnly=true`
 
 **Preferences body:**
+
 ```json
 {
   "email": { "bookingConfirmed": true, "bookingCancelled": true },
@@ -288,15 +296,16 @@ When the limit is exceeded the API returns `429 Too Many Requests`.
 
 ### Reviews — `/reviews`, `/experiences/:id/reviews`, `/guides/:id/reviews`
 
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| POST | `/reviews` | Traveler | Submit a review for a completed booking |
-| POST | `/reviews/:id/flag` | Bearer | Flag a review for moderation |
-| DELETE | `/reviews/:id` | Admin | Remove a review |
-| GET | `/experiences/:id/reviews` | Bearer | Paginated reviews for an experience |
-| GET | `/guides/:id/reviews` | Bearer | All reviews for a guide's experiences |
+| Method | Path                       | Auth     | Description                             |
+| ------ | -------------------------- | -------- | --------------------------------------- |
+| POST   | `/reviews`                 | Traveler | Submit a review for a completed booking |
+| POST   | `/reviews/:id/flag`        | Bearer   | Flag a review for moderation            |
+| DELETE | `/reviews/:id`             | Admin    | Remove a review                         |
+| GET    | `/experiences/:id/reviews` | Bearer   | Paginated reviews for an experience     |
+| GET    | `/guides/:id/reviews`      | Bearer   | All reviews for a guide's experiences   |
 
 **Create review request:**
+
 ```json
 {
   "bookingId": "uuid",
@@ -313,19 +322,19 @@ When the limit is exceeded the API returns `429 Too Many Requests`.
 
 All admin endpoints require `role: admin`.
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/admin/verification-requests` | List guide verification requests |
-| POST | `/admin/verification-requests/:id/approve` | Approve verification |
-| POST | `/admin/verification-requests/:id/reject` | Reject verification |
-| POST | `/admin/experiences/:id/approve` | Approve experience listing |
-| POST | `/admin/experiences/:id/reject` | Reject experience listing |
-| POST | `/admin/users/:id/suspend` | Suspend user account |
-| POST | `/admin/users/:id/unsuspend` | Unsuspend user account |
-| GET | `/admin/reviews/flagged` | List flagged reviews |
-| POST | `/admin/refunds` | Issue admin refund |
-| GET | `/admin/metrics` | Platform metrics |
-| GET | `/admin/audit-logs` | Admin audit logs |
+| Method | Path                                       | Description                      |
+| ------ | ------------------------------------------ | -------------------------------- |
+| GET    | `/admin/verification-requests`             | List guide verification requests |
+| POST   | `/admin/verification-requests/:id/approve` | Approve verification             |
+| POST   | `/admin/verification-requests/:id/reject`  | Reject verification              |
+| POST   | `/admin/experiences/:id/approve`           | Approve experience listing       |
+| POST   | `/admin/experiences/:id/reject`            | Reject experience listing        |
+| POST   | `/admin/users/:id/suspend`                 | Suspend user account             |
+| POST   | `/admin/users/:id/unsuspend`               | Unsuspend user account           |
+| GET    | `/admin/reviews/flagged`                   | List flagged reviews             |
+| POST   | `/admin/refunds`                           | Issue admin refund               |
+| GET    | `/admin/metrics`                           | Platform metrics                 |
+| GET    | `/admin/audit-logs`                        | Admin audit logs                 |
 
 **Metrics query params:** `startDate`, `endDate` (ISO strings; defaults to last 30 days)
 
@@ -335,9 +344,9 @@ All admin endpoints require `role: admin`.
 
 ### Health — `/health`
 
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| GET | `/health` | No | Service health check |
+| Method | Path      | Auth | Description          |
+| ------ | --------- | ---- | -------------------- |
+| GET    | `/health` | No   | Service health check |
 
 Returns `{ "status": "ok" }` when all dependencies are healthy.
 

@@ -52,7 +52,7 @@ export class FraudDetectionService {
   async checkMultipleAccountsFromIP(ip: string): Promise<boolean> {
     const records = this.registrationsByIp.get(ip) ?? [];
     const cutoff = Date.now() - MULTI_ACCOUNT_WINDOW_MS;
-    const recent = records.filter(r => r.createdAt.getTime() >= cutoff);
+    const recent = records.filter((r) => r.createdAt.getTime() >= cutoff);
     const flagged = recent.length >= MULTI_ACCOUNT_THRESHOLD;
     if (flagged) {
       this.logger.warn(`Fraud: multiple accounts (${recent.length}) from IP ${ip} within 24h`);
@@ -77,7 +77,7 @@ export class FraudDetectionService {
   async checkRepeatedPaymentFailures(userId: string): Promise<boolean> {
     const records = this.paymentFailures.get(userId) ?? [];
     const cutoff = Date.now() - PAYMENT_FAILURE_WINDOW_MS;
-    const recent = records.filter(r => r.failedAt.getTime() >= cutoff);
+    const recent = records.filter((r) => r.failedAt.getTime() >= cutoff);
     const flagged = recent.length >= PAYMENT_FAILURE_THRESHOLD;
     if (flagged) {
       this.logger.warn(`Fraud: repeated payment failures (${recent.length}) for user ${userId}`);
@@ -102,17 +102,15 @@ export class FraudDetectionService {
   async checkUnusualBookingPatterns(userId: string): Promise<boolean> {
     const records = this.bookingRecords.get(userId) ?? [];
     const cutoff = Date.now() - UNUSUAL_BOOKING_WINDOW_MS;
-    const recent = records.filter(r => r.createdAt.getTime() >= cutoff);
-    const highValue = recent.filter(r => r.amount >= UNUSUAL_BOOKING_VALUE_THRESHOLD);
+    const recent = records.filter((r) => r.createdAt.getTime() >= cutoff);
+    const highValue = recent.filter((r) => r.amount >= UNUSUAL_BOOKING_VALUE_THRESHOLD);
 
-    const flagged =
-      recent.length >= UNUSUAL_BOOKING_COUNT_THRESHOLD ||
-      highValue.length >= 3;
+    const flagged = recent.length >= UNUSUAL_BOOKING_COUNT_THRESHOLD || highValue.length >= 3;
 
     if (flagged) {
       this.logger.warn(
         `Fraud: unusual booking pattern for user ${userId}: ` +
-        `${recent.length} bookings in 1h, ${highValue.length} high-value`,
+          `${recent.length} bookings in 1h, ${highValue.length} high-value`
       );
     }
     return flagged;
@@ -135,7 +133,7 @@ export class FraudDetectionService {
   async checkGuideCancellations(guideId: string): Promise<boolean> {
     const records = this.cancellationRecords.get(guideId) ?? [];
     const cutoff = Date.now() - GUIDE_CANCELLATION_WINDOW_MS;
-    const recent = records.filter(r => r.cancelledAt.getTime() >= cutoff);
+    const recent = records.filter((r) => r.cancelledAt.getTime() >= cutoff);
     const flagged = recent.length >= GUIDE_CANCELLATION_THRESHOLD;
     if (flagged) {
       this.logger.warn(`Fraud: guide ${guideId} has ${recent.length} cancellations in 7 days`);
@@ -149,7 +147,7 @@ export class FraudDetectionService {
    */
   recordDeviceFingerprint(userId: string, fingerprint: string): void {
     const records = this.deviceFingerprints.get(userId) ?? [];
-    const existing = records.find(r => r.fingerprint === fingerprint);
+    const existing = records.find((r) => r.fingerprint === fingerprint);
     if (existing) {
       existing.lastSeen = new Date();
     } else {
@@ -165,10 +163,10 @@ export class FraudDetectionService {
    */
   checkDeviceFingerprint(fingerprint: string, currentUserId: string): boolean {
     for (const [userId, records] of this.deviceFingerprints.entries()) {
-      if (userId !== currentUserId && records.some(r => r.fingerprint === fingerprint)) {
+      if (userId !== currentUserId && records.some((r) => r.fingerprint === fingerprint)) {
         this.logger.warn(
           `Fraud: device fingerprint ${fingerprint} used by user ${currentUserId} ` +
-          `was previously seen on user ${userId}`,
+            `was previously seen on user ${userId}`
         );
         return true;
       }

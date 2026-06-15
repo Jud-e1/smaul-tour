@@ -39,7 +39,7 @@ export class MonitoringService {
 
     if (responseTimeMs > API_ALERT_THRESHOLD_MS) {
       this.logger.warn(
-        `[ALERT] Slow API response: ${endpoint} took ${responseTimeMs}ms (threshold: ${API_ALERT_THRESHOLD_MS}ms)`,
+        `[ALERT] Slow API response: ${endpoint} took ${responseTimeMs}ms (threshold: ${API_ALERT_THRESHOLD_MS}ms)`
       );
     }
 
@@ -63,7 +63,7 @@ export class MonitoringService {
 
     if (durationMs > DB_ALERT_THRESHOLD_MS) {
       this.logger.error(
-        `[ALERT] DB query exceeded ${DB_ALERT_THRESHOLD_MS}ms threshold: ${durationMs}ms — ${query.substring(0, 200)}`,
+        `[ALERT] DB query exceeded ${DB_ALERT_THRESHOLD_MS}ms threshold: ${durationMs}ms — ${query.substring(0, 200)}`
       );
     }
 

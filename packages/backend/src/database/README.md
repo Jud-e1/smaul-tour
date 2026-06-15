@@ -43,6 +43,7 @@ The database health service provides:
 2. **Database-specific check**: `GET /health/db` - Detailed database health information
 
 Health check response includes:
+
 - Connection status
 - Response time
 - Active connections count
@@ -140,7 +141,7 @@ import { User } from './database/entities';
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    private readonly userRepository: Repository<User>
   ) {}
 
   async findById(id: string): Promise<User> {
@@ -157,9 +158,7 @@ import { DatabaseHealthService } from './database/database-health.service';
 
 @Injectable()
 export class MyService {
-  constructor(
-    private readonly dbHealth: DatabaseHealthService,
-  ) {}
+  constructor(private readonly dbHealth: DatabaseHealthService) {}
 
   async checkConnection() {
     const health = await this.dbHealth.checkHealth();
@@ -199,6 +198,7 @@ The migration automatically enables required PostgreSQL extensions:
 ## Indexes
 
 All tables include appropriate indexes for:
+
 - Primary keys
 - Foreign keys
 - Frequently queried columns

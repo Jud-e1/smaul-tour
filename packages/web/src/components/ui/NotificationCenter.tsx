@@ -49,8 +49,12 @@ export default function NotificationCenter() {
 
   const markAllRead = async () => {
     const unread = notifications.filter((n: Notification) => n.status !== 'read');
-    await Promise.all(unread.map((n: Notification) => notificationsApi.markRead(n.id).catch(() => {})));
-    setNotifications((prev: Notification[]) => prev.map((n: Notification) => ({ ...n, status: 'read' })));
+    await Promise.all(
+      unread.map((n: Notification) => notificationsApi.markRead(n.id).catch(() => {}))
+    );
+    setNotifications((prev: Notification[]) =>
+      prev.map((n: Notification) => ({ ...n, status: 'read' }))
+    );
   };
 
   if (!user) return null;
@@ -125,10 +129,7 @@ export default function NotificationCenter() {
           </div>
 
           <div className="p-2 border-t border-gray-100 text-center">
-            <a
-              href="/settings/notifications"
-              className="text-xs text-gray-500 hover:text-gray-700"
-            >
+            <a href="/settings/notifications" className="text-xs text-gray-500 hover:text-gray-700">
               Notification preferences
             </a>
           </div>

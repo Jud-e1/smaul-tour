@@ -57,11 +57,7 @@ describe('EmbeddingService', () => {
 
       expect(mockedAxios.post).toHaveBeenCalledTimes(1);
       expect(result).toEqual(embedding);
-      expect(mockCacheManager.set).toHaveBeenCalledWith(
-        expect.any(String),
-        embedding,
-        3600,
-      );
+      expect(mockCacheManager.set).toHaveBeenCalledWith(expect.any(String), embedding, 3600);
     });
   });
 
@@ -78,9 +74,7 @@ describe('EmbeddingService', () => {
     it('should return cached values without calling API when all cached', async () => {
       const emb1 = [0.1, 0.2];
       const emb2 = [0.3, 0.4];
-      mockCacheManager.get
-        .mockResolvedValueOnce(emb1)
-        .mockResolvedValueOnce(emb2);
+      mockCacheManager.get.mockResolvedValueOnce(emb1).mockResolvedValueOnce(emb2);
 
       const result = await service.generateBatchEmbeddings(['text1', 'text2']);
 
@@ -92,9 +86,7 @@ describe('EmbeddingService', () => {
       const cachedEmb = [0.1, 0.2];
       const uncachedEmb = [0.3, 0.4];
       // First text cached, second not
-      mockCacheManager.get
-        .mockResolvedValueOnce(cachedEmb)
-        .mockResolvedValueOnce(null);
+      mockCacheManager.get.mockResolvedValueOnce(cachedEmb).mockResolvedValueOnce(null);
       mockedAxios.post.mockResolvedValue({
         data: { data: [{ embedding: uncachedEmb, index: 0 }] },
       });

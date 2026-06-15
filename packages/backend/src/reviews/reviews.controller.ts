@@ -11,13 +11,7 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-  ApiQuery,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { ReviewsService } from './reviews.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -80,7 +74,7 @@ export class ExperienceReviewsController {
   async getExperienceReviews(
     @Param('id') id: string,
     @Query('page') page = '1',
-    @Query('pageSize') pageSize = '10',
+    @Query('pageSize') pageSize = '10'
   ) {
     return this.reviewsService.getExperienceReviews(id, parseInt(page, 10), parseInt(pageSize, 10));
   }

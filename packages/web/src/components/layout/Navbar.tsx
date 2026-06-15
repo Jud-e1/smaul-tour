@@ -15,9 +15,11 @@ export default function Navbar() {
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   const dashboardHref =
-    user?.role === 'guide' ? '/dashboard/guide' :
-    user?.role === 'admin' ? '/admin' :
-    '/dashboard/traveler';
+    user?.role === 'guide'
+      ? '/dashboard/guide'
+      : user?.role === 'admin'
+        ? '/admin'
+        : '/dashboard/traveler';
 
   // Close user menu on outside click
   useEffect(() => {
@@ -32,7 +34,9 @@ export default function Navbar() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    router.push(search.trim() ? `/experiences?q=${encodeURIComponent(search.trim())}` : '/experiences');
+    router.push(
+      search.trim() ? `/experiences?q=${encodeURIComponent(search.trim())}` : '/experiences'
+    );
     setSearch('');
   };
 
@@ -40,13 +44,14 @@ export default function Navbar() {
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-20 gap-4">
-
           {/* Logo */}
           <Link href="/" className="flex items-center gap-1.5 shrink-0">
             <svg className="w-8 h-8 text-[#FF385C]" viewBox="0 0 32 32" fill="currentColor">
               <path d="M16 1C10.477 1 6 5.477 6 11c0 7.5 10 20 10 20s10-12.5 10-20c0-5.523-4.477-10-10-10zm0 13.5a3.5 3.5 0 110-7 3.5 3.5 0 010 7z" />
             </svg>
-            <span className="font-bold text-[#FF385C] text-xl tracking-tight hidden sm:inline">tourlocal</span>
+            <span className="font-bold text-[#FF385C] text-xl tracking-tight hidden sm:inline">
+              tourlocal
+            </span>
           </Link>
 
           {/* Center search pill — desktop */}
@@ -65,8 +70,18 @@ export default function Navbar() {
               type="submit"
               className="w-8 h-8 bg-[#FF385C] rounded-full flex items-center justify-center shrink-0 hover:bg-[#E31C5F] transition-colors"
             >
-              <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <svg
+                className="w-3.5 h-3.5 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2.5}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
               </svg>
             </button>
           </form>
@@ -88,8 +103,18 @@ export default function Navbar() {
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
                     className="flex items-center gap-2 border border-gray-300 rounded-full px-3 py-2 hover:shadow-md transition-shadow"
                   >
-                    <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    <svg
+                      className="w-4 h-4 text-gray-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 6h16M4 12h16M4 18h16"
+                      />
                     </svg>
                     <div className="w-7 h-7 bg-gray-800 rounded-full flex items-center justify-center text-white text-xs font-semibold">
                       {user.email?.[0]?.toUpperCase() ?? 'U'}
@@ -118,7 +143,10 @@ export default function Navbar() {
                       </Link>
                       <div className="border-t border-gray-100 mt-1">
                         <button
-                          onClick={() => { logout(); setUserMenuOpen(false); }}
+                          onClick={() => {
+                            logout();
+                            setUserMenuOpen(false);
+                          }}
                           className="block w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
                         >
                           Sign out
@@ -152,8 +180,12 @@ export default function Navbar() {
               aria-label="Toggle menu"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d={menuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'} />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d={menuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'}
+                />
               </svg>
             </button>
           </div>
@@ -171,21 +203,62 @@ export default function Navbar() {
               placeholder="Search experiences..."
               className="flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm outline-none"
             />
-            <button type="submit" className="bg-[#FF385C] text-white px-4 py-2 rounded-full text-sm font-medium">
+            <button
+              type="submit"
+              className="bg-[#FF385C] text-white px-4 py-2 rounded-full text-sm font-medium"
+            >
               Go
             </button>
           </form>
-          <Link href="/experiences" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-medium text-gray-700">Experiences</Link>
-          <Link href="/trip-planner" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-medium text-gray-700">Trip Planner</Link>
+          <Link
+            href="/experiences"
+            onClick={() => setMenuOpen(false)}
+            className="block py-2 text-sm font-medium text-gray-700"
+          >
+            Experiences
+          </Link>
+          <Link
+            href="/trip-planner"
+            onClick={() => setMenuOpen(false)}
+            className="block py-2 text-sm font-medium text-gray-700"
+          >
+            Trip Planner
+          </Link>
           {user ? (
             <>
-              <Link href={dashboardHref} onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-medium text-gray-700">Dashboard</Link>
-              <button onClick={() => { logout(); setMenuOpen(false); }} className="block w-full text-left py-2 text-sm font-medium text-gray-500">Sign out</button>
+              <Link
+                href={dashboardHref}
+                onClick={() => setMenuOpen(false)}
+                className="block py-2 text-sm font-medium text-gray-700"
+              >
+                Dashboard
+              </Link>
+              <button
+                onClick={() => {
+                  logout();
+                  setMenuOpen(false);
+                }}
+                className="block w-full text-left py-2 text-sm font-medium text-gray-500"
+              >
+                Sign out
+              </button>
             </>
           ) : (
             <>
-              <Link href="/login" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-medium text-gray-700">Sign in</Link>
-              <Link href="/register" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-semibold text-[#FF385C]">Sign up</Link>
+              <Link
+                href="/login"
+                onClick={() => setMenuOpen(false)}
+                className="block py-2 text-sm font-medium text-gray-700"
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/register"
+                onClick={() => setMenuOpen(false)}
+                className="block py-2 text-sm font-semibold text-[#FF385C]"
+              >
+                Sign up
+              </Link>
             </>
           )}
         </div>

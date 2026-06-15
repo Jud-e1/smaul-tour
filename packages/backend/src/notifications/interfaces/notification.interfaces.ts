@@ -49,17 +49,15 @@ export interface INotificationPreferences {
 }
 
 export interface INotificationService {
-  sendNotification(
-    notification: Omit<INotification, 'id' | 'createdAt'>,
-  ): Promise<INotification>;
+  sendNotification(notification: Omit<INotification, 'id' | 'createdAt'>): Promise<INotification>;
   getUserNotifications(
     userId: string,
-    filters?: { unreadOnly?: boolean },
+    filters?: { unreadOnly?: boolean }
   ): Promise<INotification[]>;
   markAsRead(notificationId: string): Promise<void>;
   updatePreferences(
     userId: string,
-    preferences: Partial<INotificationPreferences>,
+    preferences: Partial<INotificationPreferences>
   ): Promise<INotificationPreferences>;
   getPreferences(userId: string): Promise<INotificationPreferences>;
 }

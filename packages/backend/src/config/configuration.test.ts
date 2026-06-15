@@ -1,7 +1,5 @@
 import { ConfigurationParser } from './configuration';
 import { Configuration } from './configuration.schema';
-import * as fs from 'fs';
-import * as path from 'path';
 
 describe('ConfigurationParser', () => {
   let parser: ConfigurationParser;
@@ -482,7 +480,9 @@ database:
         server: { port: -1 },
       };
 
-      expect(() => parser.merge(baseConfig, invalidOverrides)).toThrow(/Configuration validation failed/);
+      expect(() => parser.merge(baseConfig, invalidOverrides)).toThrow(
+        /Configuration validation failed/
+      );
     });
 
     it('should handle partial overrides for nested objects', () => {

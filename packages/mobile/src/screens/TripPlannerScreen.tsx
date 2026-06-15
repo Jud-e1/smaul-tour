@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity, StyleSheet,
-  ScrollView, ActivityIndicator, Alert,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { tripPlannerApi } from '../lib/api';
 
@@ -64,7 +70,9 @@ export default function TripPlannerScreen() {
   return (
     <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
       <Text style={styles.title}>AI Trip Planner</Text>
-      <Text style={styles.subtitle}>Describe your ideal trip and we&apos;ll create a personalized itinerary.</Text>
+      <Text style={styles.subtitle}>
+        Describe your ideal trip and we&apos;ll create a personalized itinerary.
+      </Text>
 
       <TextInput
         style={styles.textArea}
@@ -112,13 +120,16 @@ export default function TripPlannerScreen() {
                 {exp.suggestedDate && (
                   <Text style={styles.expMeta}>
                     {new Date(exp.suggestedDate).toLocaleDateString('en-US', {
-                      weekday: 'short', month: 'short', day: 'numeric',
+                      weekday: 'short',
+                      month: 'short',
+                      day: 'numeric',
                     })}
                   </Text>
                 )}
                 {exp.experience && (
                   <Text style={styles.expMeta}>
-                    {exp.experience.duration}h · {exp.experience.price.currency} {exp.experience.price.amount}
+                    {exp.experience.duration}h · {exp.experience.price.currency}{' '}
+                    {exp.experience.price.amount}
                   </Text>
                 )}
                 <Text style={styles.expReasoning}>{exp.reasoning}</Text>
@@ -161,11 +172,21 @@ const styles = StyleSheet.create({
   title: { fontSize: 24, fontWeight: '700', color: '#111827', marginBottom: 8 },
   subtitle: { fontSize: 14, color: '#6B7280', marginBottom: 20 },
   textArea: {
-    borderWidth: 1, borderColor: '#D1D5DB', borderRadius: 10, padding: 14,
-    fontSize: 15, backgroundColor: '#fff', minHeight: 100, marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    borderRadius: 10,
+    padding: 14,
+    fontSize: 15,
+    backgroundColor: '#fff',
+    minHeight: 100,
+    marginBottom: 12,
   },
   primaryBtn: {
-    backgroundColor: '#2563EB', borderRadius: 10, padding: 14, alignItems: 'center', marginBottom: 16,
+    backgroundColor: '#2563EB',
+    borderRadius: 10,
+    padding: 14,
+    alignItems: 'center',
+    marginBottom: 16,
   },
   primaryBtnText: { color: '#fff', fontSize: 15, fontWeight: '600' },
   loadingBox: { alignItems: 'center', padding: 32 },
@@ -174,10 +195,22 @@ const styles = StyleSheet.create({
   costBox: { backgroundColor: '#EFF6FF', borderRadius: 8, padding: 12, marginBottom: 16 },
   costLabel: { fontSize: 12, color: '#3B82F6', fontWeight: '500' },
   costValue: { fontSize: 22, fontWeight: '700', color: '#1E40AF', marginTop: 2 },
-  expItem: { flexDirection: 'row', gap: 12, marginBottom: 16, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: '#F3F4F6' },
+  expItem: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 16,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
   expNumber: {
-    width: 32, height: 32, borderRadius: 16, backgroundColor: '#2563EB',
-    alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#2563EB',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
   },
   expNumberText: { color: '#fff', fontWeight: '700', fontSize: 14 },
   expContent: { flex: 1 },
@@ -187,7 +220,12 @@ const styles = StyleSheet.create({
   modifySection: { marginTop: 8, paddingTop: 16, borderTopWidth: 1, borderTopColor: '#E5E7EB' },
   modifyLabel: { fontSize: 14, fontWeight: '600', color: '#374151', marginBottom: 8 },
   modifyInput: {
-    borderWidth: 1, borderColor: '#D1D5DB', borderRadius: 8, padding: 12,
-    fontSize: 14, backgroundColor: '#F9FAFB', minHeight: 60,
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 14,
+    backgroundColor: '#F9FAFB',
+    minHeight: 60,
   },
 });

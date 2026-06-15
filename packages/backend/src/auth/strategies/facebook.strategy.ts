@@ -20,7 +20,7 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
     _accessToken: string,
     _refreshToken: string,
     profile: Profile,
-    done: (err: any, user?: any) => void,
+    done: (err: any, user?: any) => void
   ): void {
     const email = profile.emails?.[0]?.value;
     const firstName = profile.name?.givenName;

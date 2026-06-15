@@ -1,19 +1,5 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  UseGuards,
-  ParseUUIDPipe,
-} from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-  ApiParam,
-} from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Param, UseGuards, ParseUUIDPipe } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PaymentsService } from './payments.service';
 import { CurrencyService } from './currency.service';
@@ -26,7 +12,7 @@ import { PaymentRequest, RefundRequest } from './interfaces/payment.interfaces';
 export class PaymentsController {
   constructor(
     private readonly paymentsService: PaymentsService,
-    private readonly currencyService: CurrencyService,
+    private readonly currencyService: CurrencyService
   ) {}
 
   @Get('currencies')
@@ -97,7 +83,7 @@ export class PaymentsController {
   @ApiResponse({ status: 404, description: 'Payment not found' })
   refundPayment(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() body: Omit<RefundRequest, 'paymentId'>,
+    @Body() body: Omit<RefundRequest, 'paymentId'>
   ) {
     return this.paymentsService.refundPayment({ paymentId: id, ...body });
   }

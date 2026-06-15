@@ -26,7 +26,11 @@ export interface ReviewListResult {
 
 export interface IReviewService {
   createReview(travelerId: string, dto: CreateReviewDto): Promise<ReviewDto>;
-  getExperienceReviews(experienceId: string, page: number, pageSize: number): Promise<ReviewListResult>;
+  getExperienceReviews(
+    experienceId: string,
+    page: number,
+    pageSize: number
+  ): Promise<ReviewListResult>;
   getGuideReviews(guideId: string): Promise<ReviewDto[]>;
   flagReview(reviewId: string, userId: string): Promise<void>;
   removeReview(reviewId: string, adminId: string): Promise<void>;

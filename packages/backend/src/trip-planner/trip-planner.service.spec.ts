@@ -57,7 +57,7 @@ const makeExperience = (overrides: Partial<Experience> = {}): Experience =>
     createdAt: new Date(),
     updatedAt: new Date(),
     ...overrides,
-  } as unknown as Experience);
+  }) as unknown as Experience;
 
 describe('TripPlannerService', () => {
   let service: TripPlannerService;
@@ -100,7 +100,9 @@ describe('TripPlannerService', () => {
         timestamp: new Date(),
       });
 
-      expect(mockLlmParserService.parseTripRequest).toHaveBeenCalledWith('3-day food trip in Tokyo');
+      expect(mockLlmParserService.parseTripRequest).toHaveBeenCalledWith(
+        '3-day food trip in Tokyo'
+      );
       expect(result).toEqual(params);
     });
 
@@ -162,7 +164,7 @@ describe('TripPlannerService', () => {
       };
       mockItineraryRepo.create.mockReturnValue(savedEntity);
       mockItineraryRepo.save.mockResolvedValue(savedEntity);
-      mockItineraryExpRepo.create.mockImplementation(v => v);
+      mockItineraryExpRepo.create.mockImplementation((v) => v);
       mockItineraryExpRepo.save.mockResolvedValue([]);
 
       const result = await service.generateItinerary('user-1', params);
@@ -194,13 +196,13 @@ describe('TripPlannerService', () => {
       };
       mockItineraryRepo.create.mockReturnValue(savedEntity);
       mockItineraryRepo.save.mockResolvedValue(savedEntity);
-      mockItineraryExpRepo.create.mockImplementation(v => v);
+      mockItineraryExpRepo.create.mockImplementation((v) => v);
       mockItineraryExpRepo.save.mockResolvedValue([]);
 
       const result = await service.generateItinerary('user-1', params);
 
       // exp-2 at $300 should be excluded (budget max is $200)
-      const expIds = result.experiences.map(e => e.experienceId);
+      const expIds = result.experiences.map((e) => e.experienceId);
       expect(expIds).not.toContain('exp-2');
     });
 
@@ -225,7 +227,7 @@ describe('TripPlannerService', () => {
       };
       mockItineraryRepo.create.mockReturnValue(savedEntity);
       mockItineraryRepo.save.mockResolvedValue(savedEntity);
-      mockItineraryExpRepo.create.mockImplementation(v => v);
+      mockItineraryExpRepo.create.mockImplementation((v) => v);
       mockItineraryExpRepo.save.mockResolvedValue([]);
 
       const result = await service.generateItinerary('user-1', params);
@@ -234,7 +236,9 @@ describe('TripPlannerService', () => {
     });
 
     it('should fall back to DB search when vector search fails', async () => {
-      mockVectorSearchService.semanticSearchExperiences.mockRejectedValue(new Error('Vector DB unavailable'));
+      mockVectorSearchService.semanticSearchExperiences.mockRejectedValue(
+        new Error('Vector DB unavailable')
+      );
 
       const experiences = [
         makeExperience({ id: 'exp-1', priceAmount: 50 }),
@@ -254,7 +258,7 @@ describe('TripPlannerService', () => {
       };
       mockItineraryRepo.create.mockReturnValue(savedEntity);
       mockItineraryRepo.save.mockResolvedValue(savedEntity);
-      mockItineraryExpRepo.create.mockImplementation(v => v);
+      mockItineraryExpRepo.create.mockImplementation((v) => v);
       mockItineraryExpRepo.save.mockResolvedValue([]);
 
       const result = await service.generateItinerary('user-1', params);
@@ -271,7 +275,7 @@ describe('TripPlannerService', () => {
       mockItineraryRepo.findOne.mockResolvedValue(null);
 
       await expect(
-        service.modifyItinerary('nonexistent', 'user-1', 'add more outdoor activities'),
+        service.modifyItinerary('nonexistent', 'user-1', 'add more outdoor activities')
       ).rejects.toThrow(NotFoundException);
     });
 
@@ -312,7 +316,7 @@ describe('TripPlannerService', () => {
       mockExperienceRepo.createQueryBuilder.mockReturnValue(qb);
 
       mockItineraryRepo.save.mockResolvedValue(existingEntity);
-      mockItineraryExpRepo.create.mockImplementation(v => v);
+      mockItineraryExpRepo.create.mockImplementation((v) => v);
       mockItineraryExpRepo.save.mockResolvedValue([]);
 
       const result = await service.modifyItinerary('itin-1', 'user-1', 'add hiking');
@@ -378,7 +382,13 @@ describe('TripPlannerService', () => {
         totalCostAmount: 100,
         totalCostCurrency: 'USD',
         experiences: [
-          { experienceId: 'exp-1', relevanceScore: 0.9, suggestedDate: null, reasoning: 'Great match', position: 1 },
+          {
+            experienceId: 'exp-1',
+            relevanceScore: 0.9,
+            suggestedDate: null,
+            reasoning: 'Great match',
+            position: 1,
+          },
         ],
       };
       mockItineraryRepo.findOne.mockResolvedValue(entity);
@@ -393,7 +403,9 @@ describe('TripPlannerService', () => {
     it('should throw NotFoundException when itinerary not found', async () => {
       mockItineraryRepo.findOne.mockResolvedValue(null);
 
-      await expect(service.getItinerary('nonexistent', 'user-1')).rejects.toThrow(NotFoundException);
+      await expect(service.getItinerary('nonexistent', 'user-1')).rejects.toThrow(
+        NotFoundException
+      );
     });
 
     it('should throw NotFoundException when itinerary belongs to different user', async () => {
@@ -409,7 +421,7 @@ describe('TripPlannerService', () => {
     it('should sort experiences by proximity when location is provided', async () => {
       // Tokyo area experiences at different distances
       const experiences = [
-        makeExperience({ id: 'exp-far', locationLat: 35.7, locationLng: 140.5 }),   // farther
+        makeExperience({ id: 'exp-far', locationLat: 35.7, locationLng: 140.5 }), // farther
         makeExperience({ id: 'exp-near', locationLat: 35.68, locationLng: 139.65 }), // closer to first
         makeExperience({ id: 'exp-mid', locationLat: 35.69, locationLng: 139.7 }),
       ];
@@ -435,7 +447,7 @@ describe('TripPlannerService', () => {
       };
       mockItineraryRepo.create.mockReturnValue(savedEntity);
       mockItineraryRepo.save.mockResolvedValue(savedEntity);
-      mockItineraryExpRepo.create.mockImplementation(v => v);
+      mockItineraryExpRepo.create.mockImplementation((v) => v);
       mockItineraryExpRepo.save.mockResolvedValue([]);
 
       const result = await service.generateItinerary('user-1', paramsWithLocation);

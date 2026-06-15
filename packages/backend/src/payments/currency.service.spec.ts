@@ -51,9 +51,7 @@ describe('CurrencyService', () => {
 
     it('includes major currencies', () => {
       const currencies = service.getSupportedCurrencies();
-      ['USD', 'EUR', 'GBP', 'JPY', 'AUD', 'CAD'].forEach(c =>
-        expect(currencies).toContain(c),
-      );
+      ['USD', 'EUR', 'GBP', 'JPY', 'AUD', 'CAD'].forEach((c) => expect(currencies).toContain(c));
     });
   });
 
@@ -74,11 +72,15 @@ describe('CurrencyService', () => {
     });
 
     it('throws for unsupported from-currency', async () => {
-      await expect(service.getExchangeRate('XYZ', 'USD')).rejects.toThrow('Unsupported currency: XYZ');
+      await expect(service.getExchangeRate('XYZ', 'USD')).rejects.toThrow(
+        'Unsupported currency: XYZ'
+      );
     });
 
     it('throws for unsupported to-currency', async () => {
-      await expect(service.getExchangeRate('USD', 'XYZ')).rejects.toThrow('Unsupported currency: XYZ');
+      await expect(service.getExchangeRate('USD', 'XYZ')).rejects.toThrow(
+        'Unsupported currency: XYZ'
+      );
     });
   });
 

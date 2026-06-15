@@ -64,10 +64,7 @@ export default function VerifyEmailPage() {
             <p className="text-gray-500 text-sm mt-2">
               Your account is now active. Redirecting to login...
             </p>
-            <Link
-              href="/login"
-              className="mt-4 inline-block text-blue-600 hover:underline text-sm"
-            >
+            <Link href="/login" className="mt-4 inline-block text-blue-600 hover:underline text-sm">
               Go to login
             </Link>
           </>
@@ -118,10 +115,7 @@ export default function VerifyEmailPage() {
             <p className="text-gray-500 text-sm mt-2">
               No verification token found. Check your email for the correct link.
             </p>
-            <Link
-              href="/login"
-              className="mt-4 inline-block text-blue-600 hover:underline text-sm"
-            >
+            <Link href="/login" className="mt-4 inline-block text-blue-600 hover:underline text-sm">
               Back to login
             </Link>
           </>

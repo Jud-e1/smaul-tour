@@ -25,24 +25,34 @@ describe('ImageStorageService', () => {
 
   describe('validateFile', () => {
     it('should not throw for valid JPEG file under 10MB', () => {
-      expect(() => service.validateFile(makeFile({ mimetype: 'image/jpeg', size: 1024 }))).not.toThrow();
+      expect(() =>
+        service.validateFile(makeFile({ mimetype: 'image/jpeg', size: 1024 }))
+      ).not.toThrow();
     });
 
     it('should not throw for valid PNG file under 10MB', () => {
-      expect(() => service.validateFile(makeFile({ mimetype: 'image/png', size: 1024 }))).not.toThrow();
+      expect(() =>
+        service.validateFile(makeFile({ mimetype: 'image/png', size: 1024 }))
+      ).not.toThrow();
     });
 
     it('should not throw for valid WebP file under 10MB', () => {
-      expect(() => service.validateFile(makeFile({ mimetype: 'image/webp', size: 1024 }))).not.toThrow();
+      expect(() =>
+        service.validateFile(makeFile({ mimetype: 'image/webp', size: 1024 }))
+      ).not.toThrow();
     });
 
     it('should throw BadRequestException for invalid mimetype', () => {
-      expect(() => service.validateFile(makeFile({ mimetype: 'image/gif' }))).toThrow(BadRequestException);
+      expect(() => service.validateFile(makeFile({ mimetype: 'image/gif' }))).toThrow(
+        BadRequestException
+      );
     });
 
     it('should throw BadRequestException for file exceeding 10MB', () => {
       const oversized = 10 * 1024 * 1024 + 1;
-      expect(() => service.validateFile(makeFile({ size: oversized }))).toThrow(BadRequestException);
+      expect(() => service.validateFile(makeFile({ size: oversized }))).toThrow(
+        BadRequestException
+      );
     });
   });
 

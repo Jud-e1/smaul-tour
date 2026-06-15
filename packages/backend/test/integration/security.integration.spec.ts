@@ -79,7 +79,7 @@ describe('Security Integration Tests', () => {
     });
 
     it('applies stricter limits to unauthenticated requests', () => {
-      const getLimit = (authenticated: boolean) => authenticated ? 1000 : 100;
+      const getLimit = (authenticated: boolean) => (authenticated ? 1000 : 100);
       expect(getLimit(true)).toBe(1000);
       expect(getLimit(false)).toBe(100);
     });
@@ -114,7 +114,8 @@ describe('Security Integration Tests', () => {
     });
 
     it('validates price is positive number', () => {
-      const isValidPrice = (price: number) => typeof price === 'number' && price > 0 && isFinite(price);
+      const isValidPrice = (price: number) =>
+        typeof price === 'number' && price > 0 && isFinite(price);
       expect(isValidPrice(50)).toBe(true);
       expect(isValidPrice(-10)).toBe(false);
       expect(isValidPrice(0)).toBe(false);

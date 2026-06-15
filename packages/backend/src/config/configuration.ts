@@ -93,7 +93,9 @@ export class ConfigurationParser {
       },
       jwt: {
         secret: process.env.JWT_SECRET,
-        expiresIn: process.env.JWT_EXPIRES_IN ? parseInt(process.env.JWT_EXPIRES_IN, 10) : undefined,
+        expiresIn: process.env.JWT_EXPIRES_IN
+          ? parseInt(process.env.JWT_EXPIRES_IN, 10)
+          : undefined,
         refreshSecret: process.env.JWT_REFRESH_SECRET,
         refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN
           ? parseInt(process.env.JWT_REFRESH_EXPIRES_IN, 10)

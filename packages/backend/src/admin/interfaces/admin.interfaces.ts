@@ -58,6 +58,10 @@ export interface IAdminService {
   rejectExperience(experienceId: string, adminId: string, reason: string): Promise<void>;
   issueRefund(paymentId: string, adminId: string, reason: string): Promise<void>;
   getMetrics(startDate: Date, endDate: Date): Promise<PlatformMetrics>;
-  getAuditLogs(filters?: { adminId?: string; startDate?: Date; endDate?: Date }): Promise<AuditLogDto[]>;
+  getAuditLogs(filters?: {
+    adminId?: string;
+    startDate?: Date;
+    endDate?: Date;
+  }): Promise<AuditLogDto[]>;
   updateTrustBadges(): Promise<void>;
 }

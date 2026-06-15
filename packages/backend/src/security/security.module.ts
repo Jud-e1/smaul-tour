@@ -7,10 +7,7 @@ import { RateLimitGuard } from './rate-limit.guard';
 import { FraudDetectionService } from './fraud-detection.service';
 
 @Module({
-  imports: [
-    ConfigModule,
-    TypeOrmModule.forFeature([User, UserProfile]),
-  ],
+  imports: [ConfigModule, TypeOrmModule.forFeature([User, UserProfile])],
   providers: [RateLimitGuard, FraudDetectionService],
   exports: [RateLimitGuard, FraudDetectionService],
 })

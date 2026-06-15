@@ -333,9 +333,13 @@ export default function AdminPage() {
                         <div className="flex items-start justify-between gap-4">
                           <div>
                             <div className="font-medium text-gray-800">{r.experienceTitle}</div>
-                            <div className="text-sm text-gray-500">by {r.authorName} · {r.rating}/5</div>
+                            <div className="text-sm text-gray-500">
+                              by {r.authorName} · {r.rating}/5
+                            </div>
                             <div className="text-sm text-gray-700 mt-1">{r.comment}</div>
-                            <div className="text-xs text-red-600 mt-1">Flag reason: {r.flagReason}</div>
+                            <div className="text-xs text-red-600 mt-1">
+                              Flag reason: {r.flagReason}
+                            </div>
                           </div>
                           <button
                             onClick={() => removeReview(r.id)}
@@ -365,7 +369,9 @@ export default function AdminPage() {
                       <div key={u.id} className="p-4 flex items-center justify-between gap-4">
                         <div>
                           <div className="font-medium text-gray-800">{u.email}</div>
-                          <div className="text-sm text-gray-500 capitalize">{u.role} · {u.status}</div>
+                          <div className="text-sm text-gray-500 capitalize">
+                            {u.role} · {u.status}
+                          </div>
                         </div>
                         <div className="flex items-center gap-2">
                           {u.status === 'suspended' ? (
@@ -425,16 +431,24 @@ export default function AdminPage() {
                       { label: 'Experiences', value: metrics.totalExperiences },
                       { label: 'Bookings', value: metrics.totalBookings },
                       { label: 'Revenue', value: `$${metrics.totalRevenue?.toLocaleString()}` },
-                      { label: 'Avg Booking Value', value: `$${metrics.averageBookingValue?.toFixed(2)}` },
+                      {
+                        label: 'Avg Booking Value',
+                        value: `$${metrics.averageBookingValue?.toFixed(2)}`,
+                      },
                     ].map((m) => (
-                      <div key={m.label} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                      <div
+                        key={m.label}
+                        className="bg-white rounded-lg shadow-sm border border-gray-200 p-4"
+                      >
                         <div className="text-sm text-gray-500">{m.label}</div>
                         <div className="text-2xl font-bold text-gray-900 mt-1">{m.value}</div>
                       </div>
                     ))}
                   </>
                 ) : (
-                  <div className="col-span-4 text-center py-12 text-gray-500">No metrics available</div>
+                  <div className="col-span-4 text-center py-12 text-gray-500">
+                    No metrics available
+                  </div>
                 )}
               </div>
             )}

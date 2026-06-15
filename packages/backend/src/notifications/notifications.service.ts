@@ -1,7 +1,10 @@
 import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Notification, NotificationStatus as EntityStatus } from '../database/entities/notification.entity';
+import {
+  Notification,
+  NotificationStatus as EntityStatus,
+} from '../database/entities/notification.entity';
 import {
   INotification,
   INotificationPreferences,
@@ -31,7 +34,7 @@ export class NotificationsService implements INotificationService {
     private readonly emailService: EmailService,
     private readonly pushService: PushService,
     private readonly templateService: NotificationTemplateService,
-    private readonly queueService: NotificationQueueService,
+    private readonly queueService: NotificationQueueService
   ) {}
 
   /**
@@ -39,7 +42,7 @@ export class NotificationsService implements INotificationService {
    * Persists the notification and dispatches via email/push/in-app.
    */
   async sendNotification(
-    notification: Omit<INotification, 'id' | 'createdAt'>,
+    notification: Omit<INotification, 'id' | 'createdAt'>
   ): Promise<INotification> {
     // Render content from template
     const rendered = this.templateService.render({
@@ -69,11 +72,13 @@ export class NotificationsService implements INotificationService {
     const allowedChannels = this.filterChannelsByPreferences(
       notification.channels,
       notification.type,
-      prefs,
+      prefs
     );
 
     if (allowedChannels.length === 0) {
-      this.logger.debug(`All channels disabled by preferences for user ${notification.userId}, type ${notification.type}`);
+      this.logger.debug(
+        `All channels disabled by preferences for user ${notification.userId}, type ${notification.type}`
+      );
       saved.status = EntityStatus.SENT;
       saved.sentAt = new Date();
       await this.notificationRepository.save(saved);
@@ -108,9 +113,11 @@ export class NotificationsService implements INotificationService {
    */
   async processQueuedNotification(
     queued: QueuedNotification,
-    entity?: Notification,
+    entity?: Notification
   ): Promise<void> {
-    const notifEntity = entity ?? await this.notificationRepository.findOne({ where: { id: queued.notificationId } });
+    const notifEntity =
+      entity ??
+      (await this.notificationRepository.findOne({ where: { id: queued.notificationId } }));
     if (!notifEntity) return;
 
     let success = true;
@@ -131,7 +138,7 @@ export class NotificationsService implements INotificationService {
       // Schedule retry with exponential backoff
       const backoffMs = this.queueService.calculateBackoffMs(queued.attempt);
       this.logger.warn(
-        `Notification ${queued.notificationId} failed on attempt ${queued.attempt}. Retrying in ${backoffMs}ms`,
+        `Notification ${queued.notificationId} failed on attempt ${queued.attempt}. Retrying in ${backoffMs}ms`
       );
       const retryQueued: QueuedNotification = {
         ...queued,
@@ -141,19 +148,28 @@ export class NotificationsService implements INotificationService {
       await this.queueService.enqueue(retryQueued);
 
       // eslint-disable-next-line @typescript-eslint/no-implied-eval
-      (globalThis as typeof globalThis & { setTimeout: (fn: () => void, ms: number) => void }).setTimeout(() => {
-        this.processQueuedNotification(retryQueued).catch(err =>
-          this.logger.error(`Retry failed for notification ${queued.notificationId}: ${(err as Error).message}`),
+      (
+        globalThis as typeof globalThis & { setTimeout: (fn: () => void, ms: number) => void }
+      ).setTimeout(() => {
+        this.processQueuedNotification(retryQueued).catch((err) =>
+          this.logger.error(
+            `Retry failed for notification ${queued.notificationId}: ${(err as Error).message}`
+          )
         );
       }, backoffMs);
     } else {
       notifEntity.status = EntityStatus.FAILED;
       await this.notificationRepository.save(notifEntity);
-      this.logger.error(`Notification ${queued.notificationId} failed after ${queued.maxAttempts} attempts`);
+      this.logger.error(
+        `Notification ${queued.notificationId} failed after ${queued.maxAttempts} attempts`
+      );
     }
   }
 
-  private async dispatchChannel(channel: NotificationChannel, queued: QueuedNotification): Promise<boolean> {
+  private async dispatchChannel(
+    channel: NotificationChannel,
+    queued: QueuedNotification
+  ): Promise<boolean> {
     try {
       switch (channel) {
         case 'email':
@@ -204,7 +220,7 @@ export class NotificationsService implements INotificationService {
 
   async getUserNotifications(
     userId: string,
-    filters?: { unreadOnly?: boolean },
+    filters?: { unreadOnly?: boolean }
   ): Promise<INotification[]> {
     const query = this.notificationRepository
       .createQueryBuilder('n')
@@ -235,7 +251,7 @@ export class NotificationsService implements INotificationService {
 
   async updatePreferences(
     userId: string,
-    preferences: Partial<INotificationPreferences>,
+    preferences: Partial<INotificationPreferences>
   ): Promise<INotificationPreferences> {
     const existing = await this.getPreferences(userId);
     const updated: INotificationPreferences = {
@@ -281,9 +297,9 @@ export class NotificationsService implements INotificationService {
   filterChannelsByPreferences(
     channels: NotificationChannel[],
     type: NotificationType,
-    prefs: INotificationPreferences,
+    prefs: INotificationPreferences
   ): NotificationChannel[] {
-    return channels.filter(channel => {
+    return channels.filter((channel) => {
       if (channel === 'in_app') {
         return prefs.inApp.all;
       }
@@ -299,22 +315,33 @@ export class NotificationsService implements INotificationService {
 
   private isEmailEnabled(type: NotificationType, prefs: INotificationPreferences): boolean {
     switch (type) {
-      case 'booking_confirmed': return prefs.email.bookingConfirmed;
-      case 'booking_cancelled': return prefs.email.bookingCancelled;
-      case 'payment_received': return prefs.email.paymentReceived;
-      case 'itinerary_generated': return prefs.email.itineraryGenerated;
-      case 'review_received': return prefs.email.reviewReceived;
-      default: return true;
+      case 'booking_confirmed':
+        return prefs.email.bookingConfirmed;
+      case 'booking_cancelled':
+        return prefs.email.bookingCancelled;
+      case 'payment_received':
+        return prefs.email.paymentReceived;
+      case 'itinerary_generated':
+        return prefs.email.itineraryGenerated;
+      case 'review_received':
+        return prefs.email.reviewReceived;
+      default:
+        return true;
     }
   }
 
   private isPushEnabled(type: NotificationType, prefs: INotificationPreferences): boolean {
     switch (type) {
-      case 'booking_confirmed': return prefs.push.bookingConfirmed;
-      case 'booking_cancelled': return prefs.push.bookingCancelled;
-      case 'payment_received': return prefs.push.paymentReceived;
-      case 'new_booking': return prefs.push.newBooking;
-      default: return true;
+      case 'booking_confirmed':
+        return prefs.push.bookingConfirmed;
+      case 'booking_cancelled':
+        return prefs.push.bookingCancelled;
+      case 'payment_received':
+        return prefs.push.paymentReceived;
+      case 'new_booking':
+        return prefs.push.newBooking;
+      default:
+        return true;
     }
   }
 

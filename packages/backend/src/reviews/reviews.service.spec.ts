@@ -97,10 +97,7 @@ function makeExperienceRepo(overrides: Record<string, jest.Mock> = {}) {
  * Builds a transaction mock that executes the callback with a manager
  * pre-configured to return the given avg/count from the query builder.
  */
-function makeTransactionMock(
-  review: Review,
-  avgResult: { avg: string | null; count: string },
-) {
+function makeTransactionMock(review: Review, avgResult: { avg: string | null; count: string }) {
   return jest.fn().mockImplementation(async (cb: (m: any) => Promise<Review>) => {
     const qbMock = {
       select: jest.fn().mockReturnThis(),
@@ -173,7 +170,7 @@ describe('ReviewsService', () => {
       bookingRepo.findOne.mockResolvedValue(null);
 
       await expect(
-        service.createReview('traveler-1', { bookingId: 'missing', rating: 4 }),
+        service.createReview('traveler-1', { bookingId: 'missing', rating: 4 })
       ).rejects.toThrow(NotFoundException);
     });
 
@@ -181,7 +178,7 @@ describe('ReviewsService', () => {
       bookingRepo.findOne.mockResolvedValue(makeBooking({ travelerId: 'other-traveler' }));
 
       await expect(
-        service.createReview('traveler-1', { bookingId: 'booking-1', rating: 4 }),
+        service.createReview('traveler-1', { bookingId: 'booking-1', rating: 4 })
       ).rejects.toThrow(ForbiddenException);
     });
 
@@ -189,7 +186,7 @@ describe('ReviewsService', () => {
       bookingRepo.findOne.mockResolvedValue(makeBooking({ status: BookingStatus.CONFIRMED }));
 
       await expect(
-        service.createReview('traveler-1', { bookingId: 'booking-1', rating: 4 }),
+        service.createReview('traveler-1', { bookingId: 'booking-1', rating: 4 })
       ).rejects.toThrow(BadRequestException);
     });
 
@@ -199,7 +196,7 @@ describe('ReviewsService', () => {
       bookingRepo.findOne.mockResolvedValue(makeBooking({ completedAt: oldCompletedAt }));
 
       await expect(
-        service.createReview('traveler-1', { bookingId: 'booking-1', rating: 4 }),
+        service.createReview('traveler-1', { bookingId: 'booking-1', rating: 4 })
       ).rejects.toThrow(BadRequestException);
     });
 
@@ -210,7 +207,7 @@ describe('ReviewsService', () => {
       reviewRepo.findOne.mockResolvedValue(makeReview()); // existing review
 
       await expect(
-        service.createReview('traveler-1', { bookingId: 'booking-1', rating: 3 }),
+        service.createReview('traveler-1', { bookingId: 'booking-1', rating: 3 })
       ).rejects.toThrow(ConflictException);
     });
 
@@ -327,7 +324,7 @@ describe('ReviewsService', () => {
         });
 
         expect(result.rating).toBe(rating);
-      },
+      }
     );
 
     it('should map review rating to DTO without modification', () => {
@@ -403,7 +400,7 @@ describe('ReviewsService', () => {
 
       expect(experienceRepo.update).toHaveBeenCalledWith(
         'exp-1',
-        expect.objectContaining({ averageRating: 0, reviewCount: 0 }),
+        expect.objectContaining({ averageRating: 0, reviewCount: 0 })
       );
     });
 
@@ -426,7 +423,7 @@ describe('ReviewsService', () => {
 
       expect(experienceRepo.update).toHaveBeenCalledWith(
         'exp-1',
-        expect.objectContaining({ averageRating: 3.5, reviewCount: 2 }),
+        expect.objectContaining({ averageRating: 3.5, reviewCount: 2 })
       );
     });
 
@@ -484,7 +481,7 @@ describe('ReviewsService', () => {
 
         expect(storedAvg).toBe(expectedAvg);
         expect(storedCount).toBe(expectedCount);
-      },
+      }
     );
 
     it('should not recalculate average when a flagged (non-published) review is removed', async () => {
@@ -513,7 +510,7 @@ describe('ReviewsService', () => {
       reviewRepo.findOne.mockResolvedValue(makeReview()); // existing review
 
       await expect(
-        service.createReview('traveler-1', { bookingId: 'booking-1', rating: 4 }),
+        service.createReview('traveler-1', { bookingId: 'booking-1', rating: 4 })
       ).rejects.toThrow(ConflictException);
     });
 
@@ -522,11 +519,11 @@ describe('ReviewsService', () => {
       reviewRepo.findOne.mockResolvedValue(makeReview());
 
       await expect(
-        service.createReview('traveler-1', { bookingId: 'booking-1', rating: 5 }),
+        service.createReview('traveler-1', { bookingId: 'booking-1', rating: 5 })
       ).rejects.toThrow(ConflictException);
 
       expect(reviewRepo.findOne).toHaveBeenCalledWith(
-        expect.objectContaining({ where: { bookingId: 'booking-1' } }),
+        expect.objectContaining({ where: { bookingId: 'booking-1' } })
       );
     });
 
@@ -551,7 +548,7 @@ describe('ReviewsService', () => {
       reviewRepo.findOne.mockResolvedValue(makeReview());
 
       await expect(
-        service.createReview('traveler-1', { bookingId: 'booking-1', rating: 2 }),
+        service.createReview('traveler-1', { bookingId: 'booking-1', rating: 2 })
       ).rejects.toThrow('already submitted a review');
     });
   });
@@ -575,7 +572,7 @@ describe('ReviewsService', () => {
           order: { createdAt: 'DESC' },
           skip: 0,
           take: 10,
-        }),
+        })
       );
     });
 
@@ -584,7 +581,7 @@ describe('ReviewsService', () => {
       await service.getExperienceReviews('exp-1', 3, 5);
 
       expect(reviewRepo.findAndCount).toHaveBeenCalledWith(
-        expect.objectContaining({ skip: 10, take: 5 }),
+        expect.objectContaining({ skip: 10, take: 5 })
       );
     });
   });
@@ -603,7 +600,7 @@ describe('ReviewsService', () => {
         expect.objectContaining({
           where: { guideId: 'guide-1', status: ReviewStatus.PUBLISHED },
           order: { createdAt: 'DESC' },
-        }),
+        })
       );
     });
   });
@@ -619,7 +616,7 @@ describe('ReviewsService', () => {
       await service.flagReview('review-1', 'user-1');
 
       expect(reviewRepo.save).toHaveBeenCalledWith(
-        expect.objectContaining({ status: ReviewStatus.FLAGGED }),
+        expect.objectContaining({ status: ReviewStatus.FLAGGED })
       );
     });
 
@@ -657,11 +654,11 @@ describe('ReviewsService', () => {
       await service.removeReview('review-1', 'admin-1');
 
       expect(reviewRepo.save).toHaveBeenCalledWith(
-        expect.objectContaining({ status: ReviewStatus.REMOVED }),
+        expect.objectContaining({ status: ReviewStatus.REMOVED })
       );
       expect(experienceRepo.update).toHaveBeenCalledWith(
         'exp-1',
-        expect.objectContaining({ averageRating: 4.0, reviewCount: 2 }),
+        expect.objectContaining({ averageRating: 4.0, reviewCount: 2 })
       );
     });
 

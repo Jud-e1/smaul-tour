@@ -142,7 +142,11 @@ describe('AuthService', () => {
       const savedUser = makeUser({ email: registerDto.email, id: 'new-uuid' });
       mockUserRepository.create.mockReturnValue(savedUser);
       mockUserRepository.save.mockResolvedValue(savedUser);
-      const savedProfile = makeProfile({ userId: 'new-uuid', firstName: 'Jane', lastName: 'Smith' });
+      const savedProfile = makeProfile({
+        userId: 'new-uuid',
+        firstName: 'Jane',
+        lastName: 'Smith',
+      });
       mockUserProfileRepository.create.mockReturnValue(savedProfile);
       mockUserProfileRepository.save.mockResolvedValue(savedProfile);
 
@@ -292,7 +296,9 @@ describe('AuthService', () => {
 
   describe('generateTokens', () => {
     it('should generate access and refresh tokens', async () => {
-      mockJwtService.signAsync.mockResolvedValueOnce('access-token').mockResolvedValueOnce('refresh-token');
+      mockJwtService.signAsync
+        .mockResolvedValueOnce('access-token')
+        .mockResolvedValueOnce('refresh-token');
       const user = makeUser();
 
       const result = await service.generateTokens(user);
@@ -390,7 +396,10 @@ describe('AuthService', () => {
       mockJwtService.signAsync.mockResolvedValue('token');
       mockUserRepository.save.mockResolvedValue(user);
 
-      const result = await service.login({ email: 'test@example.com', password: 'correctPassword' } as any);
+      const result = await service.login({
+        email: 'test@example.com',
+        password: 'correctPassword',
+      } as any);
 
       expect(result.user).toBeDefined();
     });
@@ -426,7 +435,8 @@ describe('AuthService', () => {
       await service.requestPasswordReset(user.email);
 
       // Grab the token from the internal store (access via any cast)
-      const store: Map<string, { userId: string; expiresAt: Date }> = (service as any).resetTokenStore;
+      const store: Map<string, { userId: string; expiresAt: Date }> = (service as any)
+        .resetTokenStore;
       const token = [...store.keys()][0];
 
       mockUserRepository.findOne.mockResolvedValue(user); // for changePassword
@@ -436,18 +446,19 @@ describe('AuthService', () => {
 
     it('should throw BadRequestException for invalid token', async () => {
       await expect(service.changePassword('invalid-token', 'NewPassword123!')).rejects.toThrow(
-        BadRequestException,
+        BadRequestException
       );
     });
 
     it('should throw BadRequestException for expired token', async () => {
       const user = makeUser();
       // Manually insert an expired token
-      const store: Map<string, { userId: string; expiresAt: Date }> = (service as any).resetTokenStore;
+      const store: Map<string, { userId: string; expiresAt: Date }> = (service as any)
+        .resetTokenStore;
       store.set('expired-token', { userId: user.id, expiresAt: new Date(Date.now() - 1000) });
 
       await expect(service.changePassword('expired-token', 'NewPassword123!')).rejects.toThrow(
-        BadRequestException,
+        BadRequestException
       );
     });
   });

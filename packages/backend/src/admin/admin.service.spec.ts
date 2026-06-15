@@ -4,12 +4,15 @@ import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { AdminService } from './admin.service';
 import { User, UserRole } from '../database/entities/user.entity';
-import { UserProfile, GuideVerificationStatus } from '../database/entities/user-profile.entity';
+import { UserProfile } from '../database/entities/user-profile.entity';
 import { Experience, ExperienceStatus } from '../database/entities/experience.entity';
-import { Booking, BookingStatus } from '../database/entities/booking.entity';
+import { Booking } from '../database/entities/booking.entity';
 import { Payment, PaymentStatus, PaymentMethod } from '../database/entities/payment.entity';
-import { Review, ReviewStatus } from '../database/entities/review.entity';
-import { VerificationRequest, VerificationStatus } from '../database/entities/verification-request.entity';
+import { Review } from '../database/entities/review.entity';
+import {
+  VerificationRequest,
+  VerificationStatus,
+} from '../database/entities/verification-request.entity';
 import { VerificationDocument } from '../database/entities/verification-document.entity';
 import { AuditLog } from '../database/entities/audit-log.entity';
 
@@ -54,7 +57,9 @@ function makeUser(overrides: Partial<User> = {}): User {
   } as unknown as User;
 }
 
-function makeVerificationRequest(overrides: Partial<VerificationRequest> = {}): VerificationRequest {
+function makeVerificationRequest(
+  overrides: Partial<VerificationRequest> = {}
+): VerificationRequest {
   return {
     id: 'vr-1',
     guideId: 'guide-1',
@@ -181,7 +186,7 @@ describe('AdminService - approveVerification', () => {
     const request = makeVerificationRequest();
     verificationRepo.findOne.mockResolvedValue(request);
     dataSource.transaction.mockImplementation((cb: (m: any) => Promise<void>) =>
-      cb({ update: jest.fn().mockResolvedValue({}) }),
+      cb({ update: jest.fn().mockResolvedValue({}) })
     );
 
     await service.approveVerification('vr-1', 'admin-1');
@@ -193,20 +198,24 @@ describe('AdminService - approveVerification', () => {
         action: 'approve_verification',
         resourceType: 'verification_request',
         resourceId: 'vr-1',
-      }),
+      })
     );
     expect(auditLogRepo.save).toHaveBeenCalled();
   });
 
   it('throws NotFoundException when request does not exist', async () => {
     verificationRepo.findOne.mockResolvedValue(null);
-    await expect(service.approveVerification('nonexistent', 'admin-1')).rejects.toThrow(NotFoundException);
+    await expect(service.approveVerification('nonexistent', 'admin-1')).rejects.toThrow(
+      NotFoundException
+    );
   });
 
   it('throws BadRequestException when request is already approved', async () => {
     const request = makeVerificationRequest({ status: VerificationStatus.APPROVED });
     verificationRepo.findOne.mockResolvedValue(request);
-    await expect(service.approveVerification('vr-1', 'admin-1')).rejects.toThrow(BadRequestException);
+    await expect(service.approveVerification('vr-1', 'admin-1')).rejects.toThrow(
+      BadRequestException
+    );
   });
 });
 
@@ -231,7 +240,7 @@ describe('AdminService - rejectVerification', () => {
     const request = makeVerificationRequest();
     verificationRepo.findOne.mockResolvedValue(request);
     dataSource.transaction.mockImplementation((cb: (m: any) => Promise<void>) =>
-      cb({ update: jest.fn().mockResolvedValue({}) }),
+      cb({ update: jest.fn().mockResolvedValue({}) })
     );
 
     await service.rejectVerification('vr-1', 'admin-1', 'Documents unclear');
@@ -241,13 +250,15 @@ describe('AdminService - rejectVerification', () => {
       expect.objectContaining({
         action: 'reject_verification',
         changes: expect.objectContaining({ reason: 'Documents unclear' }),
-      }),
+      })
     );
   });
 
   it('throws NotFoundException when request does not exist', async () => {
     verificationRepo.findOne.mockResolvedValue(null);
-    await expect(service.rejectVerification('nonexistent', 'admin-1', 'reason')).rejects.toThrow(NotFoundException);
+    await expect(service.rejectVerification('nonexistent', 'admin-1', 'reason')).rejects.toThrow(
+      NotFoundException
+    );
   });
 });
 
@@ -281,19 +292,23 @@ describe('AdminService - suspendUser', () => {
         resourceType: 'user',
         resourceId: 'user-1',
         changes: expect.objectContaining({ reason: 'Violation of terms' }),
-      }),
+      })
     );
   });
 
   it('throws NotFoundException when user does not exist', async () => {
     userRepo.findOne.mockResolvedValue(null);
-    await expect(service.suspendUser('nonexistent', 'admin-1', 'reason')).rejects.toThrow(NotFoundException);
+    await expect(service.suspendUser('nonexistent', 'admin-1', 'reason')).rejects.toThrow(
+      NotFoundException
+    );
   });
 
   it('throws BadRequestException when user is already suspended', async () => {
     const user = makeUser({ locked: true });
     userRepo.findOne.mockResolvedValue(user);
-    await expect(service.suspendUser('user-1', 'admin-1', 'reason')).rejects.toThrow(BadRequestException);
+    await expect(service.suspendUser('user-1', 'admin-1', 'reason')).rejects.toThrow(
+      BadRequestException
+    );
   });
 });
 
@@ -343,10 +358,14 @@ describe('AdminService - getMetrics', () => {
     bookingRepo = module.get(getRepositoryToken(Booking));
   });
 
-  function setupMocks(bookingStats: { totalBookings: string; totalRevenue: string; avgBookingValue: string }) {
+  function setupMocks(bookingStats: {
+    totalBookings: string;
+    totalRevenue: string;
+    avgBookingValue: string;
+  }) {
     userRepo.count
       .mockResolvedValueOnce(100) // totalUsers
-      .mockResolvedValueOnce(20)  // totalGuides
+      .mockResolvedValueOnce(20) // totalGuides
       .mockResolvedValueOnce(80); // totalTravelers
     experienceRepo.count.mockResolvedValue(50);
 
@@ -437,10 +456,7 @@ describe('AdminService - getAuditLogs', () => {
 
     await service.getAuditLogs({ adminId: 'admin-1' });
 
-    expect(qbMock.andWhere).toHaveBeenCalledWith(
-      'al.adminId = :adminId',
-      { adminId: 'admin-1' },
-    );
+    expect(qbMock.andWhere).toHaveBeenCalledWith('al.adminId = :adminId', { adminId: 'admin-1' });
   });
 
   it('filters by date range when provided', async () => {
@@ -455,7 +471,9 @@ describe('AdminService - getAuditLogs', () => {
     const end = new Date('2024-12-31');
     await service.getAuditLogs({ startDate: start, endDate: end });
 
-    expect(qbMock.andWhere).toHaveBeenCalledWith('al.timestamp >= :startDate', { startDate: start });
+    expect(qbMock.andWhere).toHaveBeenCalledWith('al.timestamp >= :startDate', {
+      startDate: start,
+    });
     expect(qbMock.andWhere).toHaveBeenCalledWith('al.timestamp <= :endDate', { endDate: end });
   });
 });
@@ -484,26 +502,30 @@ describe('AdminService - issueRefund', () => {
 
     expect(paymentRepo.update).toHaveBeenCalledWith(
       'pay-1',
-      expect.objectContaining({ status: PaymentStatus.REFUNDED }),
+      expect.objectContaining({ status: PaymentStatus.REFUNDED })
     );
     expect(auditLogRepo.create).toHaveBeenCalledWith(
       expect.objectContaining({
         action: 'issue_refund',
         resourceType: 'payment',
         resourceId: 'pay-1',
-      }),
+      })
     );
   });
 
   it('throws NotFoundException when payment does not exist', async () => {
     paymentRepo.findOne.mockResolvedValue(null);
-    await expect(service.issueRefund('nonexistent', 'admin-1', 'reason')).rejects.toThrow(NotFoundException);
+    await expect(service.issueRefund('nonexistent', 'admin-1', 'reason')).rejects.toThrow(
+      NotFoundException
+    );
   });
 
   it('throws BadRequestException when payment is in pending state', async () => {
     const payment = makePayment({ status: PaymentStatus.PENDING });
     paymentRepo.findOne.mockResolvedValue(payment);
-    await expect(service.issueRefund('pay-1', 'admin-1', 'reason')).rejects.toThrow(BadRequestException);
+    await expect(service.issueRefund('pay-1', 'admin-1', 'reason')).rejects.toThrow(
+      BadRequestException
+    );
   });
 });
 
@@ -529,12 +551,16 @@ describe('AdminService - approveExperience', () => {
 
     await service.approveExperience('exp-1', 'admin-1');
 
-    expect(experienceRepo.update).toHaveBeenCalledWith('exp-1', { status: ExperienceStatus.ACTIVE });
+    expect(experienceRepo.update).toHaveBeenCalledWith('exp-1', {
+      status: ExperienceStatus.ACTIVE,
+    });
   });
 
   it('throws BadRequestException when experience is already active', async () => {
     const experience = makeExperience({ status: ExperienceStatus.ACTIVE });
     experienceRepo.findOne.mockResolvedValue(experience);
-    await expect(service.approveExperience('exp-1', 'admin-1')).rejects.toThrow(BadRequestException);
+    await expect(service.approveExperience('exp-1', 'admin-1')).rejects.toThrow(
+      BadRequestException
+    );
   });
 });

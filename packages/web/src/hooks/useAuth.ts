@@ -9,8 +9,18 @@ import { useAuthStore } from '@/store/auth';
  * Optionally redirects to login if not authenticated.
  */
 export function useAuth(requireAuth = false) {
-  const { user, isAuthenticated, isLoading, error, login, loginOAuth, register, logout, fetchMe, clearError } =
-    useAuthStore();
+  const {
+    user,
+    isAuthenticated,
+    isLoading,
+    error,
+    login,
+    loginOAuth,
+    register,
+    logout,
+    fetchMe,
+    clearError,
+  } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
@@ -25,5 +35,15 @@ export function useAuth(requireAuth = false) {
     }
   }, [requireAuth, isLoading, isAuthenticated, router]);
 
-  return { user, isAuthenticated, isLoading, error, login, loginOAuth, register, logout, clearError };
+  return {
+    user,
+    isAuthenticated,
+    isLoading,
+    error,
+    login,
+    loginOAuth,
+    register,
+    logout,
+    clearError,
+  };
 }

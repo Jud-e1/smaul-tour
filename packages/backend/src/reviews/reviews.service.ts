@@ -11,7 +11,12 @@ import { Repository, DataSource, EntityManager } from 'typeorm';
 import { Review, ReviewStatus } from '../database/entities/review.entity';
 import { Booking, BookingStatus } from '../database/entities/booking.entity';
 import { Experience } from '../database/entities/experience.entity';
-import { ReviewDto, CreateReviewDto, ReviewListResult, IReviewService } from './interfaces/review.interfaces';
+import {
+  ReviewDto,
+  CreateReviewDto,
+  ReviewListResult,
+  IReviewService,
+} from './interfaces/review.interfaces';
 
 /** Number of days after experience completion within which a review can be submitted */
 const REVIEW_WINDOW_DAYS = 30;
@@ -24,7 +29,7 @@ export class ReviewsService implements IReviewService {
     @InjectRepository(Review) private reviewRepo: Repository<Review>,
     @InjectRepository(Booking) private bookingRepo: Repository<Booking>,
     @InjectRepository(Experience) private experienceRepo: Repository<Experience>,
-    private dataSource: DataSource,
+    private dataSource: DataSource
   ) {}
 
   async createReview(travelerId: string, dto: CreateReviewDto): Promise<ReviewDto> {
@@ -48,7 +53,7 @@ export class ReviewsService implements IReviewService {
         (Date.now() - new Date(booking.completedAt).getTime()) / (1000 * 60 * 60 * 24);
       if (daysSinceCompletion > REVIEW_WINDOW_DAYS) {
         throw new BadRequestException(
-          `Reviews must be submitted within ${REVIEW_WINDOW_DAYS} days of experience completion`,
+          `Reviews must be submitted within ${REVIEW_WINDOW_DAYS} days of experience completion`
         );
       }
     }
@@ -73,13 +78,13 @@ export class ReviewsService implements IReviewService {
       const saved = await manager.save(Review, newReview);
 
       // Recalculate average rating for the experience
-      const rawResult = await manager
+      const rawResult = (await manager
         .createQueryBuilder(Review, 'r')
         .select('AVG(r.rating)', 'avg')
         .addSelect('COUNT(r.id)', 'count')
         .where('r.experienceId = :expId', { expId: booking.experienceId })
         .andWhere('r.status = :status', { status: ReviewStatus.PUBLISHED })
-        .getRawOne() as { avg: string; count: string } | undefined;
+        .getRawOne()) as { avg: string; count: string } | undefined;
       const { avg, count } = rawResult ?? { avg: '0', count: '0' };
 
       await manager.update(Experience, booking.experienceId, {
@@ -97,7 +102,7 @@ export class ReviewsService implements IReviewService {
   async getExperienceReviews(
     experienceId: string,
     page: number,
-    pageSize: number,
+    pageSize: number
   ): Promise<ReviewListResult> {
     const [reviews, total] = await this.reviewRepo.findAndCount({
       where: { experienceId, status: ReviewStatus.PUBLISHED },

@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity, StyleSheet,
-  ActivityIndicator, Alert, ScrollView, KeyboardAvoidingView, Platform,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/AppNavigator';
@@ -10,7 +18,7 @@ import { useAuthStore } from '../../store/auth';
 type Props = { navigation: StackNavigationProp<RootStackParamList, 'Login'> };
 
 export default function LoginScreen({ navigation }: Props) {
-  const { login, loginOAuth, isLoading, error, clearError } = useAuthStore();
+  const { login, isLoading, error, clearError } = useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -32,7 +40,10 @@ export default function LoginScreen({ navigation }: Props) {
   };
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
       <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
         <Text style={styles.title}>Welcome back</Text>
         <Text style={styles.subtitle}>Sign in to your account</Text>
@@ -47,7 +58,10 @@ export default function LoginScreen({ navigation }: Props) {
           style={styles.input}
           placeholder="Email address"
           value={email}
-          onChangeText={(t) => { setEmail(t); clearError(); }}
+          onChangeText={(t) => {
+            setEmail(t);
+            clearError();
+          }}
           keyboardType="email-address"
           autoCapitalize="none"
           autoComplete="email"
@@ -56,7 +70,10 @@ export default function LoginScreen({ navigation }: Props) {
           style={styles.input}
           placeholder="Password"
           value={password}
-          onChangeText={(t) => { setPassword(t); clearError(); }}
+          onChangeText={(t) => {
+            setPassword(t);
+            clearError();
+          }}
           secureTextEntry
           autoComplete="password"
         />
@@ -69,7 +86,11 @@ export default function LoginScreen({ navigation }: Props) {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.primaryBtn} onPress={handleLogin} disabled={isLoading}>
-          {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryBtnText}>Sign In</Text>}
+          {isLoading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.primaryBtnText}>Sign In</Text>
+          )}
         </TouchableOpacity>
 
         <View style={styles.divider}>
@@ -85,7 +106,10 @@ export default function LoginScreen({ navigation }: Props) {
           <Text style={styles.oauthBtnText}>Continue with Facebook</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Register')} style={styles.registerLink}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Register')}
+          style={styles.registerLink}
+        >
           <Text style={styles.registerText}>
             Don&apos;t have an account? <Text style={styles.linkText}>Sign up</Text>
           </Text>
@@ -102,22 +126,35 @@ const styles = StyleSheet.create({
   errorBox: { backgroundColor: '#FEE2E2', borderRadius: 8, padding: 12, marginBottom: 16 },
   errorText: { color: '#DC2626', fontSize: 14 },
   input: {
-    borderWidth: 1, borderColor: '#D1D5DB', borderRadius: 10, padding: 14,
-    fontSize: 16, marginBottom: 12, backgroundColor: '#F9FAFB',
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    borderRadius: 10,
+    padding: 14,
+    fontSize: 16,
+    marginBottom: 12,
+    backgroundColor: '#F9FAFB',
   },
   forgotLink: { alignSelf: 'flex-end', marginBottom: 20 },
   linkText: { color: '#2563EB', fontSize: 14, fontWeight: '500' },
   primaryBtn: {
-    backgroundColor: '#2563EB', borderRadius: 10, padding: 16,
-    alignItems: 'center', marginBottom: 16,
+    backgroundColor: '#2563EB',
+    borderRadius: 10,
+    padding: 16,
+    alignItems: 'center',
+    marginBottom: 16,
   },
   primaryBtnText: { color: '#fff', fontSize: 16, fontWeight: '600' },
   divider: { flexDirection: 'row', alignItems: 'center', marginVertical: 16 },
   dividerLine: { flex: 1, height: 1, backgroundColor: '#E5E7EB' },
   dividerText: { marginHorizontal: 12, color: '#9CA3AF', fontSize: 14 },
   oauthBtn: {
-    borderWidth: 1, borderColor: '#D1D5DB', borderRadius: 10, padding: 14,
-    alignItems: 'center', marginBottom: 12, backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    borderRadius: 10,
+    padding: 14,
+    alignItems: 'center',
+    marginBottom: 12,
+    backgroundColor: '#fff',
   },
   oauthBtnText: { fontSize: 15, color: '#374151', fontWeight: '500' },
   registerLink: { marginTop: 16, alignItems: 'center' },

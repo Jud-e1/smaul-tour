@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { VerificationRequest } from './verification-request.entity';
 
 @Entity('verification_documents')
@@ -18,7 +25,7 @@ export class VerificationDocument {
   @CreateDateColumn({ name: 'uploaded_at' })
   uploadedAt!: Date;
 
-  @ManyToOne(() => VerificationRequest, request => request.documents, { onDelete: 'CASCADE' })
+  @ManyToOne(() => VerificationRequest, (request) => request.documents, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'verification_request_id' })
   verificationRequest!: VerificationRequest;
 }

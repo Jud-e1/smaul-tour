@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToOne,
+  OneToMany,
+} from 'typeorm';
 import { UserProfile } from './user-profile.entity';
 import { Experience } from './experience.entity';
 import { Booking } from './booking.entity';
@@ -43,21 +51,21 @@ export class User {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt!: Date;
 
-  @OneToOne(() => UserProfile, profile => profile.user)
+  @OneToOne(() => UserProfile, (profile) => profile.user)
   profile!: UserProfile;
 
-  @OneToMany(() => Experience, experience => experience.guide)
+  @OneToMany(() => Experience, (experience) => experience.guide)
   experiences!: Experience[];
 
-  @OneToMany(() => Booking, booking => booking.traveler)
+  @OneToMany(() => Booking, (booking) => booking.traveler)
   bookingsAsTraveler!: Booking[];
 
-  @OneToMany(() => Booking, booking => booking.guide)
+  @OneToMany(() => Booking, (booking) => booking.guide)
   bookingsAsGuide!: Booking[];
 
-  @OneToMany(() => Review, review => review.traveler)
+  @OneToMany(() => Review, (review) => review.traveler)
   reviews!: Review[];
 
-  @OneToMany(() => Notification, notification => notification.user)
+  @OneToMany(() => Notification, (notification) => notification.user)
   notifications!: Notification[];
 }

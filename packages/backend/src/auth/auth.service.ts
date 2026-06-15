@@ -34,7 +34,7 @@ export class AuthService {
     @InjectRepository(UserProfile)
     private readonly userProfileRepository: Repository<UserProfile>,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService
   ) {}
 
   async getMe(userId: string): Promise<UserDto> {
@@ -113,7 +113,9 @@ export class AuthService {
       if (user.failedLoginAttempts >= MAX_FAILED_ATTEMPTS) {
         user.locked = true;
         user.lockoutUntil = new Date(Date.now() + LOCKOUT_DURATION_MS);
-        this.logger.warn(`Account locked for user ${user.email} after ${MAX_FAILED_ATTEMPTS} failed attempts`);
+        this.logger.warn(
+          `Account locked for user ${user.email} after ${MAX_FAILED_ATTEMPTS} failed attempts`
+        );
       }
 
       await this.userRepository.save(user);
@@ -171,24 +173,33 @@ export class AuthService {
   }
 
   async generateTokens(user: User): Promise<AuthToken> {
-    const secret = this.configService.get<string>('JWT_SECRET', 'default-secret-change-in-production');
-    const refreshSecret = this.configService.get<string>('JWT_REFRESH_SECRET', 'default-refresh-secret-change-in-production');
+    const secret = this.configService.get<string>(
+      'JWT_SECRET',
+      'default-secret-change-in-production'
+    );
+    const refreshSecret = this.configService.get<string>(
+      'JWT_REFRESH_SECRET',
+      'default-refresh-secret-change-in-production'
+    );
 
     const accessToken = await this.jwtService.signAsync(
       { sub: user.id, email: user.email, role: user.role },
-      { secret, expiresIn: '1h' },
+      { secret, expiresIn: '1h' }
     );
 
     const refreshToken = await this.jwtService.signAsync(
       { sub: user.id, type: 'refresh' },
-      { secret: refreshSecret, expiresIn: '30d' },
+      { secret: refreshSecret, expiresIn: '30d' }
     );
 
     return { accessToken, refreshToken, expiresIn: 3600, tokenType: 'Bearer' };
   }
 
   async refreshToken(refreshToken: string): Promise<AuthToken> {
-    const refreshSecret = this.configService.get<string>('JWT_REFRESH_SECRET', 'default-refresh-secret-change-in-production');
+    const refreshSecret = this.configService.get<string>(
+      'JWT_REFRESH_SECRET',
+      'default-refresh-secret-change-in-production'
+    );
 
     let payload: { sub: string; type: string };
     try {
@@ -201,7 +212,10 @@ export class AuthService {
       throw new UnauthorizedException('Invalid token type');
     }
 
-    const user = await this.userRepository.findOne({ where: { id: payload.sub }, relations: ['profile'] });
+    const user = await this.userRepository.findOne({
+      where: { id: payload.sub },
+      relations: ['profile'],
+    });
 
     if (!user || user.locked) {
       throw new UnauthorizedException('User not found or account is locked');

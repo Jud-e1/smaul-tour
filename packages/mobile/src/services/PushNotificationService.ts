@@ -62,10 +62,12 @@ export class PushNotificationService {
       this.deviceToken = token;
 
       // Register token with backend
-      await api.post(`/users/${userId}/device-tokens`, {
-        token,
-        platform: Platform.OS,
-      }).catch(() => {});
+      await api
+        .post(`/users/${userId}/device-tokens`, {
+          token,
+          platform: Platform.OS,
+        })
+        .catch(() => {});
 
       console.log('Push notification token registered:', token.substring(0, 20) + '...');
     } catch (err) {
@@ -87,21 +89,17 @@ export class PushNotificationService {
       const { notification, data } = remoteMessage;
       if (!notification) return;
 
-      Alert.alert(
-        notification.title || 'Notification',
-        notification.body || '',
-        [
-          { text: 'Dismiss', style: 'cancel' },
-          {
-            text: 'View',
-            onPress: () => {
-              if (data?.screen) {
-                onNavigate(data.screen, data as Record<string, string>);
-              }
-            },
+      Alert.alert(notification.title || 'Notification', notification.body || '', [
+        { text: 'Dismiss', style: 'cancel' },
+        {
+          text: 'View',
+          onPress: () => {
+            if (data?.screen) {
+              onNavigate(data.screen, data as Record<string, string>);
+            }
           },
-        ]
-      );
+        },
+      ]);
     });
   }
 

@@ -10,12 +10,7 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { TripPlannerService } from './trip-planner.service';
 import { ParseTripRequestDto } from './dto/parse-trip-request.dto';
 import { GenerateItineraryDto } from './dto/generate-itinerary.dto';
@@ -76,11 +71,7 @@ export class TripPlannerController {
   @ApiResponse({ status: 200, description: 'Itinerary modified successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 404, description: 'Itinerary not found' })
-  async modifyItinerary(
-    @Param('id') id: string,
-    @Req() req: any,
-    @Body() dto: ModifyItineraryDto,
-  ) {
+  async modifyItinerary(@Param('id') id: string, @Req() req: any, @Body() dto: ModifyItineraryDto) {
     return this.tripPlannerService.modifyItinerary(id, req.user.id, dto.modification);
   }
 }

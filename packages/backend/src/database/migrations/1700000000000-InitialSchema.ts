@@ -71,8 +71,12 @@ export class InitialSchema1700000000000 implements MigrationInterface {
 
     await queryRunner.query(`CREATE INDEX "idx_experiences_guide_id" ON "experiences"("guide_id")`);
     await queryRunner.query(`CREATE INDEX "idx_experiences_status" ON "experiences"("status")`);
-    await queryRunner.query(`CREATE INDEX "idx_experiences_category" ON "experiences" USING GIN("category")`);
-    await queryRunner.query(`CREATE INDEX "idx_experiences_location" ON "experiences" USING GIST(ll_to_earth("location_lat", "location_lng"))`);
+    await queryRunner.query(
+      `CREATE INDEX "idx_experiences_category" ON "experiences" USING GIN("category")`
+    );
+    await queryRunner.query(
+      `CREATE INDEX "idx_experiences_location" ON "experiences" USING GIST(ll_to_earth("location_lat", "location_lng"))`
+    );
 
     // Create images table
     await queryRunner.query(`
@@ -106,7 +110,9 @@ export class InitialSchema1700000000000 implements MigrationInterface {
       )
     `);
 
-    await queryRunner.query(`CREATE INDEX "idx_availability_experience_date" ON "availability_slots"("experience_id", "date")`);
+    await queryRunner.query(
+      `CREATE INDEX "idx_availability_experience_date" ON "availability_slots"("experience_id", "date")`
+    );
 
     // Create bookings table
     await queryRunner.query(`
@@ -135,7 +141,9 @@ export class InitialSchema1700000000000 implements MigrationInterface {
 
     await queryRunner.query(`CREATE INDEX "idx_bookings_traveler_id" ON "bookings"("traveler_id")`);
     await queryRunner.query(`CREATE INDEX "idx_bookings_guide_id" ON "bookings"("guide_id")`);
-    await queryRunner.query(`CREATE INDEX "idx_bookings_experience_id" ON "bookings"("experience_id")`);
+    await queryRunner.query(
+      `CREATE INDEX "idx_bookings_experience_id" ON "bookings"("experience_id")`
+    );
     await queryRunner.query(`CREATE INDEX "idx_bookings_status" ON "bookings"("status")`);
     await queryRunner.query(`CREATE INDEX "idx_bookings_date" ON "bookings"("date")`);
 
@@ -180,8 +188,12 @@ export class InitialSchema1700000000000 implements MigrationInterface {
       )
     `);
 
-    await queryRunner.query(`CREATE INDEX "idx_transaction_logs_payment_id" ON "transaction_logs"("payment_id")`);
-    await queryRunner.query(`CREATE INDEX "idx_transaction_logs_timestamp" ON "transaction_logs"("timestamp")`);
+    await queryRunner.query(
+      `CREATE INDEX "idx_transaction_logs_payment_id" ON "transaction_logs"("payment_id")`
+    );
+    await queryRunner.query(
+      `CREATE INDEX "idx_transaction_logs_timestamp" ON "transaction_logs"("timestamp")`
+    );
 
     // Create reviews table
     await queryRunner.query(`
@@ -199,7 +211,9 @@ export class InitialSchema1700000000000 implements MigrationInterface {
       )
     `);
 
-    await queryRunner.query(`CREATE INDEX "idx_reviews_experience_id" ON "reviews"("experience_id")`);
+    await queryRunner.query(
+      `CREATE INDEX "idx_reviews_experience_id" ON "reviews"("experience_id")`
+    );
     await queryRunner.query(`CREATE INDEX "idx_reviews_guide_id" ON "reviews"("guide_id")`);
     await queryRunner.query(`CREATE INDEX "idx_reviews_status" ON "reviews"("status")`);
 
@@ -230,7 +244,9 @@ export class InitialSchema1700000000000 implements MigrationInterface {
       )
     `);
 
-    await queryRunner.query(`CREATE INDEX "idx_itinerary_experiences_itinerary_id" ON "itinerary_experiences"("itinerary_id")`);
+    await queryRunner.query(
+      `CREATE INDEX "idx_itinerary_experiences_itinerary_id" ON "itinerary_experiences"("itinerary_id")`
+    );
 
     // Create notifications table
     await queryRunner.query(`
@@ -250,9 +266,13 @@ export class InitialSchema1700000000000 implements MigrationInterface {
       )
     `);
 
-    await queryRunner.query(`CREATE INDEX "idx_notifications_user_id" ON "notifications"("user_id")`);
+    await queryRunner.query(
+      `CREATE INDEX "idx_notifications_user_id" ON "notifications"("user_id")`
+    );
     await queryRunner.query(`CREATE INDEX "idx_notifications_status" ON "notifications"("status")`);
-    await queryRunner.query(`CREATE INDEX "idx_notifications_created_at" ON "notifications"("created_at" DESC)`);
+    await queryRunner.query(
+      `CREATE INDEX "idx_notifications_created_at" ON "notifications"("created_at" DESC)`
+    );
 
     // Create verification_requests table
     await queryRunner.query(`
@@ -267,8 +287,12 @@ export class InitialSchema1700000000000 implements MigrationInterface {
       )
     `);
 
-    await queryRunner.query(`CREATE INDEX "idx_verification_requests_guide_id" ON "verification_requests"("guide_id")`);
-    await queryRunner.query(`CREATE INDEX "idx_verification_requests_status" ON "verification_requests"("status")`);
+    await queryRunner.query(
+      `CREATE INDEX "idx_verification_requests_guide_id" ON "verification_requests"("guide_id")`
+    );
+    await queryRunner.query(
+      `CREATE INDEX "idx_verification_requests_status" ON "verification_requests"("status")`
+    );
 
     // Create verification_documents table
     await queryRunner.query(`
@@ -281,7 +305,9 @@ export class InitialSchema1700000000000 implements MigrationInterface {
       )
     `);
 
-    await queryRunner.query(`CREATE INDEX "idx_verification_documents_request_id" ON "verification_documents"("verification_request_id")`);
+    await queryRunner.query(
+      `CREATE INDEX "idx_verification_documents_request_id" ON "verification_documents"("verification_request_id")`
+    );
 
     // Create audit_logs table
     await queryRunner.query(`
@@ -297,8 +323,12 @@ export class InitialSchema1700000000000 implements MigrationInterface {
     `);
 
     await queryRunner.query(`CREATE INDEX "idx_audit_logs_admin_id" ON "audit_logs"("admin_id")`);
-    await queryRunner.query(`CREATE INDEX "idx_audit_logs_timestamp" ON "audit_logs"("timestamp" DESC)`);
-    await queryRunner.query(`CREATE INDEX "idx_audit_logs_resource" ON "audit_logs"("resource_type", "resource_id")`);
+    await queryRunner.query(
+      `CREATE INDEX "idx_audit_logs_timestamp" ON "audit_logs"("timestamp" DESC)`
+    );
+    await queryRunner.query(
+      `CREATE INDEX "idx_audit_logs_resource" ON "audit_logs"("resource_type", "resource_id")`
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
@@ -318,7 +348,7 @@ export class InitialSchema1700000000000 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE IF EXISTS "experiences" CASCADE`);
     await queryRunner.query(`DROP TABLE IF EXISTS "user_profiles" CASCADE`);
     await queryRunner.query(`DROP TABLE IF EXISTS "users" CASCADE`);
-    
+
     // Drop extensions
     await queryRunner.query(`DROP EXTENSION IF EXISTS "earthdistance"`);
     await queryRunner.query(`DROP EXTENSION IF EXISTS "cube"`);

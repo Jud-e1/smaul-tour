@@ -13,7 +13,10 @@ export class EmailService {
   private readonly provider: 'sendgrid' | 'ses' | 'none';
 
   constructor(private readonly configService: ConfigService) {
-    this.from = this.configService.get<string>('NOTIFICATION_EMAIL_FROM', 'noreply@tourism-marketplace.com');
+    this.from = this.configService.get<string>(
+      'NOTIFICATION_EMAIL_FROM',
+      'noreply@tourism-marketplace.com'
+    );
     const sendgridKey = this.configService.get<string>('SENDGRID_API_KEY');
     const sesRegion = this.configService.get<string>('AWS_SES_REGION');
 
@@ -35,7 +38,7 @@ export class EmailService {
         return await this.sendViaSES(options);
       } else {
         this.logger.log(
-          `[EMAIL MOCK] To: ${options.to} | Subject: ${options.subject} | Body: ${options.text.substring(0, 100)}...`,
+          `[EMAIL MOCK] To: ${options.to} | Subject: ${options.subject} | Body: ${options.text.substring(0, 100)}...`
         );
         return true;
       }
@@ -92,7 +95,7 @@ export class EmailService {
             ...(options.html ? { Html: { Data: options.html } } : {}),
           },
         },
-      }),
+      })
     );
 
     this.logger.log(`Email sent via AWS SES to ${options.to}`);

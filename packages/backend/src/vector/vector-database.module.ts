@@ -7,10 +7,7 @@ import { VectorSearchService } from './vector-search.service';
 import { RecommendationService } from './recommendation.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([]),
-    CacheModule.register({ ttl: 3600, max: 1000 }),
-  ],
+  imports: [TypeOrmModule.forFeature([]), CacheModule.register({ ttl: 3600, max: 1000 })],
   providers: [VectorDatabaseService, EmbeddingService, VectorSearchService, RecommendationService],
   exports: [VectorDatabaseService, EmbeddingService, VectorSearchService, RecommendationService],
 })

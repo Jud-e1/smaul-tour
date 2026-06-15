@@ -35,23 +35,57 @@ export default function AppNavigator() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerStyle: { backgroundColor: '#2563EB' }, headerTintColor: '#fff' }}>
+      <Stack.Navigator
+        screenOptions={{ headerStyle: { backgroundColor: '#2563EB' }, headerTintColor: '#fff' }}
+      >
         {!isAuthenticated ? (
           <>
             <Stack.Screen name="Login" component={LoginScreen} options={{ title: 'Sign In' }} />
-            <Stack.Screen name="Register" component={RegisterScreen} options={{ title: 'Create Account' }} />
-            <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} options={{ title: 'Reset Password' }} />
+            <Stack.Screen
+              name="Register"
+              component={RegisterScreen}
+              options={{ title: 'Create Account' }}
+            />
+            <Stack.Screen
+              name="ResetPassword"
+              component={ResetPasswordScreen}
+              options={{ title: 'Reset Password' }}
+            />
           </>
         ) : (
           <>
-            <Stack.Screen name="Experiences" component={ExperiencesScreen} options={{ title: 'Experiences' }} />
-            <Stack.Screen name="ExperienceDetail" component={ExperienceDetailScreen} options={{ title: 'Experience' }} />
-            <Stack.Screen name="TripPlanner" component={TripPlannerScreen} options={{ title: 'AI Trip Planner' }} />
-            <Stack.Screen name="Booking" component={BookingScreen} options={{ title: 'Book Experience' }} />
+            <Stack.Screen
+              name="Experiences"
+              component={ExperiencesScreen}
+              options={{ title: 'Experiences' }}
+            />
+            <Stack.Screen
+              name="ExperienceDetail"
+              component={ExperienceDetailScreen}
+              options={{ title: 'Experience' }}
+            />
+            <Stack.Screen
+              name="TripPlanner"
+              component={TripPlannerScreen}
+              options={{ title: 'AI Trip Planner' }}
+            />
+            <Stack.Screen
+              name="Booking"
+              component={BookingScreen}
+              options={{ title: 'Book Experience' }}
+            />
             {user?.role === 'guide' ? (
-              <Stack.Screen name="GuideDashboard" component={GuideDashboardScreen} options={{ title: 'My Dashboard' }} />
+              <Stack.Screen
+                name="GuideDashboard"
+                component={GuideDashboardScreen}
+                options={{ title: 'My Dashboard' }}
+              />
             ) : (
-              <Stack.Screen name="TravelerDashboard" component={TravelerDashboardScreen} options={{ title: 'My Dashboard' }} />
+              <Stack.Screen
+                name="TravelerDashboard"
+                component={TravelerDashboardScreen}
+                options={{ title: 'My Dashboard' }}
+              />
             )}
           </>
         )}

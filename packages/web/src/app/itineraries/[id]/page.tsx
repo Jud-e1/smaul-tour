@@ -99,7 +99,7 @@ export default function ItineraryPage() {
     if (!note.trim()) return;
     try {
       await tripPlannerApi.addNote(id, note);
-      setItinerary((prev) => prev ? { ...prev, notes: note } : prev);
+      setItinerary((prev) => (prev ? { ...prev, notes: note } : prev));
       setNoteSaved(true);
       setTimeout(() => setNoteSaved(false), 2000);
     } catch {
@@ -147,7 +147,10 @@ export default function ItineraryPage() {
           {itinerary.parameters.preferences?.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-2">
               {itinerary.parameters.preferences.map((p) => (
-                <span key={p} className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">
+                <span
+                  key={p}
+                  className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full"
+                >
                   {p}
                 </span>
               ))}
@@ -170,7 +173,9 @@ export default function ItineraryPage() {
                   {exp.suggestedDate && (
                     <div className="text-sm text-gray-500 mt-0.5">
                       {new Date(exp.suggestedDate).toLocaleDateString('en-US', {
-                        weekday: 'short', month: 'short', day: 'numeric',
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric',
                       })}
                     </div>
                   )}

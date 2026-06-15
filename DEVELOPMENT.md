@@ -5,17 +5,20 @@
 ### Initial Setup
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd ai-local-tourism-marketplace
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Set up environment variables**
+
    ```bash
    # Backend
    cd packages/backend
@@ -29,11 +32,13 @@
    ```
 
 4. **Start Docker services**
+
    ```bash
    docker-compose up -d
    ```
 
 5. **Run database migrations**
+
    ```bash
    npm run migrate --workspace=packages/backend
    ```
@@ -62,6 +67,7 @@ npm run <script> --workspaces
 ### Code Quality
 
 #### Linting
+
 ```bash
 # Lint all packages
 npm run lint
@@ -71,6 +77,7 @@ npm run lint --workspace=packages/backend
 ```
 
 #### Formatting
+
 ```bash
 # Format all code
 npm run format
@@ -80,6 +87,7 @@ npm run format:check
 ```
 
 #### Type Checking
+
 ```bash
 # TypeScript type checking is automatic during build
 npm run build
@@ -88,6 +96,7 @@ npm run build
 ### Testing
 
 #### Unit Tests
+
 ```bash
 # Run all tests
 npm test
@@ -103,11 +112,13 @@ npm run test:cov --workspace=packages/backend
 ```
 
 #### Integration Tests
+
 Integration tests should be placed in `test/` directories and use the `.integration.spec.ts` suffix.
 
 ### Database Management
 
 #### Migrations
+
 ```bash
 # Run migrations
 npm run migrate --workspace=packages/backend
@@ -120,6 +131,7 @@ npm run migrate:generate --workspace=packages/backend -- MigrationName
 ```
 
 #### Database Access
+
 - **Adminer UI**: http://localhost:8080
   - System: PostgreSQL
   - Server: postgres
@@ -164,17 +176,20 @@ llm.apiKey: String must contain at least 1 character(s)
 #### Creating New Endpoints
 
 1. **Create a module**
+
    ```bash
    cd packages/backend
    nest generate module features/my-feature
    ```
 
 2. **Create a controller**
+
    ```bash
    nest generate controller features/my-feature
    ```
 
 3. **Create a service**
+
    ```bash
    nest generate service features/my-feature
    ```
@@ -242,27 +257,32 @@ export default apiClient;
 ### Docker Development
 
 #### Start Services
+
 ```bash
 docker-compose up -d
 ```
 
 #### View Logs
+
 ```bash
 docker-compose logs -f [service-name]
 ```
 
 #### Stop Services
+
 ```bash
 docker-compose down
 ```
 
 #### Reset Databases
+
 ```bash
 docker-compose down -v
 docker-compose up -d
 ```
 
 #### Build Custom Images
+
 ```bash
 # Backend
 docker build -f packages/backend/Dockerfile -t tourism-backend .
@@ -351,11 +371,13 @@ See `.github/workflows/ci.yml` for CI/CD pipeline configuration.
 ### Manual Deployment
 
 1. **Build all packages**
+
    ```bash
    npm run build
    ```
 
 2. **Run production build**
+
    ```bash
    # Backend
    npm run start:prod --workspace=packages/backend

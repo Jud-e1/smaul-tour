@@ -24,7 +24,13 @@ interface AuthState {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   loginOAuth: (provider: string, accessToken: string) => Promise<void>;
-  register: (data: { email: string; password: string; role: 'traveler' | 'guide'; firstName: string; lastName: string }) => Promise<void>;
+  register: (data: {
+    email: string;
+    password: string;
+    role: 'traveler' | 'guide';
+    firstName: string;
+    lastName: string;
+  }) => Promise<void>;
   logout: () => Promise<void>;
   fetchMe: () => Promise<void>;
   clearError: () => void;
@@ -44,7 +50,9 @@ export const useAuthStore = create<AuthState>((set) => ({
       await Keychain.setGenericPassword('token', data.refreshToken, { service: 'refresh_token' });
       set({ user: data.user, isAuthenticated: true, isLoading: false });
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Login failed';
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        'Login failed';
       set({ error: msg, isLoading: false });
       throw err;
     }
@@ -58,7 +66,9 @@ export const useAuthStore = create<AuthState>((set) => ({
       await Keychain.setGenericPassword('token', data.refreshToken, { service: 'refresh_token' });
       set({ user: data.user, isAuthenticated: true, isLoading: false });
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'OAuth login failed';
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        'OAuth login failed';
       set({ error: msg, isLoading: false });
       throw err;
     }
@@ -72,7 +82,9 @@ export const useAuthStore = create<AuthState>((set) => ({
       await Keychain.setGenericPassword('token', res.refreshToken, { service: 'refresh_token' });
       set({ user: res.user, isAuthenticated: true, isLoading: false });
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Registration failed';
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        'Registration failed';
       set({ error: msg, isLoading: false });
       throw err;
     }

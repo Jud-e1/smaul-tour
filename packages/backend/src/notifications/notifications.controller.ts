@@ -27,7 +27,7 @@ export class NotificationsController {
   async getUserNotifications(
     @Request() req: { user: { id: string } },
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) _page: number,
-    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) _limit: number,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) _limit: number
   ) {
     return this.notificationsService.getUserNotifications(req.user.id);
   }
@@ -57,7 +57,7 @@ export class UserNotificationPreferencesController {
   @ApiOperation({ summary: 'Update notification preferences' })
   async updatePreferences(
     @Param('id') userId: string,
-    @Body() preferences: Partial<INotificationPreferences>,
+    @Body() preferences: Partial<INotificationPreferences>
   ) {
     return this.notificationsService.updatePreferences(userId, preferences);
   }

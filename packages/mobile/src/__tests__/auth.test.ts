@@ -76,7 +76,9 @@ describe('Mobile Authentication', () => {
     it('uses Keychain for secure token storage', async () => {
       const Keychain = require('react-native-keychain');
       await Keychain.setGenericPassword('token', 'test-token', { service: 'access_token' });
-      expect(Keychain.setGenericPassword).toHaveBeenCalledWith('token', 'test-token', { service: 'access_token' });
+      expect(Keychain.setGenericPassword).toHaveBeenCalledWith('token', 'test-token', {
+        service: 'access_token',
+      });
     });
   });
 });

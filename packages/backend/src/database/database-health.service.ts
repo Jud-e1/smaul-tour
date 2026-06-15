@@ -18,7 +18,7 @@ export class DatabaseHealthService {
 
   constructor(
     @InjectDataSource()
-    private readonly dataSource: DataSource,
+    private readonly dataSource: DataSource
   ) {}
 
   /**
@@ -31,9 +31,9 @@ export class DatabaseHealthService {
     try {
       // Execute a simple query to check connectivity
       await this.dataSource.query('SELECT 1');
-      
+
       const responseTime = Date.now() - startTime;
-      
+
       // Get connection pool statistics
       const poolStats = await this.getPoolStatistics();
 
@@ -93,7 +93,7 @@ export class DatabaseHealthService {
     const delay = this.retryDelay * Math.pow(2, this.retryCount - 1);
 
     this.logger.warn(
-      `Retrying database connection (attempt ${this.retryCount}/${this.maxRetries}) in ${delay}ms`,
+      `Retrying database connection (attempt ${this.retryCount}/${this.maxRetries}) in ${delay}ms`
     );
 
     await this.sleep(delay);
@@ -104,7 +104,7 @@ export class DatabaseHealthService {
       }
 
       const health = await this.checkHealth();
-      
+
       if (health.isHealthy) {
         this.logger.log('Database connection restored');
         this.retryCount = 0;
@@ -146,16 +146,13 @@ export class DatabaseHealthService {
   /**
    * Execute a query with automatic retry on failure
    */
-  async executeWithRetry<T>(
-    queryFn: () => Promise<T>,
-    retries = 3,
-  ): Promise<T> {
+  async executeWithRetry<T>(queryFn: () => Promise<T>, retries = 3): Promise<T> {
     try {
       return await queryFn();
     } catch (error) {
       if (retries > 0 && this.isConnectionError(error)) {
         this.logger.warn(
-          `Query failed with connection error, retrying... (${retries} attempts left)`,
+          `Query failed with connection error, retrying... (${retries} attempts left)`
         );
         await this.sleep(1000);
         return this.executeWithRetry(queryFn, retries - 1);

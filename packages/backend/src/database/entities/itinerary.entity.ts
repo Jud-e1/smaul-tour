@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
+} from 'typeorm';
 import { User } from './user.entity';
 import { ItineraryExperience } from './itinerary-experience.entity';
 
@@ -26,6 +34,6 @@ export class Itinerary {
   @JoinColumn({ name: 'user_id' })
   user!: User;
 
-  @OneToMany(() => ItineraryExperience, itineraryExperience => itineraryExperience.itinerary)
+  @OneToMany(() => ItineraryExperience, (itineraryExperience) => itineraryExperience.itinerary)
   experiences!: ItineraryExperience[];
 }

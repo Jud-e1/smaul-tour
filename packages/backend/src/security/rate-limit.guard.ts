@@ -29,8 +29,8 @@ export class RateLimitGuard implements CanActivate {
     this.adminWhitelist = new Set(
       whitelist
         .split(',')
-        .map(ip => ip.trim())
-        .filter(Boolean),
+        .map((ip) => ip.trim())
+        .filter(Boolean)
     );
   }
 
@@ -59,10 +59,17 @@ export class RateLimitGuard implements CanActivate {
     if (record?.backoffUntil && now < record.backoffUntil) {
       const retryAfterSec = Math.ceil((record.backoffUntil - now) / 1000);
       res.setHeader('Retry-After', String(retryAfterSec));
-      this.logViolation({ identifier, type: isAuthenticated ? 'user' : 'ip', timestamp: new Date(), requestCount: record.count, limit, endpoint });
+      this.logViolation({
+        identifier,
+        type: isAuthenticated ? 'user' : 'ip',
+        timestamp: new Date(),
+        requestCount: record.count,
+        limit,
+        endpoint,
+      });
       throw new HttpException(
         { statusCode: 429, message: 'Too Many Requests', retryAfter: retryAfterSec },
-        HttpStatus.TOO_MANY_REQUESTS,
+        HttpStatus.TOO_MANY_REQUESTS
       );
     }
 
@@ -76,18 +83,28 @@ export class RateLimitGuard implements CanActivate {
 
     if (record.count > limit) {
       record.violations += 1;
-      const backoffMs = Math.min(BASE_BACKOFF_MS * Math.pow(2, record.violations - 1), MAX_BACKOFF_MS);
+      const backoffMs = Math.min(
+        BASE_BACKOFF_MS * Math.pow(2, record.violations - 1),
+        MAX_BACKOFF_MS
+      );
       record.backoffUntil = now + backoffMs;
       this.store.set(identifier, record);
 
       const retryAfterSec = Math.ceil(backoffMs / 1000);
       res.setHeader('Retry-After', String(retryAfterSec));
 
-      this.logViolation({ identifier, type: isAuthenticated ? 'user' : 'ip', timestamp: new Date(), requestCount: record.count, limit, endpoint });
+      this.logViolation({
+        identifier,
+        type: isAuthenticated ? 'user' : 'ip',
+        timestamp: new Date(),
+        requestCount: record.count,
+        limit,
+        endpoint,
+      });
 
       throw new HttpException(
         { statusCode: 429, message: 'Too Many Requests', retryAfter: retryAfterSec },
-        HttpStatus.TOO_MANY_REQUESTS,
+        HttpStatus.TOO_MANY_REQUESTS
       );
     }
 
@@ -113,8 +130,8 @@ export class RateLimitGuard implements CanActivate {
   private logViolation(violation: RateLimitViolation): void {
     this.logger.warn(
       `Rate limit violation: identifier=${violation.identifier} type=${violation.type} ` +
-      `count=${violation.requestCount} limit=${violation.limit} endpoint=${violation.endpoint} ` +
-      `timestamp=${violation.timestamp.toISOString()}`,
+        `count=${violation.requestCount} limit=${violation.limit} endpoint=${violation.endpoint} ` +
+        `timestamp=${violation.timestamp.toISOString()}`
     );
   }
 

@@ -8,7 +8,7 @@ import { MonitoringService } from '../monitoring/monitoring.service';
 export class HealthController {
   constructor(
     private readonly databaseHealthService: DatabaseHealthService,
-    private readonly monitoringService: MonitoringService,
+    private readonly monitoringService: MonitoringService
   ) {}
 
   @Get()

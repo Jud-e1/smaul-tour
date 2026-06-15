@@ -7,9 +7,9 @@ export interface RateLimitRecord {
 
 export interface RateLimitConfig {
   unauthenticatedLimit: number; // requests per hour per IP
-  authenticatedLimit: number;   // requests per hour per user
-  windowMs: number;             // window size in ms
-  adminWhitelist: string[];     // IPs exempt from rate limiting
+  authenticatedLimit: number; // requests per hour per user
+  windowMs: number; // window size in ms
+  adminWhitelist: string[]; // IPs exempt from rate limiting
 }
 
 export interface RateLimitViolation {
