@@ -6,12 +6,13 @@ import { EmailService } from './email.service';
 import { PushService } from './push.service';
 import { NotificationTemplateService } from './notification-template.service';
 import { NotificationQueueService } from './notification-queue.service';
-import { Notification, NotificationStatus as EntityStatus } from '../database/entities/notification.entity';
 import {
-  INotification,
+  Notification,
+  NotificationStatus as EntityStatus,
+} from '../database/entities/notification.entity';
+import {
   INotificationPreferences,
   NotificationChannel,
-  NotificationType,
 } from './interfaces/notification.interfaces';
 
 const mockNotificationRepo = () => ({
@@ -39,8 +40,6 @@ const mockQueueService = () => ({
 describe('NotificationsService', () => {
   let service: NotificationsService;
   let repo: jest.Mocked<Repository<Notification>>;
-  let emailService: jest.Mocked<EmailService>;
-  let pushService: jest.Mocked<PushService>;
   let queueService: jest.Mocked<NotificationQueueService>;
 
   beforeEach(async () => {
@@ -57,8 +56,6 @@ describe('NotificationsService', () => {
 
     service = module.get<NotificationsService>(NotificationsService);
     repo = module.get(getRepositoryToken(Notification));
-    emailService = module.get(EmailService);
-    pushService = module.get(PushService);
     queueService = module.get(NotificationQueueService);
   });
 
@@ -72,7 +69,11 @@ describe('NotificationsService', () => {
         priority: 'high',
         subject: 'Booking Confirmed – Test Experience',
         body: 'Your booking has been confirmed.',
-        data: { referenceNumber: 'ABC12345', experienceName: 'Test Experience', date: '2024-06-01' },
+        data: {
+          referenceNumber: 'ABC12345',
+          experienceName: 'Test Experience',
+          date: '2024-06-01',
+        },
         status: EntityStatus.PENDING,
         createdAt: new Date(),
         sentAt: null,
@@ -80,7 +81,11 @@ describe('NotificationsService', () => {
       } as unknown as Notification;
 
       repo.create.mockReturnValue(savedEntity);
-      repo.save.mockResolvedValue({ ...savedEntity, status: EntityStatus.SENT, sentAt: new Date() } as Notification);
+      repo.save.mockResolvedValue({
+        ...savedEntity,
+        status: EntityStatus.SENT,
+        sentAt: new Date(),
+      } as Notification);
 
       const result = await service.sendNotification({
         userId: 'user-1',
@@ -90,7 +95,11 @@ describe('NotificationsService', () => {
         subject: '',
         body: '',
         status: 'pending',
-        data: { referenceNumber: 'ABC12345', experienceName: 'Test Experience', date: '2024-06-01' },
+        data: {
+          referenceNumber: 'ABC12345',
+          experienceName: 'Test Experience',
+          date: '2024-06-01',
+        },
       });
 
       expect(repo.create).toHaveBeenCalled();
@@ -158,7 +167,11 @@ describe('NotificationsService', () => {
 
     it('should return all channels when all preferences are enabled', () => {
       const channels: NotificationChannel[] = ['email', 'push', 'in_app'];
-      const result = service.filterChannelsByPreferences(channels, 'booking_confirmed', defaultPrefs);
+      const result = service.filterChannelsByPreferences(
+        channels,
+        'booking_confirmed',
+        defaultPrefs
+      );
       expect(result).toEqual(['email', 'push', 'in_app']);
     });
 
@@ -248,7 +261,7 @@ describe('NotificationsService', () => {
       await service.getUserNotifications('user-1', { unreadOnly: true });
       expect(mockQb.andWhere).toHaveBeenCalledWith(
         expect.stringContaining('status'),
-        expect.objectContaining({ status: EntityStatus.READ }),
+        expect.objectContaining({ status: EntityStatus.READ })
       );
     });
   });
@@ -262,18 +275,24 @@ describe('NotificationsService', () => {
       } as unknown as Notification;
 
       repo.findOne.mockResolvedValue(notification);
-      repo.save.mockResolvedValue({ ...notification, status: EntityStatus.READ, readAt: new Date() } as Notification);
+      repo.save.mockResolvedValue({
+        ...notification,
+        status: EntityStatus.READ,
+        readAt: new Date(),
+      } as Notification);
 
       await service.markAsRead('notif-1');
 
       expect(repo.save).toHaveBeenCalledWith(
-        expect.objectContaining({ status: EntityStatus.READ }),
+        expect.objectContaining({ status: EntityStatus.READ })
       );
     });
 
     it('should throw NotFoundException when notification does not exist', async () => {
       repo.findOne.mockResolvedValue(null);
-      await expect(service.markAsRead('nonexistent')).rejects.toThrow('Notification nonexistent not found');
+      await expect(service.markAsRead('nonexistent')).rejects.toThrow(
+        'Notification nonexistent not found'
+      );
     });
   });
 
@@ -310,15 +329,8 @@ describe('NotificationsService', () => {
 
   describe('retry logic', () => {
     it('should retry failed notifications with exponential backoff', async () => {
-      const backoff1 = queueService.calculateBackoffMs(1);
-      const backoff2 = queueService.calculateBackoffMs(2);
-      const backoff3 = queueService.calculateBackoffMs(3);
-
       // Verify backoff increases (mocked to return 1000 always, but we test the real service)
-      const realQueueService = new NotificationQueueService(
-        { get: jest.fn() } as any,
-        null,
-      );
+      const realQueueService = new NotificationQueueService({ get: jest.fn() } as any, null);
       expect(realQueueService.calculateBackoffMs(1)).toBe(1000);
       expect(realQueueService.calculateBackoffMs(2)).toBe(2000);
       expect(realQueueService.calculateBackoffMs(3)).toBe(4000);
@@ -347,7 +359,12 @@ describe('NotificationTemplateService', () => {
   it('should render booking_cancelled template with refund info', () => {
     const result = templateService.render({
       type: 'booking_cancelled',
-      data: { referenceNumber: 'XYZ789', experienceName: 'Food Tour', refundAmount: 50, refundCurrency: 'USD' },
+      data: {
+        referenceNumber: 'XYZ789',
+        experienceName: 'Food Tour',
+        refundAmount: 50,
+        refundCurrency: 'USD',
+      },
     });
     expect(result.subject).toContain('Food Tour');
     expect(result.body).toContain('50');
@@ -376,7 +393,12 @@ describe('NotificationTemplateService', () => {
   it('should render new_booking template for guides', () => {
     const result = templateService.render({
       type: 'new_booking',
-      data: { referenceNumber: 'REF001', experienceName: 'Hiking', date: '2024-07-15', travelerName: 'John Doe' },
+      data: {
+        referenceNumber: 'REF001',
+        experienceName: 'Hiking',
+        date: '2024-07-15',
+        travelerName: 'John Doe',
+      },
     });
     expect(result.subject).toContain('Hiking');
     expect(result.body).toContain('John Doe');

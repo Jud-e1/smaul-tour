@@ -4,8 +4,12 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { PaymentsService, calculateRefundAmount } from './payments.service';
 import { StripeGatewayService } from './stripe-gateway.service';
 import { ReceiptService } from './receipt.service';
-import { Payment as PaymentEntity, PaymentStatus, PaymentMethod } from '../database/entities/payment.entity';
-import { TransactionLog as TransactionLogEntity, TransactionAction } from '../database/entities/transaction-log.entity';
+import {
+  Payment as PaymentEntity,
+  PaymentStatus,
+  PaymentMethod,
+} from '../database/entities/payment.entity';
+import { TransactionLog as TransactionLogEntity } from '../database/entities/transaction-log.entity';
 import { RefundRequest, isValidPaymentTransition } from './interfaces/payment.interfaces';
 
 const mockPaymentRepo = () => ({
@@ -85,8 +89,16 @@ describe('PaymentsService - refundPayment', () => {
   it('calls Stripe createRefund with the gateway transaction ID and amount', async () => {
     const payment = makePayment();
     paymentRepo.findOne.mockResolvedValue(payment);
-    paymentRepo.save.mockResolvedValue({ ...payment, status: PaymentStatus.REFUNDED, refundedAt: new Date() });
-    stripeGateway.createRefund.mockResolvedValue({ refundId: 're_test_abc', status: 'succeeded', amount: 100 });
+    paymentRepo.save.mockResolvedValue({
+      ...payment,
+      status: PaymentStatus.REFUNDED,
+      refundedAt: new Date(),
+    });
+    stripeGateway.createRefund.mockResolvedValue({
+      refundId: 're_test_abc',
+      status: 'succeeded',
+      amount: 100,
+    });
     transactionLogRepo.create.mockReturnValue({});
     transactionLogRepo.save.mockResolvedValue({});
 
@@ -105,16 +117,24 @@ describe('PaymentsService - refundPayment', () => {
     const payment = makePayment();
     paymentRepo.findOne.mockResolvedValue(payment);
     paymentRepo.save.mockResolvedValue({ ...payment, status: PaymentStatus.REFUNDED });
-    stripeGateway.createRefund.mockResolvedValue({ refundId: 're_test_abc', status: 'succeeded', amount: 100 });
+    stripeGateway.createRefund.mockResolvedValue({
+      refundId: 're_test_abc',
+      status: 'succeeded',
+      amount: 100,
+    });
     transactionLogRepo.create.mockReturnValue({});
     transactionLogRepo.save.mockResolvedValue({});
 
-    await service.refundPayment({ paymentId: 'pay-1', amount: { amount: 100, currency: 'USD' }, reason: 'test' });
+    await service.refundPayment({
+      paymentId: 'pay-1',
+      amount: { amount: 100, currency: 'USD' },
+      reason: 'test',
+    });
 
     expect(transactionLogRepo.create).toHaveBeenCalledWith(
       expect.objectContaining({
         metadata: expect.objectContaining({ stripeRefundId: 're_test_abc' }),
-      }),
+      })
     );
   });
 
@@ -124,7 +144,11 @@ describe('PaymentsService - refundPayment', () => {
     stripeGateway.createRefund.mockRejectedValue(new Error('Stripe error'));
 
     await expect(
-      service.refundPayment({ paymentId: 'pay-1', amount: { amount: 100, currency: 'USD' }, reason: 'test' }),
+      service.refundPayment({
+        paymentId: 'pay-1',
+        amount: { amount: 100, currency: 'USD' },
+        reason: 'test',
+      })
     ).rejects.toThrow('Stripe error');
 
     expect(paymentRepo.save).not.toHaveBeenCalled();
@@ -135,7 +159,11 @@ describe('PaymentsService - refundPayment', () => {
     paymentRepo.findOne.mockResolvedValue(payment);
 
     await expect(
-      service.refundPayment({ paymentId: 'pay-1', amount: { amount: 100, currency: 'USD' }, reason: 'test' }),
+      service.refundPayment({
+        paymentId: 'pay-1',
+        amount: { amount: 100, currency: 'USD' },
+        reason: 'test',
+      })
     ).rejects.toThrow(BadRequestException);
 
     expect(stripeGateway.createRefund).not.toHaveBeenCalled();
@@ -145,7 +173,11 @@ describe('PaymentsService - refundPayment', () => {
     paymentRepo.findOne.mockResolvedValue(null);
 
     await expect(
-      service.refundPayment({ paymentId: 'nonexistent', amount: { amount: 50, currency: 'USD' }, reason: 'test' }),
+      service.refundPayment({
+        paymentId: 'nonexistent',
+        amount: { amount: 50, currency: 'USD' },
+        reason: 'test',
+      })
     ).rejects.toThrow(NotFoundException);
   });
 });
@@ -153,36 +185,69 @@ describe('PaymentsService - refundPayment', () => {
 describe('calculateRefundAmount (standalone)', () => {
   describe('flexible policy', () => {
     it('returns 100% refund when >= 1 day before', () => {
-      expect(calculateRefundAmount(200, 'flexible', 1)).toEqual({ refundAmount: 200, refundPercentage: 100 });
-      expect(calculateRefundAmount(200, 'flexible', 5)).toEqual({ refundAmount: 200, refundPercentage: 100 });
+      expect(calculateRefundAmount(200, 'flexible', 1)).toEqual({
+        refundAmount: 200,
+        refundPercentage: 100,
+      });
+      expect(calculateRefundAmount(200, 'flexible', 5)).toEqual({
+        refundAmount: 200,
+        refundPercentage: 100,
+      });
     });
 
     it('returns 50% refund when < 1 day before', () => {
-      expect(calculateRefundAmount(200, 'flexible', 0)).toEqual({ refundAmount: 100, refundPercentage: 50 });
+      expect(calculateRefundAmount(200, 'flexible', 0)).toEqual({
+        refundAmount: 100,
+        refundPercentage: 50,
+      });
     });
   });
 
   describe('moderate policy', () => {
     it('returns 100% refund when >= 7 days before', () => {
-      expect(calculateRefundAmount(100, 'moderate', 7)).toEqual({ refundAmount: 100, refundPercentage: 100 });
-      expect(calculateRefundAmount(100, 'moderate', 14)).toEqual({ refundAmount: 100, refundPercentage: 100 });
+      expect(calculateRefundAmount(100, 'moderate', 7)).toEqual({
+        refundAmount: 100,
+        refundPercentage: 100,
+      });
+      expect(calculateRefundAmount(100, 'moderate', 14)).toEqual({
+        refundAmount: 100,
+        refundPercentage: 100,
+      });
     });
 
     it('returns 50% refund when < 7 days before', () => {
-      expect(calculateRefundAmount(100, 'moderate', 6)).toEqual({ refundAmount: 50, refundPercentage: 50 });
-      expect(calculateRefundAmount(100, 'moderate', 0)).toEqual({ refundAmount: 50, refundPercentage: 50 });
+      expect(calculateRefundAmount(100, 'moderate', 6)).toEqual({
+        refundAmount: 50,
+        refundPercentage: 50,
+      });
+      expect(calculateRefundAmount(100, 'moderate', 0)).toEqual({
+        refundAmount: 50,
+        refundPercentage: 50,
+      });
     });
   });
 
   describe('strict policy', () => {
     it('returns 100% refund when >= 14 days before', () => {
-      expect(calculateRefundAmount(80, 'strict', 14)).toEqual({ refundAmount: 80, refundPercentage: 100 });
-      expect(calculateRefundAmount(80, 'strict', 30)).toEqual({ refundAmount: 80, refundPercentage: 100 });
+      expect(calculateRefundAmount(80, 'strict', 14)).toEqual({
+        refundAmount: 80,
+        refundPercentage: 100,
+      });
+      expect(calculateRefundAmount(80, 'strict', 30)).toEqual({
+        refundAmount: 80,
+        refundPercentage: 100,
+      });
     });
 
     it('returns 50% refund when < 14 days before', () => {
-      expect(calculateRefundAmount(80, 'strict', 13)).toEqual({ refundAmount: 40, refundPercentage: 50 });
-      expect(calculateRefundAmount(80, 'strict', 0)).toEqual({ refundAmount: 40, refundPercentage: 50 });
+      expect(calculateRefundAmount(80, 'strict', 13)).toEqual({
+        refundAmount: 40,
+        refundPercentage: 50,
+      });
+      expect(calculateRefundAmount(80, 'strict', 0)).toEqual({
+        refundAmount: 40,
+        refundPercentage: 50,
+      });
     });
   });
 });
@@ -196,8 +261,14 @@ describe('PaymentsService.calculateRefundAmount (method)', () => {
   });
 
   it('delegates to the standalone function', () => {
-    expect(service.calculateRefundAmount(150, 'moderate', 10)).toEqual({ refundAmount: 150, refundPercentage: 100 });
-    expect(service.calculateRefundAmount(150, 'moderate', 3)).toEqual({ refundAmount: 75, refundPercentage: 50 });
+    expect(service.calculateRefundAmount(150, 'moderate', 10)).toEqual({
+      refundAmount: 150,
+      refundPercentage: 100,
+    });
+    expect(service.calculateRefundAmount(150, 'moderate', 3)).toEqual({
+      refundAmount: 75,
+      refundPercentage: 50,
+    });
   });
 });
 
@@ -238,7 +309,11 @@ describe('PaymentsService - processPayment', () => {
       .mockResolvedValueOnce({ ...created, status: PaymentStatus.AUTHORIZED })
       .mockResolvedValueOnce({ ...created, status: PaymentStatus.CAPTURED })
       .mockResolvedValueOnce({ ...created, status: PaymentStatus.ESCROWED, escrowedAt: new Date() })
-      .mockResolvedValueOnce({ ...created, status: PaymentStatus.ESCROWED, receiptUrl: 'receipts/pay-1' });
+      .mockResolvedValueOnce({
+        ...created,
+        status: PaymentStatus.ESCROWED,
+        receiptUrl: 'receipts/pay-1',
+      });
 
     stripeGateway.createPaymentIntent.mockResolvedValue({
       paymentIntentId: 'pi_123',

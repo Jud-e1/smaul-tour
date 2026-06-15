@@ -1,20 +1,16 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-  Logger,
-  Inject,
-  Optional,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource, Between, MoreThanOrEqual, LessThanOrEqual, EntityManager } from 'typeorm';
+import { Repository, DataSource, EntityManager } from 'typeorm';
 import { User, UserRole } from '../database/entities/user.entity';
 import { UserProfile, GuideVerificationStatus } from '../database/entities/user-profile.entity';
 import { Experience, ExperienceStatus } from '../database/entities/experience.entity';
 import { Booking, BookingStatus } from '../database/entities/booking.entity';
 import { Payment, PaymentStatus } from '../database/entities/payment.entity';
 import { Review, ReviewStatus } from '../database/entities/review.entity';
-import { VerificationRequest, VerificationStatus } from '../database/entities/verification-request.entity';
+import {
+  VerificationRequest,
+  VerificationStatus,
+} from '../database/entities/verification-request.entity';
 import { VerificationDocument } from '../database/entities/verification-document.entity';
 import { AuditLog } from '../database/entities/audit-log.entity';
 import {
@@ -53,10 +49,12 @@ export class AdminService implements IAdminService {
     @InjectRepository(Booking) private readonly bookingRepo: Repository<Booking>,
     @InjectRepository(Payment) private readonly paymentRepo: Repository<Payment>,
     @InjectRepository(Review) private readonly reviewRepo: Repository<Review>,
-    @InjectRepository(VerificationRequest) private readonly verificationRepo: Repository<VerificationRequest>,
-    @InjectRepository(VerificationDocument) private readonly documentRepo: Repository<VerificationDocument>,
+    @InjectRepository(VerificationRequest)
+    private readonly verificationRepo: Repository<VerificationRequest>,
+    @InjectRepository(VerificationDocument)
+    private readonly documentRepo: Repository<VerificationDocument>,
     @InjectRepository(AuditLog) private readonly auditLogRepo: Repository<AuditLog>,
-    private readonly dataSource: DataSource,
+    private readonly dataSource: DataSource
   ) {}
 
   // ─── Verification Management ─────────────────────────────────────────────
@@ -89,9 +87,13 @@ export class AdminService implements IAdminService {
       });
 
       // Update guide's profile verification status
-      await manager.update(UserProfile, { userId: request.guideId }, {
-        guideVerificationStatus: GuideVerificationStatus.APPROVED,
-      });
+      await manager.update(
+        UserProfile,
+        { userId: request.guideId },
+        {
+          guideVerificationStatus: GuideVerificationStatus.APPROVED,
+        }
+      );
 
       // Mark user as verified
       await manager.update(User, request.guideId, { verified: true });
@@ -119,9 +121,13 @@ export class AdminService implements IAdminService {
         rejectionReason: reason,
       });
 
-      await manager.update(UserProfile, { userId: request.guideId }, {
-        guideVerificationStatus: GuideVerificationStatus.REJECTED,
-      });
+      await manager.update(
+        UserProfile,
+        { userId: request.guideId },
+        {
+          guideVerificationStatus: GuideVerificationStatus.REJECTED,
+        }
+      );
     });
 
     await this.logAction(adminId, 'reject_verification', 'verification_request', requestId, {
@@ -138,7 +144,9 @@ export class AdminService implements IAdminService {
     const experience = await this.experienceRepo.findOne({ where: { id: experienceId } });
     if (!experience) throw new NotFoundException(`Experience ${experienceId} not found`);
     if (experience.status !== ExperienceStatus.PENDING_APPROVAL) {
-      throw new BadRequestException(`Experience is not pending approval (current: ${experience.status})`);
+      throw new BadRequestException(
+        `Experience is not pending approval (current: ${experience.status})`
+      );
     }
 
     await this.experienceRepo.update(experienceId, { status: ExperienceStatus.ACTIVE });
@@ -155,7 +163,9 @@ export class AdminService implements IAdminService {
     const experience = await this.experienceRepo.findOne({ where: { id: experienceId } });
     if (!experience) throw new NotFoundException(`Experience ${experienceId} not found`);
     if (experience.status !== ExperienceStatus.PENDING_APPROVAL) {
-      throw new BadRequestException(`Experience is not pending approval (current: ${experience.status})`);
+      throw new BadRequestException(
+        `Experience is not pending approval (current: ${experience.status})`
+      );
     }
 
     await this.experienceRepo.update(experienceId, { status: ExperienceStatus.INACTIVE });
@@ -216,9 +226,7 @@ export class AdminService implements IAdminService {
       PaymentStatus.RELEASED,
     ];
     if (!refundableStatuses.includes(payment.status)) {
-      throw new BadRequestException(
-        `Cannot refund payment in status '${payment.status}'`,
-      );
+      throw new BadRequestException(`Cannot refund payment in status '${payment.status}'`);
     }
 
     await this.paymentRepo.update(paymentId, {
@@ -245,26 +253,21 @@ export class AdminService implements IAdminService {
       return cached.data;
     }
 
-    const [
-      totalUsers,
-      totalGuides,
-      totalTravelers,
-      totalExperiences,
-      bookingStats,
-    ] = await Promise.all([
-      this.userRepo.count(),
-      this.userRepo.count({ where: { role: UserRole.GUIDE } }),
-      this.userRepo.count({ where: { role: UserRole.TRAVELER } }),
-      this.experienceRepo.count(),
-      this.bookingRepo
-        .createQueryBuilder('b')
-        .select('COUNT(b.id)', 'totalBookings')
-        .addSelect('COALESCE(SUM(b.totalAmount), 0)', 'totalRevenue')
-        .addSelect('COALESCE(AVG(b.totalAmount), 0)', 'avgBookingValue')
-        .where('b.createdAt BETWEEN :start AND :end', { start: startDate, end: endDate })
-        .andWhere('b.status != :cancelled', { cancelled: BookingStatus.CANCELLED })
-        .getRawOne<{ totalBookings: string; totalRevenue: string; avgBookingValue: string }>(),
-    ]);
+    const [totalUsers, totalGuides, totalTravelers, totalExperiences, bookingStats] =
+      await Promise.all([
+        this.userRepo.count(),
+        this.userRepo.count({ where: { role: UserRole.GUIDE } }),
+        this.userRepo.count({ where: { role: UserRole.TRAVELER } }),
+        this.experienceRepo.count(),
+        this.bookingRepo
+          .createQueryBuilder('b')
+          .select('COUNT(b.id)', 'totalBookings')
+          .addSelect('COALESCE(SUM(b.totalAmount), 0)', 'totalRevenue')
+          .addSelect('COALESCE(AVG(b.totalAmount), 0)', 'avgBookingValue')
+          .where('b.createdAt BETWEEN :start AND :end', { start: startDate, end: endDate })
+          .andWhere('b.status != :cancelled', { cancelled: BookingStatus.CANCELLED })
+          .getRawOne<{ totalBookings: string; totalRevenue: string; avgBookingValue: string }>(),
+      ]);
 
     const metrics: PlatformMetrics = {
       totalUsers,
@@ -283,7 +286,10 @@ export class AdminService implements IAdminService {
       period: { start: startDate, end: endDate },
     };
 
-    this.metricsCache.set(cacheKey, { data: metrics, expiresAt: Date.now() + METRICS_CACHE_TTL_MS });
+    this.metricsCache.set(cacheKey, {
+      data: metrics,
+      expiresAt: Date.now() + METRICS_CACHE_TTL_MS,
+    });
 
     return metrics;
   }
@@ -335,32 +341,26 @@ export class AdminService implements IAdminService {
       if (avgRating > 0 && avgRating < LOW_RATING_THRESHOLD) {
         if (!guide.locked) {
           this.logger.warn(
-            `Guide ${guide.id} has average rating ${avgRating} below threshold ${LOW_RATING_THRESHOLD} — flagging for review`,
+            `Guide ${guide.id} has average rating ${avgRating} below threshold ${LOW_RATING_THRESHOLD} — flagging for review`
           );
           // We log this as an audit action (system-initiated)
-          await this.logAction(
-            'system',
-            'flag_low_rating_guide',
-            'user',
-            guide.id,
-            { averageRating: avgRating, threshold: LOW_RATING_THRESHOLD },
-          );
+          await this.logAction('system', 'flag_low_rating_guide', 'user', guide.id, {
+            averageRating: avgRating,
+            threshold: LOW_RATING_THRESHOLD,
+          });
         }
       }
 
       // Assign "Top Guide" badge if criteria met
       if (completedBookings >= TOP_GUIDE_MIN_BOOKINGS && avgRating >= TOP_GUIDE_MIN_RATING) {
         this.logger.log(
-          `Guide ${guide.id} qualifies for Top Guide badge (bookings: ${completedBookings}, rating: ${avgRating})`,
+          `Guide ${guide.id} qualifies for Top Guide badge (bookings: ${completedBookings}, rating: ${avgRating})`
         );
         // Badge assignment is tracked via audit log; actual badge display is handled by profile queries
-        await this.logAction(
-          'system',
-          'assign_top_guide_badge',
-          'user',
-          guide.id,
-          { completedBookings, averageRating: avgRating },
-        );
+        await this.logAction('system', 'assign_top_guide_badge', 'user', guide.id, {
+          completedBookings,
+          averageRating: avgRating,
+        });
       }
     }
   }
@@ -372,7 +372,7 @@ export class AdminService implements IAdminService {
     action: string,
     resourceType: string,
     resourceId: string,
-    changes: Record<string, any>,
+    changes: Record<string, any>
   ): Promise<void> {
     const log = this.auditLogRepo.create({
       adminId,
@@ -389,7 +389,7 @@ export class AdminService implements IAdminService {
     return {
       id: r.id,
       guideId: r.guideId,
-      documents: (r.documents ?? []).map(d => this.mapDocument(d)),
+      documents: (r.documents ?? []).map((d) => this.mapDocument(d)),
       status: r.status as VerificationRequestDto['status'],
       reviewedBy: r.reviewedBy ?? undefined,
       reviewedAt: r.reviewedAt ?? undefined,
