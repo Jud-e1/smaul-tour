@@ -2,13 +2,14 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from '@/store/auth';
 import NotificationCenter from '@/components/ui/NotificationCenter';
 
 export default function Navbar() {
   const { user, logout } = useAuthStore();
   const router = useRouter();
+  const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -35,6 +36,11 @@ export default function Navbar() {
     router.push(search.trim() ? `/experiences?q=${encodeURIComponent(search.trim())}` : '/experiences');
     setSearch('');
   };
+
+  // The dashboard/admin areas render their own full-screen shell + sidebar.
+  if (pathname?.startsWith('/dashboard') || pathname?.startsWith('/admin')) {
+    return null;
+  }
 
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-40">
