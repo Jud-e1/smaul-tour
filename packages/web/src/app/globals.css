@@ -55,3 +55,54 @@ body {
 /* Hide scrollbar for category pills */
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Auth screen motion ── */
+
+/* Staggered entrance for form rows */
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-rise-in {
+  opacity: 0;
+  animation: rise-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Slow bob for the illustration */
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-14px); }
+}
+.animate-float-y {
+  animation: float-y 6s ease-in-out infinite;
+}
+
+/* Drifting background blobs */
+@keyframes drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  33%      { transform: translate3d(24px, -30px, 0) scale(1.08); }
+  66%      { transform: translate3d(-20px, 18px, 0) scale(0.94); }
+}
+.animate-drift {
+  animation: drift 18s ease-in-out infinite;
+}
+
+/* Panning gradient wash behind the illustration */
+@keyframes pan-gradient {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
+}
+.animate-pan-gradient {
+  background-size: 200% 200%;
+  animation: pan-gradient 14s ease infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise-in,
+  .animate-float-y,
+  .animate-drift,
+  .animate-pan-gradient {
+    animation: none;
+    opacity: 1;
+  }
+}
