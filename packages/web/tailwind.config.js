@@ -8,6 +8,13 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        accra: {
+          green: '#0E4A22',
+          dark: '#0A3417',
+          leaf: '#1F7A3C',
+          gold: '#F5C518',
+          cream: '#FBF7E8',
+        },
         primary: {
           50: '#f0f9ff',
           100: '#e0f2fe',

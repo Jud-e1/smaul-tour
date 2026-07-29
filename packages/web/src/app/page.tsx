@@ -1,24 +1,56 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+const HERO_IMAGE =
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Black_Star_Gate_located_in_Accra.jpg/1280px-Black_Star_Gate_located_in_Accra.jpg';
+const ABURI_IMAGE =
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Araucaria_columnaris%2C_Aburi_%28P1090843%29.jpg/1280px-Araucaria_columnaris%2C_Aburi_%28P1090843%29.jpg';
+const HERITAGE_IMAGE =
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Kwame_Nkrumah_Monument_at_the_Kwame_Nkrumah_Mausoleum_and_Memorial_Park%2C_Accra_01.jpg/1280px-Kwame_Nkrumah_Monument_at_the_Kwame_Nkrumah_Mausoleum_and_Memorial_Park%2C_Accra_01.jpg';
+const STAYS_IMAGE =
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/M%C3%B6venpick_Ambassador_Hotel_Accra.jpg/1280px-M%C3%B6venpick_Ambassador_Hotel_Accra.jpg';
 
 const CATEGORIES = [
-  { label: 'Food & Drink', emoji: '🍜' },
-  { label: 'Culture',      emoji: '🏛️' },
+  { label: 'Food & Drink', emoji: '🍲' },
+  { label: 'Culture',      emoji: '🥁' },
   { label: 'Adventure',    emoji: '🧗' },
   { label: 'Nature',       emoji: '🌿' },
   { label: 'Art',          emoji: '🎨' },
   { label: 'Wellness',     emoji: '🧘' },
-  { label: 'Sports',       emoji: '⚽' },
+  { label: 'Beaches',      emoji: '🏖️' },
 ];
 
-const STATS = [
-  { value: '10,000+', label: 'Experiences' },
-  { value: '500+',    label: 'Local Guides' },
-  { value: '50+',     label: 'Cities' },
-  { value: '4.9★',    label: 'Avg Rating' },
+const TRENDING = [
+  {
+    img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Jamestown%2C_Accra_%28P1100253%29.jpg/1280px-Jamestown%2C_Accra_%28P1100253%29.jpg',
+    title: 'Jamestown Heritage Walk',
+    location: 'Jamestown, Accra',
+    price: '$28',
+    rating: '4.94',
+  },
+  {
+    img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Labadi_Beach_at_Sunset.jpg/1280px-Labadi_Beach_at_Sunset.jpg',
+    title: 'Labadi Beach Sunset',
+    location: 'La, Accra',
+    price: '$35',
+    rating: '4.91',
+  },
+  {
+    img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Waakye_in_Accra%2C_Ghana.jpg/1280px-Waakye_in_Accra%2C_Ghana.jpg',
+    title: 'Waakye Food Crawl',
+    location: 'Osu, Accra',
+    price: '$22',
+    rating: '4.97',
+  },
+  {
+    img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Canopy_walkway_at_Kakum_National_Park_2.jpg/1280px-Canopy_walkway_at_Kakum_National_Park_2.jpg',
+    title: 'Kakum Canopy Walk',
+    location: 'Central Region',
+    price: '$64',
+    rating: '4.89',
+  },
 ];
 
 const FEATURES = [
@@ -29,7 +61,7 @@ const FEATURES = [
       </svg>
     ),
     title: 'AI Trip Planner',
-    desc: 'Describe your dream trip and get a personalized itinerary in seconds.',
+    desc: 'Describe your dream trip and get a personalized Accra itinerary in seconds.',
   },
   {
     icon: (
@@ -46,95 +78,274 @@ const FEATURES = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
       </svg>
     ),
-    title: 'Verified Guides',
+    title: 'Verified Local Guides',
     desc: 'Every guide is reviewed and verified so you can book with confidence.',
   },
 ];
 
-export default function Home() {
-  const router = useRouter();
-  const [search, setSearch] = useState('');
+type WeatherIcon = 'sun' | 'cloud' | 'rain' | 'storm';
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    router.push(search.trim() ? `/experiences?q=${encodeURIComponent(search.trim())}` : '/experiences');
+interface WeatherCondition {
+  codes: number[];
+  label: string;
+  icon: WeatherIcon;
+  suggestion: string;
+}
+
+const WEATHER_CONDITIONS: WeatherCondition[] = [
+  {
+    codes: [0, 1],
+    label: 'Sunny',
+    icon: 'sun',
+    suggestion: 'Perfect weather for a visit to Labadi Beach. Tap to add to itinerary.',
+  },
+  {
+    codes: [2],
+    label: 'Partly cloudy',
+    icon: 'cloud',
+    suggestion: 'Great light for the Jamestown heritage walk. Tap to add to itinerary.',
+  },
+  {
+    codes: [3, 45, 48],
+    label: 'Cloudy',
+    icon: 'cloud',
+    suggestion: 'Cool and overcast — ideal for the Aburi gardens trail. Tap to add to itinerary.',
+  },
+  {
+    codes: [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82],
+    label: 'Rainy',
+    icon: 'rain',
+    suggestion: 'Showers over Accra — try an indoor museum or an Osu food tour instead.',
+  },
+  {
+    codes: [95, 96, 99],
+    label: 'Thunderstorms',
+    icon: 'storm',
+    suggestion: 'Storms expected today. We suggest indoor experiences and a flexible booking.',
+  },
+];
+
+interface OpenMeteoResponse {
+  current?: {
+    temperature_2m?: number;
+    relative_humidity_2m?: number;
+    weather_code?: number;
   };
+}
+
+interface Weather {
+  temperature: number;
+  humidity: number;
+  condition: WeatherCondition;
+}
+
+const FALLBACK_WEATHER: Weather = { temperature: 28, humidity: 78, condition: WEATHER_CONDITIONS[0] };
+
+const WEATHER_ICON_PATHS: Record<WeatherIcon, JSX.Element> = {
+  sun: (
+    <>
+      <circle cx="12" cy="12" r="4.5" />
+      <path strokeLinecap="round" d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.5 1.5m11.2 11.2l1.5 1.5M19.1 4.9l-1.5 1.5M6.4 17.6l-1.5 1.5" />
+    </>
+  ),
+  cloud: (
+    <path strokeLinecap="round" strokeLinejoin="round" d="M7 18h10a4 4 0 000-8 6 6 0 00-11.6 2A3.5 3.5 0 006 18h1z" />
+  ),
+  rain: (
+    <>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M7 15h10a4 4 0 000-8 6 6 0 00-11.6 2A3.5 3.5 0 006 15h1z" />
+      <path strokeLinecap="round" d="M8 18l-1 3m5-3l-1 3m5-3l-1 3" />
+    </>
+  ),
+  storm: (
+    <>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M7 15h10a4 4 0 000-8 6 6 0 00-11.6 2A3.5 3.5 0 006 15h1z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M13 17l-3 3h3l-1 3" />
+    </>
+  ),
+};
+
+export default function Home() {
+  const [weather, setWeather] = useState<Weather>(FALLBACK_WEATHER);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    void fetch(
+      'https://api.open-meteo.com/v1/forecast?latitude=5.6037&longitude=-0.187&current=temperature_2m,relative_humidity_2m,weather_code',
+      { signal: controller.signal },
+    )
+      .then((res) => res.json() as Promise<OpenMeteoResponse>)
+      .then(({ current }) => {
+        if (typeof current?.temperature_2m !== 'number') return;
+        setWeather({
+          temperature: Math.round(current.temperature_2m),
+          humidity: Math.round(current.relative_humidity_2m ?? FALLBACK_WEATHER.humidity),
+          condition:
+            WEATHER_CONDITIONS.find((entry) => entry.codes.includes(current.weather_code ?? -1)) ??
+            FALLBACK_WEATHER.condition,
+        });
+      })
+      .catch(() => {});
+    return () => controller.abort();
+  }, []);
+
+  const humidityLabel = weather.humidity >= 70 ? 'Humid' : 'Mild';
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-br from-[#E9F6E1] via-[#FCF7DC] to-[#FCEBE3]">
 
-      {/* Hero — full bleed real photo */}
-      <section className="relative h-[580px] sm:h-[640px] flex items-center justify-center overflow-hidden">
-        {/* Real travel photo from Unsplash */}
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1600&q=80')" }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60" />
+      {/* Hero */}
+      <section className="max-w-6xl mx-auto px-6 pt-14 pb-12 grid lg:grid-cols-2 gap-10 items-center">
+        <div>
+          <span className="inline-flex items-center gap-2 bg-accra-gold text-accra-green text-[11px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full">
+            <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M11 2l1.6 4.4L17 8l-4.4 1.6L11 14l-1.6-4.4L5 8l4.4-1.6L11 2zM18 13l.9 2.5L21.5 16l-2.6.9L18 19.5l-.9-2.6-2.6-.9 2.6-.9L18 13z" />
+            </svg>
+            AI-Powered Discovery
+          </span>
 
-        <div className="relative z-10 text-center px-4 max-w-2xl mx-auto">
-          <h1 className="text-4xl sm:text-6xl font-extrabold text-white leading-tight mb-4 tracking-tight">
-            Find your next<br />local adventure
+          <h1 className="mt-6 text-5xl sm:text-6xl font-extrabold text-accra-green leading-[1.05] tracking-tight">
+            Experience Accra<br />Like Never Before.
           </h1>
-          <p className="text-white/80 text-lg mb-8">
-            Book unique experiences with local guides around the world.
+
+          <p className="mt-5 text-gray-600 leading-relaxed max-w-md">
+            Curated itineraries, hidden gems, and real-time local insights powered by advanced AI.
+            Your premium journey starts here.
           </p>
 
-          {/* Search bar */}
-          <form
-            onSubmit={handleSearch}
-            className="bg-white rounded-full shadow-2xl flex items-center overflow-hidden max-w-xl mx-auto"
-          >
-            <div className="flex-1 flex items-center px-5 py-4 gap-3 border-r border-gray-200">
-              <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Where do you want to go?"
-                className="flex-1 text-sm text-gray-800 placeholder-gray-400 outline-none"
-              />
-            </div>
-            <button
-              type="submit"
-              className="bg-[#FF385C] hover:bg-[#E31C5F] text-white font-semibold px-6 py-4 text-sm transition-colors"
+          <div className="mt-8 flex flex-wrap items-center gap-4">
+            <Link
+              href="/experiences"
+              className="bg-accra-green hover:bg-accra-dark text-white font-semibold text-sm px-8 py-4 rounded-full shadow-lg shadow-accra-green/20 transition-colors"
             >
-              Search
-            </button>
-          </form>
-
-          <div className="mt-5 flex items-center justify-center gap-5 text-sm text-white/70">
-            <span>✓ Free cancellation</span>
-            <span>✓ No booking fees</span>
-            <span>✓ Instant confirmation</span>
+              Start Exploring
+            </Link>
+            <Link
+              href="/trip-planner"
+              className="flex items-center gap-3 bg-white hover:bg-gray-50 text-accra-green font-semibold text-sm px-7 py-4 rounded-full border border-gray-200 shadow-sm transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10 9l5 3-5 3V9z" />
+              </svg>
+              Plan With AI
+            </Link>
           </div>
         </div>
-      </section>
 
-      {/* Stats bar */}
-      <section className="border-b border-gray-100">
-        <div className="max-w-5xl mx-auto px-4 py-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {STATS.map((s) => (
-            <div key={s.label} className="text-center">
-              <p className="text-2xl font-bold text-gray-900">{s.value}</p>
-              <p className="text-sm text-gray-500 mt-0.5">{s.label}</p>
-            </div>
-          ))}
+        <div className="rounded-3xl overflow-hidden bg-white p-2 shadow-2xl shadow-accra-green/10">
+          <div
+            className="rounded-2xl bg-cover bg-center aspect-[4/3]"
+            style={{ backgroundImage: `url('${HERO_IMAGE}')` }}
+            role="img"
+            aria-label="Black Star Gate, Accra"
+          />
         </div>
       </section>
 
-      {/* Category pills */}
-      <section className="max-w-5xl mx-auto px-4 py-10">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Explore by category</h2>
+      {/* Bento grid */}
+      <section className="max-w-6xl mx-auto px-6 pb-14 grid lg:grid-cols-3 gap-5">
+        {/* Featured eco-stay */}
+        <Link
+          href="/experiences?categories=Nature"
+          className="lg:col-span-2 group relative rounded-3xl overflow-hidden min-h-[380px] flex items-end"
+        >
+          <div
+            className="absolute inset-0 bg-cover bg-center card-img"
+            style={{ backgroundImage: `url('${ABURI_IMAGE}')` }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
+          <div className="relative z-10 p-7 text-white">
+            <span className="inline-block bg-white/20 backdrop-blur-sm border border-white/30 text-xs font-semibold px-3 py-1 rounded-full">
+              Eco-Stays
+            </span>
+            <h2 className="mt-3 text-3xl font-bold">Aburi Botanical Escape</h2>
+            <p className="mt-2 text-sm text-white/80 max-w-md leading-relaxed">
+              Discover lush tranquility just outside the city. AI recommends the best trails based on your fitness level.
+            </p>
+          </div>
+        </Link>
+
+        {/* Live weather + AI suggestion */}
+        <div className="bg-white/70 backdrop-blur-sm rounded-3xl p-6 flex flex-col shadow-sm">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-4xl font-bold text-accra-green">{weather.temperature}°C</p>
+              <p className="text-sm text-gray-500 mt-1">{weather.condition.label}, {humidityLabel}</p>
+            </div>
+            <svg
+              className={weather.condition.icon === 'sun' ? 'w-9 h-9 text-accra-gold' : 'w-9 h-9 text-accra-leaf'}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.8}
+              viewBox="0 0 24 24"
+              aria-hidden
+            >
+              {WEATHER_ICON_PATHS[weather.condition.icon]}
+            </svg>
+          </div>
+
+          <div className="mt-auto bg-accra-cream rounded-2xl p-4">
+            <p className="text-xs font-bold text-accra-green">AI Suggestion</p>
+            <p className="text-sm text-gray-600 mt-1 leading-relaxed">
+              {weather.condition.suggestion}
+            </p>
+          </div>
+
+          <Link
+            href="/trip-planner"
+            className="mt-4 text-center bg-white border border-gray-200 rounded-2xl py-3 text-sm font-semibold text-accra-green hover:bg-gray-50 transition-colors"
+          >
+            View Details
+          </Link>
+        </div>
+
+        {/* Heritage walk */}
+        <Link
+          href="/experiences?categories=Culture"
+          className="relative rounded-3xl overflow-hidden min-h-[230px] flex flex-col justify-between p-6 group"
+        >
+          <div className="absolute inset-0 bg-cover bg-center opacity-25 card-img" style={{ backgroundImage: `url('${HERITAGE_IMAGE}')` }} />
+          <div className="absolute inset-0 bg-accra-cream/60" />
+          <div className="relative z-10 w-11 h-11 rounded-full bg-accra-green text-white flex items-center justify-center">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.7} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 10l9-6 9 6M5 10v9h14v-9M9 19v-5h6v5" />
+            </svg>
+          </div>
+          <div className="relative z-10">
+            <h3 className="text-2xl font-bold text-accra-green">Heritage Walk</h3>
+            <p className="text-sm text-gray-600 mt-1">Immerse yourself in history with our curated walking tours.</p>
+          </div>
+        </Link>
+
+        {/* Premium stays */}
+        <Link
+          href="/experiences?categories=Wellness"
+          className="lg:col-span-2 relative rounded-3xl overflow-hidden min-h-[230px] flex flex-col justify-between p-6 group"
+        >
+          <div className="absolute inset-0 bg-cover bg-center opacity-25 card-img" style={{ backgroundImage: `url('${STAYS_IMAGE}')` }} />
+          <div className="absolute inset-0 bg-accra-cream/60" />
+          <div className="relative z-10 w-11 h-11 rounded-full bg-accra-gold text-accra-green flex items-center justify-center">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.7} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 18v-6a2 2 0 012-2h14a2 2 0 012 2v6M3 18h18M3 18v2m18-2v2M7 10V8a2 2 0 012-2h2a2 2 0 012 2v2" />
+            </svg>
+          </div>
+          <div className="relative z-10">
+            <h3 className="text-2xl font-bold text-accra-green">Premium Stays</h3>
+            <p className="text-sm text-gray-600 mt-1">Handpicked boutique hotels matched to your style by AI.</p>
+          </div>
+        </Link>
+      </section>
+
+      {/* Categories */}
+      <section className="max-w-6xl mx-auto px-6 pb-12">
+        <h2 className="text-2xl font-bold text-accra-green mb-6">Explore by category</h2>
         <div className="flex flex-wrap gap-3">
           {CATEGORIES.map((cat) => (
             <Link
               key={cat.label}
               href={`/experiences?categories=${encodeURIComponent(cat.label)}`}
-              className="flex items-center gap-2 border border-gray-200 rounded-full px-5 py-2.5 text-sm font-medium text-gray-700 hover:border-gray-900 hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-2 bg-white/70 border border-white rounded-full px-5 py-2.5 text-sm font-medium text-gray-700 hover:border-accra-green hover:text-accra-green transition-colors"
             >
               <span className="text-base">{cat.emoji}</span>
               {cat.label}
@@ -143,30 +354,17 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Trending experiences — real Unsplash photos as placeholders */}
-      <section className="max-w-5xl mx-auto px-4 pb-10">
+      {/* Trending */}
+      <section className="max-w-6xl mx-auto px-6 pb-14">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">Trending right now</h2>
-          <Link href="/experiences" className="text-sm font-medium text-[#FF385C] hover:underline">Show all →</Link>
+          <h2 className="text-2xl font-bold text-accra-green">Trending right now</h2>
+          <Link href="/experiences" className="text-sm font-semibold text-accra-leaf hover:underline">Show all →</Link>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            { img: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80', title: 'Street Food Tour', location: 'Bangkok, Thailand', price: '$35', rating: '4.97', reviews: 312 },
-            { img: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?w=600&q=80', title: 'Sunset Sailing', location: 'Santorini, Greece', price: '$89', rating: '4.95', reviews: 218 },
-            { img: 'https://images.unsplash.com/photo-1551632811-561732d1e306?w=600&q=80', title: 'Mountain Hike', location: 'Patagonia, Argentina', price: '$55', rating: '4.92', reviews: 176 },
-            { img: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=600&q=80', title: 'Cooking Class', location: 'Tokyo, Japan', price: '$65', rating: '4.98', reviews: 445 },
-          ].map((item) => (
-            <Link key={item.title} href="/experiences" className="group cursor-pointer">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {TRENDING.map((item) => (
+            <Link key={item.title} href="/experiences" className="group">
               <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gray-100 mb-3">
-                <div
-                  className="absolute inset-0 bg-cover bg-center card-img"
-                  style={{ backgroundImage: `url('${item.img}')` }}
-                />
-                <button className="absolute top-3 right-3 p-1">
-                  <svg className="w-6 h-6 text-white drop-shadow-md" fill="none" stroke="white" strokeWidth={2} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                  </svg>
-                </button>
+                <div className="absolute inset-0 bg-cover bg-center card-img" style={{ backgroundImage: `url('${item.img}')` }} />
               </div>
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
@@ -174,7 +372,7 @@ export default function Home() {
                   <p className="text-gray-500 text-sm truncate">{item.location}</p>
                 </div>
                 <div className="flex items-center gap-0.5 shrink-0">
-                  <svg className="w-3 h-3 text-gray-900" fill="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3 h-3 text-accra-gold" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                   </svg>
                   <span className="text-xs font-semibold text-gray-900">{item.rating}</span>
@@ -189,20 +387,21 @@ export default function Home() {
         </div>
       </section>
 
-      {/* AI Trip Planner CTA */}      <section className="max-w-5xl mx-auto px-4 pb-10">
-        <div className="relative bg-gradient-to-r from-[#FF385C] to-[#E31C5F] rounded-3xl overflow-hidden p-8 sm:p-12 text-white">
-          <div className="absolute right-0 top-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl pointer-events-none" />
+      {/* AI planner CTA */}
+      <section className="max-w-6xl mx-auto px-6 pb-14">
+        <div className="relative bg-gradient-to-r from-accra-green to-accra-leaf rounded-3xl overflow-hidden p-8 sm:p-12 text-white">
+          <div className="absolute right-0 top-0 w-64 h-64 bg-accra-gold/20 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl pointer-events-none" />
           <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
             <div>
-              <p className="text-white/70 text-sm font-medium uppercase tracking-wide mb-1">New feature</p>
+              <p className="text-accra-gold text-sm font-semibold uppercase tracking-widest mb-1">New feature</p>
               <h2 className="text-2xl sm:text-3xl font-bold mb-2">AI Trip Planner</h2>
               <p className="text-white/80 max-w-md">
-                Tell us your dream trip in plain language — we'll build a full itinerary with local experiences in seconds.
+                Tell us your dream trip in plain language — we&apos;ll build a full itinerary with local experiences in seconds.
               </p>
             </div>
             <Link
               href="/trip-planner"
-              className="shrink-0 bg-white text-[#FF385C] font-semibold px-6 py-3 rounded-full hover:bg-gray-50 transition-colors text-sm"
+              className="shrink-0 bg-accra-gold text-accra-green font-bold px-7 py-3.5 rounded-full hover:brightness-105 transition-all text-sm"
             >
               Try it free →
             </Link>
@@ -211,16 +410,16 @@ export default function Home() {
       </section>
 
       {/* Why us */}
-      <section className="bg-gray-50 border-t border-gray-100">
-        <div className="max-w-5xl mx-auto px-4 py-14">
-          <h2 className="text-2xl font-bold text-gray-900 mb-10 text-center">Why travelers choose us</h2>
+      <section className="bg-white/50 border-y border-white">
+        <div className="max-w-6xl mx-auto px-6 py-14">
+          <h2 className="text-2xl font-bold text-accra-green mb-10 text-center">Why travelers choose us</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
             {FEATURES.map((f) => (
               <div key={f.title} className="flex flex-col items-start gap-3">
-                <div className="w-12 h-12 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center text-[#FF385C]">
+                <div className="w-12 h-12 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center text-accra-leaf">
                   {f.icon}
                 </div>
-                <h3 className="font-semibold text-gray-900">{f.title}</h3>
+                <h3 className="font-semibold text-accra-green">{f.title}</h3>
                 <p className="text-sm text-gray-500 leading-relaxed">{f.desc}</p>
               </div>
             ))}
@@ -228,34 +427,40 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Bottom CTA */}
-      <section className="max-w-5xl mx-auto px-4 py-16 text-center">
-        <h2 className="text-3xl font-bold text-gray-900 mb-3">Ready to explore?</h2>
-        <p className="text-gray-500 mb-8">Join thousands of travelers discovering authentic local experiences.</p>
+      {/* Bottom CTA — keeps sign in / sign up entry points */}
+      <section className="max-w-6xl mx-auto px-6 py-16 text-center">
+        <h2 className="text-3xl font-bold text-accra-green mb-3">Ready to explore Accra?</h2>
+        <p className="text-gray-600 mb-8">Create an account to save itineraries, or sign in to pick up where you left off.</p>
         <div className="flex gap-3 justify-center flex-wrap">
           <Link
-            href="/experiences"
-            className="bg-[#FF385C] hover:bg-[#E31C5F] text-white font-semibold px-8 py-3.5 rounded-full transition-colors text-sm"
+            href="/register"
+            className="bg-accra-green hover:bg-accra-dark text-white font-semibold px-8 py-3.5 rounded-full transition-colors text-sm"
           >
-            Browse Experiences
+            Sign up
           </Link>
           <Link
-            href="/register"
-            className="border border-gray-300 text-gray-700 font-semibold px-8 py-3.5 rounded-full hover:border-gray-900 transition-colors text-sm"
+            href="/login"
+            className="bg-white border border-gray-200 text-accra-green font-semibold px-8 py-3.5 rounded-full hover:border-accra-green transition-colors text-sm"
           >
-            Become a Guide
+            Sign in
+          </Link>
+          <Link
+            href="/experiences"
+            className="border border-transparent text-gray-600 font-semibold px-8 py-3.5 rounded-full hover:text-accra-green transition-colors text-sm"
+          >
+            Browse experiences
           </Link>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-gray-200 bg-white">
-        <div className="max-w-5xl mx-auto px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500">
-          <p>© 2026 TourLocal. All rights reserved.</p>
+      <footer className="border-t border-white bg-white/60">
+        <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500">
+          <p>© 2026 AccraAI. All rights reserved.</p>
           <div className="flex gap-5">
-            <Link href="/experiences" className="hover:text-gray-900 transition-colors">Experiences</Link>
-            <Link href="/trip-planner" className="hover:text-gray-900 transition-colors">Trip Planner</Link>
-            <Link href="/register" className="hover:text-gray-900 transition-colors">Become a Guide</Link>
+            <Link href="/experiences" className="hover:text-accra-green transition-colors">Explore</Link>
+            <Link href="/trip-planner" className="hover:text-accra-green transition-colors">Itinerary</Link>
+            <Link href="/register" className="hover:text-accra-green transition-colors">Become a Guide</Link>
           </div>
         </div>
       </footer>

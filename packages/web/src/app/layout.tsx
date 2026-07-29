@@ -7,8 +7,8 @@ import { ToastProvider } from '@/components/ui/Toast';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'AI-Powered Local Tourism Marketplace',
-  description: 'Discover authentic local experiences with AI-driven trip planning',
+  title: 'AccraAI — Experience Accra Like Never Before',
+  description: 'Curated itineraries, hidden gems, and real-time local insights powered by advanced AI',
 };
 
 export const viewport: Viewport = {
