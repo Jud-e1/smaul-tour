@@ -2,15 +2,24 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/auth';
 import NotificationCenter from '@/components/ui/NotificationCenter';
+
+const NAV_LINKS = [
+  { label: 'Explore', href: '/experiences' },
+  { label: 'Itinerary', href: '/trip-planner' },
+  { label: 'Local Guides', href: '/experiences?q=guide' },
+  { label: 'Eco-Stays', href: '/experiences?categories=Nature' },
+];
 
 export default function Navbar() {
   const { user, logout } = useAuthStore();
   const router = useRouter();
+  const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [search, setSearch] = useState('');
   const userMenuRef = useRef<HTMLDivElement>(null);
 
@@ -34,50 +43,77 @@ export default function Navbar() {
     e.preventDefault();
     router.push(search.trim() ? `/experiences?q=${encodeURIComponent(search.trim())}` : '/experiences');
     setSearch('');
+    setSearchOpen(false);
+    setMenuOpen(false);
   };
 
   return (
-    <nav className="bg-white border-b border-gray-200 sticky top-0 z-40">
+    <nav className="bg-white/80 backdrop-blur-md border-b border-black/5 sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-20 gap-4">
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-1.5 shrink-0">
-            <svg className="w-8 h-8 text-[#FF385C]" viewBox="0 0 32 32" fill="currentColor">
-              <path d="M16 1C10.477 1 6 5.477 6 11c0 7.5 10 20 10 20s10-12.5 10-20c0-5.523-4.477-10-10-10zm0 13.5a3.5 3.5 0 110-7 3.5 3.5 0 010 7z" />
-            </svg>
-            <span className="font-bold text-[#FF385C] text-xl tracking-tight hidden sm:inline">tourlocal</span>
+          <Link href="/" className="shrink-0 text-2xl font-extrabold tracking-tight text-accra-green">
+            AccraAI
           </Link>
 
-          {/* Center search pill — desktop */}
-          <form
-            onSubmit={handleSearch}
-            className="hidden md:flex items-center border border-gray-300 rounded-full shadow-sm hover:shadow-md transition-shadow px-4 py-2 gap-3 flex-1 max-w-md"
-          >
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search experiences..."
-              className="flex-1 text-sm text-gray-800 placeholder-gray-400 outline-none bg-transparent"
-            />
-            <button
-              type="submit"
-              className="w-8 h-8 bg-[#FF385C] rounded-full flex items-center justify-center shrink-0 hover:bg-[#E31C5F] transition-colors"
-            >
-              <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </button>
-          </form>
+          {/* Center nav */}
+          <div className="hidden lg:flex items-center gap-1">
+            {NAV_LINKS.map((link) => {
+              const active = pathname === link.href.split('?')[0];
+              return (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className={`relative px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                    active ? 'text-accra-green' : 'text-gray-600 hover:text-accra-green hover:bg-black/5'
+                  }`}
+                >
+                  {link.label}
+                  {active && (
+                    <span className="absolute left-4 right-4 -bottom-0.5 h-0.5 rounded-full bg-accra-gold" />
+                  )}
+                </Link>
+              );
+            })}
+          </div>
 
           {/* Right side */}
           <div className="flex items-center gap-2 shrink-0">
+            {searchOpen ? (
+              <form onSubmit={handleSearch} className="hidden md:flex items-center gap-2 border border-gray-200 bg-white rounded-full pl-4 pr-1 py-1">
+                <input
+                  autoFocus
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  onBlur={() => !search && setSearchOpen(false)}
+                  placeholder="Search experiences..."
+                  className="w-44 text-sm text-gray-800 placeholder-gray-400 outline-none bg-transparent"
+                />
+                <button type="submit" className="w-8 h-8 bg-accra-green rounded-full flex items-center justify-center hover:bg-accra-dark transition-colors">
+                  <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </button>
+              </form>
+            ) : (
+              <button
+                onClick={() => setSearchOpen(true)}
+                aria-label="Search experiences"
+                className="hidden md:flex w-10 h-10 items-center justify-center rounded-full text-gray-600 hover:text-accra-green hover:bg-black/5 transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </button>
+            )}
+
             <Link
               href="/trip-planner"
-              className="hidden md:block text-sm font-medium text-gray-700 hover:bg-gray-100 px-3 py-2 rounded-full transition-colors"
+              className="hidden sm:block text-sm font-semibold text-white bg-accra-green hover:bg-accra-dark px-5 py-2.5 rounded-full transition-colors"
             >
-              Trip Planner
+              Plan Trip
             </Link>
 
             {user ? (
@@ -86,14 +122,9 @@ export default function Navbar() {
                 <div ref={userMenuRef} className="relative">
                   <button
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    className="flex items-center gap-2 border border-gray-300 rounded-full px-3 py-2 hover:shadow-md transition-shadow"
+                    className="flex items-center justify-center w-10 h-10 rounded-full bg-accra-green text-white text-sm font-semibold hover:bg-accra-dark transition-colors"
                   >
-                    <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                    <div className="w-7 h-7 bg-gray-800 rounded-full flex items-center justify-center text-white text-xs font-semibold">
-                      {user.email?.[0]?.toUpperCase() ?? 'U'}
-                    </div>
+                    {user.email?.[0]?.toUpperCase() ?? 'U'}
                   </button>
 
                   {userMenuOpen && (
@@ -132,13 +163,13 @@ export default function Navbar() {
               <div className="flex items-center gap-1">
                 <Link
                   href="/login"
-                  className="text-sm font-medium text-gray-700 hover:bg-gray-100 px-3 py-2 rounded-full transition-colors"
+                  className="text-sm font-medium text-accra-green hover:bg-black/5 px-3 py-2 rounded-full transition-colors"
                 >
                   Sign in
                 </Link>
                 <Link
                   href="/register"
-                  className="text-sm font-semibold text-white bg-[#FF385C] hover:bg-[#E31C5F] px-4 py-2 rounded-full transition-colors"
+                  className="text-sm font-semibold text-accra-green bg-accra-gold hover:brightness-105 px-4 py-2 rounded-full transition-all"
                 >
                   Sign up
                 </Link>
@@ -148,7 +179,7 @@ export default function Navbar() {
             {/* Mobile hamburger */}
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="md:hidden p-2 text-gray-600 hover:text-gray-900"
+              className="lg:hidden p-2 text-gray-600 hover:text-accra-green"
               aria-label="Toggle menu"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -162,7 +193,7 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="md:hidden border-t border-gray-100 bg-white px-4 py-3 space-y-1 animate-fade-in">
+        <div className="lg:hidden border-t border-gray-100 bg-white px-4 py-3 space-y-1 animate-fade-in">
           <form onSubmit={handleSearch} className="flex gap-2 mb-3">
             <input
               type="text"
@@ -171,12 +202,20 @@ export default function Navbar() {
               placeholder="Search experiences..."
               className="flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm outline-none"
             />
-            <button type="submit" className="bg-[#FF385C] text-white px-4 py-2 rounded-full text-sm font-medium">
+            <button type="submit" className="bg-accra-green text-white px-4 py-2 rounded-full text-sm font-medium">
               Go
             </button>
           </form>
-          <Link href="/experiences" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-medium text-gray-700">Experiences</Link>
-          <Link href="/trip-planner" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-medium text-gray-700">Trip Planner</Link>
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.label}
+              href={link.href}
+              onClick={() => setMenuOpen(false)}
+              className="block py-2 text-sm font-medium text-gray-700"
+            >
+              {link.label}
+            </Link>
+          ))}
           {user ? (
             <>
               <Link href={dashboardHref} onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-medium text-gray-700">Dashboard</Link>
@@ -185,7 +224,7 @@ export default function Navbar() {
           ) : (
             <>
               <Link href="/login" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-medium text-gray-700">Sign in</Link>
-              <Link href="/register" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-semibold text-[#FF385C]">Sign up</Link>
+              <Link href="/register" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-semibold text-accra-green">Sign up</Link>
             </>
           )}
         </div>

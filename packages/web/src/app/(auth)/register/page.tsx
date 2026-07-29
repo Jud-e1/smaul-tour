@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { useAuthStore } from '@/store/auth';
+import AuthShell, { authInputClass, authLabelClass } from '@/components/auth/AuthShell';
 
 interface RegisterForm {
   firstName: string;
@@ -13,18 +14,21 @@ interface RegisterForm {
   password: string;
   confirmPassword: string;
   role: 'traveler' | 'guide';
+  agreeToTerms: boolean;
 }
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { register: registerUser, isLoading, error, clearError } = useAuthStore();
+  const { register: registerUser, loginOAuth, isLoading, error, clearError } = useAuthStore();
   const [submitError, setSubmitError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm<RegisterForm>({
     defaultValues: { role: 'traveler' },
   });
 
   const password = watch('password');
+  const selectedRole = watch('role');
 
   const onSubmit = async (data: RegisterForm) => {
     setSubmitError('');
@@ -48,113 +52,161 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left branding panel */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#FF385C] to-[#E31C5F] flex-col justify-between p-12 text-white">
-        <div>
-          <span className="text-2xl font-extrabold tracking-tight">🌍 TourLocal</span>
-        </div>
-        <div>
-          <h2 className="text-3xl font-bold leading-snug mb-4">
-            Share your city.<br />Earn doing what you love.
-          </h2>
-          <p className="text-rose-100 text-sm leading-relaxed max-w-sm">
-            Whether you're a traveler seeking adventure or a local guide ready to share your passion — there's a place for you here.
-          </p>
-          <div className="mt-8 flex flex-col gap-3">
-            {['Free to join', 'Set your own schedule', 'Get paid securely'].map((f) => (
-              <div key={f} className="flex items-center gap-2 text-sm text-rose-100">
-                <svg className="w-4 h-4 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                </svg>
-                {f}
-              </div>
-            ))}
-          </div>
-        </div>
-        <p className="text-rose-200 text-xs">© 2026 TourLocal. All rights reserved.</p>
+    <AuthShell
+      headline={<>Discover Accra, one<br />guided step at a time.</>}
+      caption="Beyond the guidebook"
+      image="/auth-explorer.webp"
+      imageAlt="Illustrated explorer standing on a green hillside"
+      topLink={{ prompt: 'Already a member?', label: 'Sign in', href: '/login' }}
+    >
+      <h1 className="text-3xl font-extrabold text-accra-green animate-rise-in" style={{ animationDelay: '60ms' }}>
+        Create Account
+      </h1>
+
+      <div className="mt-6 grid grid-cols-2 gap-3 animate-rise-in" style={{ animationDelay: '120ms' }}>
+        <button
+          type="button"
+          onClick={() => { void loginOAuth('google', 'google-oauth-token').catch(() => {}); }}
+          className="flex items-center justify-center gap-2 rounded-xl bg-accra-green text-white text-xs font-semibold py-3 hover:bg-accra-dark hover:-translate-y-0.5 transition-all"
+        >
+          <svg className="w-4 h-4" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          Sign up with Google
+        </button>
+        <button
+          type="button"
+          onClick={() => { void loginOAuth('facebook', 'facebook-oauth-token').catch(() => {}); }}
+          className="flex items-center justify-center gap-2 rounded-xl bg-white border border-gray-200 text-accra-green text-xs font-semibold py-3 hover:border-accra-leaf hover:-translate-y-0.5 transition-all"
+        >
+          <svg className="w-4 h-4 text-[#1877F2]" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+          </svg>
+          with Facebook
+        </button>
       </div>
 
-      {/* Right form panel */}
-      <div className="flex-1 flex items-center justify-center bg-gray-50 px-6 py-12 overflow-y-auto">
-        <div className="w-full max-w-md">
-          <div className="lg:hidden mb-8 text-center">
-            <span className="text-2xl font-extrabold text-[#FF385C]">🌍 TourLocal</span>
+      <p className="mt-5 text-[11px] text-gray-400 animate-rise-in" style={{ animationDelay: '180ms' }}>
+        <span className="inline-block w-6 border-t border-gray-200 align-middle mr-2" />
+        Or sign up using your email address
+      </p>
+
+      <form onSubmit={(e) => { void handleSubmit(onSubmit)(e); }} className="mt-4 space-y-3.5">
+        <div className="grid grid-cols-2 gap-3 animate-rise-in" style={{ animationDelay: '220ms' }}>
+          <div>
+            <label className={authLabelClass}>First name</label>
+            <input {...register('firstName', { required: 'Required' })} className={authInputClass} />
+            {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName.message}</p>}
           </div>
+          <div>
+            <label className={authLabelClass}>Last name</label>
+            <input {...register('lastName', { required: 'Required' })} className={authInputClass} />
+            {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName.message}</p>}
+          </div>
+        </div>
 
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">Create account</h1>
-          <p className="text-gray-500 text-sm mb-7">Join the tourism marketplace</p>
+        <div className="animate-rise-in" style={{ animationDelay: '260ms' }}>
+          <label className={authLabelClass}>Email</label>
+          <input type="email" {...register('email', { required: 'Email is required' })} className={authInputClass} />
+          {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+        </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">First name</label>
-                <input {...register('firstName', { required: 'Required' })}
-                  className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF385C]" />
-                {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName.message}</p>}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Last name</label>
-                <input {...register('lastName', { required: 'Required' })}
-                  className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF385C]" />
-                {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName.message}</p>}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input type="email" {...register('email', { required: 'Email is required' })}
-                className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF385C]" />
-              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-              <input type="password" {...register('password', {
+        <div className="animate-rise-in" style={{ animationDelay: '300ms' }}>
+          <label className={authLabelClass}>Password</label>
+          <div className="relative">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              {...register('password', {
                 required: 'Password is required',
                 minLength: { value: 8, message: 'At least 8 characters' },
                 pattern: { value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, message: 'Must include uppercase, lowercase, and number' },
               })}
-                className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF385C]" />
-              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Confirm password</label>
-              <input type="password" {...register('confirmPassword', {
-                required: 'Please confirm your password',
-                validate: (v: string) => v === password || 'Passwords do not match',
-              })}
-                className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF385C]" />
-              {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">I am a...</label>
-              <div className="grid grid-cols-2 gap-3">
-                {(['traveler', 'guide'] as const).map((role) => (
-                  <label key={role} className="flex items-center gap-2 border border-gray-300 rounded-xl p-3 cursor-pointer hover:bg-white transition-colors">
-                    <input type="radio" value={role} {...register('role')} className="text-[#FF385C]" />
-                    <span className="text-sm capitalize">{role}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {(submitError || error) && <p className="text-red-500 text-sm">{submitError || error}</p>}
-
-            <button type="submit" disabled={isLoading}
-              className="w-full bg-[#FF385C] text-white py-2.5 rounded-xl font-medium hover:bg-[#E31C5F] disabled:opacity-50 transition-colors">
-              {isLoading ? 'Creating account...' : 'Create Account'}
+              className={`${authInputClass} pr-12`}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-accra-green transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                {showPassword ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 3l18 18M10.6 10.6a2 2 0 002.8 2.8M9.9 4.24A9.1 9.1 0 0112 4c5 0 9 4.5 9 8a9.7 9.7 0 01-2.2 3.9M6.6 6.6C4.3 8 3 10.3 3 12c0 3.5 4 8 9 8 1.4 0 2.7-.3 3.9-.9" />
+                ) : (
+                  <>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 12s3.5-7 9-7 9 7 9 7-3.5 7-9 7-9-7-9-7z" />
+                    <circle cx="12" cy="12" r="2.5" />
+                  </>
+                )}
+              </svg>
             </button>
-          </form>
-
-          <p className="mt-6 text-center text-sm text-gray-500">
-            Already have an account?{' '}
-            <Link href="/login" className="text-[#FF385C] hover:underline">Sign in</Link>
-          </p>
+          </div>
+          {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
         </div>
-      </div>
-    </div>
+
+        <div className="animate-rise-in" style={{ animationDelay: '340ms' }}>
+          <label className={authLabelClass}>Confirm password</label>
+          <input
+            type={showPassword ? 'text' : 'password'}
+            {...register('confirmPassword', {
+              required: 'Please confirm your password',
+              validate: (v: string) => v === password || 'Passwords do not match',
+            })}
+            className={authInputClass}
+          />
+          {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>}
+        </div>
+
+        <div className="animate-rise-in" style={{ animationDelay: '380ms' }}>
+          <label className={authLabelClass}>I am a...</label>
+          <div className="grid grid-cols-2 gap-3">
+            {(['traveler', 'guide'] as const).map((role) => (
+              <label
+                key={role}
+                className={`flex items-center gap-2 rounded-xl border px-4 py-3 cursor-pointer transition-all ${
+                  selectedRole === role
+                    ? 'border-accra-leaf bg-accra-leaf/10 text-accra-green'
+                    : 'border-gray-200 text-gray-600 hover:border-accra-leaf/50'
+                }`}
+              >
+                <input type="radio" value={role} {...register('role')} className="accent-accra-leaf" />
+                <span className="text-sm font-medium capitalize">{role}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div className="animate-rise-in" style={{ animationDelay: '420ms' }}>
+          <label className="flex items-start gap-2 text-xs text-gray-500 cursor-pointer">
+            <input
+              type="checkbox"
+              {...register('agreeToTerms', { required: 'Please accept the terms to continue' })}
+              className="mt-0.5 accent-accra-leaf"
+            />
+            I agree to all terms and Privacy Policy
+          </label>
+          {errors.agreeToTerms && <p className="text-red-500 text-xs mt-1">{errors.agreeToTerms.message}</p>}
+        </div>
+
+        {(submitError || error) && <p className="text-red-500 text-sm">{submitError || error}</p>}
+
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full rounded-xl bg-accra-green text-white py-3.5 text-sm font-bold shadow-lg shadow-accra-green/20 hover:bg-accra-dark hover:-translate-y-0.5 disabled:opacity-50 disabled:translate-y-0 transition-all animate-rise-in"
+          style={{ animationDelay: '460ms' }}
+        >
+          {isLoading ? 'Creating account...' : 'Sign up'}
+        </button>
+      </form>
+
+      <p className="mt-5 text-xs text-gray-500 animate-rise-in" style={{ animationDelay: '500ms' }}>
+        Already have an account?{' '}
+        <Link href="/login" className="font-semibold text-accra-leaf hover:underline">Log in</Link>
+      </p>
+    </AuthShell>
   );
 }

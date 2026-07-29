@@ -45,7 +45,9 @@ export default function ExperiencesPage() {
 
   // Filters
   const [search, setSearch] = useState(searchParams.get('q') || '');
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    searchParams.get('categories')?.split(',').filter(Boolean) || [],
+  );
   const [priceMin, setPriceMin] = useState('');
   const [priceMax, setPriceMax] = useState('');
   const [durationMin, setDurationMin] = useState('');
