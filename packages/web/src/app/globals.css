@@ -1,43 +1,46 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;0,14..32,900;1,14..32,400&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ── Design tokens ─────────────────────────────────────────────────────── */
 :root {
   --foreground-rgb: 34, 34, 34;
   --brand: #FF385C;
   --brand-dark: #E31C5F;
+  --green-primary: #22c55e;
+  --green-deep: #0E4A22;
+  --green-mid: #1F7A3C;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   color: rgb(var(--foreground-rgb));
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* Fade in + slide up */
 @keyframes fade-in {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
 .animate-fade-in {
-  animation: fade-in 0.2s ease-out;
+  animation: fade-in 0.3s ease-out;
 }
 
 /* Airbnb-style card image zoom */
-.card-img {
-  transition: transform 0.4s ease;
-}
-.card-img:hover {
-  transform: scale(1.03);
-}
+.card-img { transition: transform 0.4s ease; }
+.card-img:hover { transform: scale(1.03); }
 
-/* Smooth underline on price */
+/* Price underline */
 .price-underline {
   text-decoration: underline;
   text-underline-offset: 2px;
@@ -52,15 +55,13 @@ body {
   animation: slide-in-right 0.25s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-/* Hide scrollbar for category pills */
+/* Hide scrollbar */
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* ── Auth screen motion ── */
-
-/* Staggered entrance for form rows */
+/* ── Staggered entrance for form rows ──────────────────────────────────── */
 @keyframes rise-in {
-  from { opacity: 0; transform: translateY(14px); }
+  from { opacity: 0; transform: translateY(18px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 .animate-rise-in {
@@ -68,41 +69,205 @@ body {
   animation: rise-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-/* Slow bob for the illustration */
+/* ── Floating bob animation (traveler illustration) ────────────────────── */
 @keyframes float-y {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(-14px); }
 }
 .animate-float-y {
-  animation: float-y 6s ease-in-out infinite;
+  animation: float-y 5s ease-in-out infinite;
 }
 
-/* Drifting background blobs */
+/* ── Drifting background blobs ─────────────────────────────────────────── */
 @keyframes drift {
   0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-  33%      { transform: translate3d(24px, -30px, 0) scale(1.08); }
-  66%      { transform: translate3d(-20px, 18px, 0) scale(0.94); }
+  25%      { transform: translate3d(30px, -40px, 0) scale(1.1); }
+  50%      { transform: translate3d(-20px, 25px, 0) scale(0.95); }
+  75%      { transform: translate3d(40px, 10px, 0) scale(1.05); }
 }
 .animate-drift {
-  animation: drift 18s ease-in-out infinite;
+  animation: drift 20s ease-in-out infinite;
 }
 
-/* Panning gradient wash behind the illustration */
+/* ── Panning gradient wash (sidebar) ───────────────────────────────────── */
 @keyframes pan-gradient {
   0%, 100% { background-position: 0% 50%; }
   50%      { background-position: 100% 50%; }
 }
 .animate-pan-gradient {
   background-size: 200% 200%;
-  animation: pan-gradient 14s ease infinite;
+  animation: pan-gradient 10s ease infinite;
 }
 
+/* ── Dashboard card lift on hover ──────────────────────────────────────── */
+.dashboard-card-hover {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.35s ease;
+}
+.dashboard-card-hover:hover {
+  transform: translateY(-6px) scale(1.015);
+  box-shadow: 0 24px 48px -12px rgba(14, 74, 34, 0.15);
+}
+
+/* ── Gentle pulse for "Book Now" button ────────────────────────────────── */
+@keyframes pulse-green {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.5); }
+  50%      { box-shadow: 0 0 0 12px rgba(34, 197, 94, 0); }
+}
+.animate-pulse-green {
+  animation: pulse-green 2.5s ease-in-out infinite;
+}
+
+/* ── Staggered slide-up for discover cards ─────────────────────────────── */
+@keyframes slide-up-fade {
+  from { opacity: 0; transform: translateY(28px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-slide-up {
+  animation: slide-up-fade 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  opacity: 0;
+}
+
+/* ── Cloud drift for sidebar illustration ──────────────────────────────── */
+@keyframes cloud-drift {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(10px); }
+}
+.animate-cloud-drift {
+  animation: cloud-drift 5s ease-in-out infinite;
+}
+
+/* ── Floating particle dots (background texture) ───────────────────────── */
+@keyframes float-particle {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.4; }
+  50%       { transform: translateY(-20px) scale(1.2); opacity: 0.8; }
+}
+.animate-float-particle {
+  animation: float-particle 4s ease-in-out infinite;
+}
+
+/* ── Shimmer loading skeleton ──────────────────────────────────────────── */
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position: 200% 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, #f0fdf4 25%, #dcfce7 50%, #f0fdf4 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ── Smooth underline indicator for tabs ───────────────────────────────── */
+@keyframes tab-underline {
+  from { scaleX: 0; }
+  to   { scaleX: 1; }
+}
+
+/* ── Notification dot pulse ────────────────────────────────────────────── */
+@keyframes dot-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.6; transform: scale(0.8); }
+}
+
+/* ── Sidebar nav item hover glow ───────────────────────────────────────── */
+@keyframes nav-glow {
+  from { box-shadow: none; }
+  to   { box-shadow: inset 0 0 20px rgba(34, 197, 94, 0.1); }
+}
+
+/* ── Featured card shimmer overlay ─────────────────────────────────────── */
+@keyframes featured-shine {
+  from { transform: translateX(-100%) rotate(45deg); }
+  to   { transform: translateX(300%) rotate(45deg); }
+}
+.featured-shine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.15) 50%, transparent 70%);
+  animation: featured-shine 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ── Scale-in for modal ────────────────────────────────────────────────── */
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.animate-scale-in {
+  animation: scale-in 0.25s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* ── Greeting banner animated wave ────────────────────────────────────── */
+@keyframes wave-float {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50%       { transform: translateY(-8px) rotate(2deg); }
+}
+.animate-wave {
+  display: inline-block;
+  animation: wave-float 2.5s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+/* ── Moving gradient background for hero banner ────────────────────────── */
+@keyframes gradient-move {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.animate-gradient-move {
+  background-size: 200% 200%;
+  animation: gradient-move 6s ease infinite;
+}
+
+/* ── Sidebar nav item slide-in ─────────────────────────────────────────── */
+@keyframes slide-in-left {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.animate-slide-in-left {
+  animation: slide-in-left 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  opacity: 0;
+}
+
+/* ── KPI card count-up shimmer ─────────────────────────────────────────── */
+@keyframes count-glow {
+  0%, 100% { text-shadow: 0 0 0 transparent; }
+  50%       { text-shadow: 0 0 20px rgba(34, 197, 94, 0.4); }
+}
+.animate-count-glow {
+  animation: count-glow 3s ease-in-out infinite;
+}
+
+/* ── Discover card tilt on hover (3D effect) ───────────────────────────── */
+.discover-card {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+  transform-style: preserve-3d;
+}
+.discover-card:hover {
+  transform: perspective(600px) rotateY(-4deg) rotateX(2deg) translateY(-4px);
+  box-shadow: 8px 16px 40px -8px rgba(14, 74, 34, 0.2);
+}
+
+/* ── Reduced-motion overrides ──────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   .animate-rise-in,
   .animate-float-y,
   .animate-drift,
-  .animate-pan-gradient {
+  .animate-pan-gradient,
+  .animate-pulse-green,
+  .animate-slide-up,
+  .animate-cloud-drift,
+  .animate-float-particle,
+  .animate-fade-in,
+  .animate-wave,
+  .animate-gradient-move,
+  .animate-slide-in-left,
+  .animate-count-glow,
+  .dashboard-card-hover:hover,
+  .discover-card:hover {
     animation: none;
     opacity: 1;
+    transform: none;
   }
 }
