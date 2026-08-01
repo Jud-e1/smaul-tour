@@ -3,7 +3,7 @@ import { User } from './user.entity';
 import { Experience } from './experience.entity';
 import { Payment } from './payment.entity';
 import { Review } from './review.entity';
-import { CancellationPolicy } from './experience.entity';
+import { CancellationPolicy } from './experience.enums';
 
 export enum BookingStatus {
   PENDING = 'pending',

@@ -4,18 +4,9 @@ import { Image } from './image.entity';
 import { AvailabilitySlot } from './availability-slot.entity';
 import { Booking } from './booking.entity';
 import { Review } from './review.entity';
+import { ExperienceStatus, CancellationPolicy } from './experience.enums';
 
-export enum ExperienceStatus {
-  ACTIVE = 'active',
-  INACTIVE = 'inactive',
-  PENDING_APPROVAL = 'pending_approval',
-}
-
-export enum CancellationPolicy {
-  FLEXIBLE = 'flexible',
-  MODERATE = 'moderate',
-  STRICT = 'strict',
-}
+export { ExperienceStatus, CancellationPolicy };
 
 @Entity('experiences')
 export class Experience {
