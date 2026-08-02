@@ -64,14 +64,8 @@ export const useAuthStore = create<AuthState>((set: (state: Partial<AuthState> |
       if (accessToken) localStorage.setItem('access_token', accessToken);
       if (refreshToken) localStorage.setItem('refresh_token', refreshToken);
       set({ user: data.user, isAuthenticated: true, isLoading: false });
-      // #region agent log
-      fetch('http://127.0.0.1:7530/ingest/996782cf-3a56-4e12-b167-d1376a9b8cab',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'a4fced'},body:JSON.stringify({sessionId:'a4fced',hypothesisId:'H4',location:'auth.ts:login:success',message:'login ok',data:{role:data.user?.role},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
     } catch (err: unknown) {
       const msg = normalizeApiErrorMessage(err, 'Login failed');
-      // #region agent log
-      fetch('http://127.0.0.1:7530/ingest/996782cf-3a56-4e12-b167-d1376a9b8cab',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'a4fced'},body:JSON.stringify({sessionId:'a4fced',hypothesisId:'H1',location:'auth.ts:login:catch',message:'login err',data:{status:(err as {response?:{status?:number}}).response?.status,hasResponse:!!(err as {response?:unknown}).response,isNetwork:isAxiosError(err)&&!(err as {response?:unknown}).response,normalizedLen:msg.length,usedNetworkHint:msg===NETWORK_HINT},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
       set({ error: msg, isLoading: false });
       throw err;
     }
@@ -101,14 +95,8 @@ export const useAuthStore = create<AuthState>((set: (state: Partial<AuthState> |
       if (accessToken) localStorage.setItem('access_token', accessToken);
       if (refreshToken) localStorage.setItem('refresh_token', refreshToken);
       set({ user: res.user, isAuthenticated: true, isLoading: false });
-      // #region agent log
-      fetch('http://127.0.0.1:7530/ingest/996782cf-3a56-4e12-b167-d1376a9b8cab',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'a4fced'},body:JSON.stringify({sessionId:'a4fced',hypothesisId:'H3',location:'auth.ts:register:success',message:'register ok',data:{role:res.user?.role,hasUser:!!res.user},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
     } catch (err: unknown) {
       const msg = normalizeApiErrorMessage(err, 'Registration failed');
-      // #region agent log
-      fetch('http://127.0.0.1:7530/ingest/996782cf-3a56-4e12-b167-d1376a9b8cab',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'a4fced'},body:JSON.stringify({sessionId:'a4fced',hypothesisId:'H1',location:'auth.ts:register:catch',message:'register err',data:{status:(err as {response?:{status?:number}}).response?.status,hasResponse:!!(err as {response?:unknown}).response,isNetwork:isAxiosError(err)&&!(err as {response?:unknown}).response,normalizedLen:msg.length,usedNetworkHint:msg===NETWORK_HINT},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
       set({ error: msg, isLoading: false });
       throw err;
     }

@@ -32,9 +32,6 @@ export default function LoginPage() {
     } catch {
       const fromStore = useAuthStore.getState().error;
       setSubmitError(fromStore || 'Login failed. Please check your credentials.');
-      // #region agent log
-      fetch('http://127.0.0.1:7530/ingest/996782cf-3a56-4e12-b167-d1376a9b8cab',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'a4fced'},body:JSON.stringify({sessionId:'a4fced',hypothesisId:'H5',location:'login/page.tsx:catch',message:'login ui err',data:{storeErrorLen:fromStore?.length??0,usedFallback:!fromStore},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
     }
   };
 

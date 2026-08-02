@@ -56,7 +56,7 @@ export default function Navbar() {
 
           {/* Logo */}
           <Link href="/" className="shrink-0 text-2xl font-extrabold tracking-tight text-accra-green">
-            AccraAI
+            Nsoroma
           </Link>
 
           {/* Center nav */}

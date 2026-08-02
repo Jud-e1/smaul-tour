@@ -2,6 +2,10 @@
 const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
+  // Suppress SWC lockfile patch warning in monorepo workspaces
+  experimental: {
+    forceSwcTransforms: true,
+  },
   images: {
     domains: ['localhost'],
     remotePatterns: [

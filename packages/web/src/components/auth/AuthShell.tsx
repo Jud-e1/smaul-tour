@@ -87,7 +87,7 @@ export default function AuthShell({ headline, caption, image, imageAlt, topLink,
 
           <div className="relative h-full flex flex-col justify-between p-7 lg:p-9 text-white">
             <Link href="/" className="text-lg font-extrabold tracking-tight drop-shadow-sm w-fit">
-              AccraAI
+              Nsoroma
             </Link>
             <div
               className="transition-transform duration-300 ease-out"

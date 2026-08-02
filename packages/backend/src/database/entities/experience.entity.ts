@@ -2,19 +2,15 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 import { User } from './user.entity';
 import { Image } from './image.entity';
 import { AvailabilitySlot } from './availability-slot.entity';
-import { Booking } from './booking.entity';
 import { Review } from './review.entity';
+import { CancellationPolicy } from './cancellation-policy.enum';
+
+export { CancellationPolicy } from './cancellation-policy.enum';
 
 export enum ExperienceStatus {
   ACTIVE = 'active',
   INACTIVE = 'inactive',
   PENDING_APPROVAL = 'pending_approval',
-}
-
-export enum CancellationPolicy {
-  FLEXIBLE = 'flexible',
-  MODERATE = 'moderate',
-  STRICT = 'strict',
 }
 
 @Entity('experiences')
@@ -71,6 +67,7 @@ export class Experience {
   @Column({ 
     type: 'enum', 
     enum: CancellationPolicy, 
+    enumName: 'cancellation_policy_enum',
     default: CancellationPolicy.MODERATE,
     name: 'cancellation_policy'
   })
@@ -92,8 +89,9 @@ export class Experience {
   @OneToMany(() => AvailabilitySlot, slot => slot.experience)
   availabilitySlots!: AvailabilitySlot[];
 
-  @OneToMany(() => Booking, booking => booking.experience)
-  bookings!: Booking[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  @OneToMany('Booking', (booking: any) => booking.experience)
+  bookings!: any[];
 
   @OneToMany(() => Review, review => review.experience)
   reviews!: Review[];

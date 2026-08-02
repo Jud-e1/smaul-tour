@@ -456,7 +456,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t border-white bg-white/60">
         <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500">
-          <p>© 2026 AccraAI. All rights reserved.</p>
+          <p>© 2026 Nsoroma. All rights reserved.</p>
           <div className="flex gap-5">
             <Link href="/experiences" className="hover:text-accra-green transition-colors">Explore</Link>
             <Link href="/trip-planner" className="hover:text-accra-green transition-colors">Itinerary</Link>

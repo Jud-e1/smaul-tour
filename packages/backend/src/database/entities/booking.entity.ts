@@ -3,7 +3,7 @@ import { User } from './user.entity';
 import { Experience } from './experience.entity';
 import { Payment } from './payment.entity';
 import { Review } from './review.entity';
-import { CancellationPolicy } from './experience.entity';
+import { CancellationPolicy } from './cancellation-policy.enum';
 
 export enum BookingStatus {
   PENDING = 'pending',
@@ -51,7 +51,7 @@ export class Booking {
   @Column({ type: 'enum', enum: BookingStatus, default: BookingStatus.PENDING })
   status: BookingStatus;
 
-  @Column({ type: 'enum', enum: CancellationPolicy, name: 'cancellation_policy' })
+  @Column({ type: 'enum', enum: CancellationPolicy, enumName: 'cancellation_policy_enum', default: CancellationPolicy.MODERATE, name: 'cancellation_policy' })
   cancellationPolicy: CancellationPolicy;
 
   @Column({ type: 'uuid', nullable: true, name: 'payment_id' })
