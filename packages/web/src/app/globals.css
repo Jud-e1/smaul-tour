@@ -249,6 +249,74 @@ body {
   box-shadow: 8px 16px 40px -8px rgba(14, 74, 34, 0.2);
 }
 
+/* ── Premium card surface (Resort / Findora style) ─────────────────────── */
+.premium-card {
+  border-radius: 1.5rem;
+  background: #fff;
+  border: 1px solid rgba(46, 139, 158, 0.08);
+  box-shadow: 0 4px 24px -4px rgba(46, 139, 158, 0.08);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
+}
+.premium-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -12px rgba(46, 139, 158, 0.18);
+}
+
+/* Pill search bar */
+.search-pill {
+  border-radius: 9999px;
+  background: #fff;
+  border: 1px solid rgba(46, 139, 158, 0.12);
+  box-shadow: 0 2px 12px -2px rgba(46, 139, 158, 0.06);
+}
+.search-pill:focus-within {
+  border-color: var(--sea-light);
+  box-shadow: 0 0 0 4px rgba(58, 163, 184, 0.15);
+}
+
+/* Category chip */
+.chip {
+  border-radius: 9999px;
+  padding: 0.5rem 1.125rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.chip-active {
+  background: var(--sea);
+  color: #fff;
+  border: 1px solid var(--sea);
+  box-shadow: 0 4px 12px -2px rgba(46, 139, 158, 0.35);
+}
+.chip-inactive {
+  background: #fff;
+  color: #64748b;
+  border: 1px solid rgba(46, 139, 158, 0.12);
+}
+.chip-inactive:hover {
+  border-color: var(--sea-light);
+  color: var(--sea);
+  background: var(--beige);
+}
+
+/* Image overlay gradient for cards */
+.card-overlay-gradient {
+  background: linear-gradient(to top, rgba(9, 29, 32, 0.85) 0%, rgba(9, 29, 32, 0.35) 45%, transparent 100%);
+}
+
+/* Featured dark hero card */
+.featured-hero-card {
+  background: linear-gradient(135deg, #1B545F 0%, #246F7E 50%, #2E8B9E 100%);
+  border-radius: 1.75rem;
+  box-shadow: 0 16px 48px -8px rgba(27, 84, 95, 0.45);
+}
+
+/* Soft page background */
+.page-bg-soft {
+  background: linear-gradient(180deg, #FDFCF9 0%, #F5F0E6 40%, #EBF6F9 100%);
+}
+
 /* ── Reduced-motion overrides ──────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   .animate-rise-in,

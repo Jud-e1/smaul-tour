@@ -47,12 +47,14 @@ const CANCELLATION_POLICY_LABELS: Record<string, string> = {
   strict: 'Strict – full refund up to 14 days before',
 };
 
+const DASHBOARD_CATEGORIES = ['Culture', 'Adventure', 'Nature', 'Food & Drink', 'Wellness', 'Art'];
+
 // ── Animated floating orb ────────────────────────────────────────────────
 function FloatingOrb({ className }: { className: string }) {
   return <div className={`absolute rounded-full blur-3xl opacity-15 animate-drift pointer-events-none ${className}`} />;
 }
 
-// ── Floating green particles ─────────────────────────────────────────────
+// ── Floating accent particles ─────────────────────────────────────────────
 function Particles() {
   const dots = [
     { style: { top: '15%', left: '8%', animationDelay: '0s', width: 8, height: 8 } },
@@ -68,7 +70,7 @@ function Particles() {
       {dots.map((d, i) => (
         <div
           key={i}
-          className="fixed rounded-full bg-emerald-400 animate-float-particle pointer-events-none z-0"
+          className="fixed rounded-full bg-sea-400 animate-float-particle pointer-events-none z-0"
           style={{ opacity: 0.35, position: 'fixed', ...d.style }}
         />
       ))}
@@ -79,8 +81,8 @@ function Particles() {
 // ── Sidebar animated travel illustration ─────────────────────────────────
 function SidebarIllustration({ name }: { name: string }) {
   return (
-    <div className="relative h-36 overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-400 via-green-400 to-emerald-600 mx-1">
-      <div className="absolute inset-0 animate-pan-gradient bg-gradient-to-br from-emerald-300/50 via-transparent to-green-700/40" style={{ backgroundSize: '200% 200%' }} />
+    <div className="relative h-36 overflow-hidden rounded-2xl bg-gradient-to-br from-sea-400 via-sea-300 to-sea-600 mx-1">
+      <div className="absolute inset-0 animate-pan-gradient bg-gradient-to-br from-sea-200/50 via-transparent to-sea-700/40" style={{ backgroundSize: '200% 200%' }} />
       {/* Clouds */}
       <div className="absolute top-3 left-2 right-2 flex justify-between animate-cloud-drift">
         <div className="w-10 h-3 bg-white/60 rounded-full blur-[2px]" />
@@ -90,21 +92,21 @@ function SidebarIllustration({ name }: { name: string }) {
       {/* Floating traveler */}
       <div className="absolute inset-0 flex items-center justify-center animate-float-y">
         <svg viewBox="0 0 120 110" className="w-20 h-18 drop-shadow-xl" aria-hidden>
-          <ellipse cx="60" cy="92" rx="22" ry="4" fill="#0A3417" opacity="0.2" />
+          <ellipse cx="60" cy="92" rx="22" ry="4" fill="#091D20" opacity="0.2" />
           <rect x="49" y="64" width="22" height="24" rx="4" fill="#ffffff" />
-          <rect x="44" y="66" width="7" height="14" rx="3" fill="#4ade80" />
-          <circle cx="60" cy="54" r="11" fill="#FBBF24" />
-          <ellipse cx="60" cy="43" rx="13" ry="3" fill="#0E4A22" />
-          <rect x="54" y="37" width="12" height="7" rx="3" fill="#0E4A22" />
+          <rect x="44" y="66" width="7" height="14" rx="3" fill="#3AA3B8" />
+          <circle cx="60" cy="54" r="11" fill="#F5F0E6" />
+          <ellipse cx="60" cy="43" rx="13" ry="3" fill="#1B545F" />
+          <rect x="54" y="37" width="12" height="7" rx="3" fill="#1B545F" />
           <circle cx="56.5" cy="54" r="1.6" fill="white" />
           <circle cx="63.5" cy="54" r="1.6" fill="white" />
-          <path d="M56 58 Q60 61 64 58" stroke="#0A3417" strokeWidth="1.4" fill="none" strokeLinecap="round" />
-          <path d="M49 70 L40 61" stroke="#FBBF24" strokeWidth="3.5" strokeLinecap="round" />
-          <path d="M71 70 L80 63" stroke="#FBBF24" strokeWidth="3.5" strokeLinecap="round" />
-          <line x1="80" y1="63" x2="80" y2="48" stroke="#0E4A22" strokeWidth="1.8" />
-          <path d="M80 48 L91 52 L80 56Z" fill="#22c55e" />
-          <rect x="53" y="87" width="6" height="9" rx="2" fill="#0E4A22" />
-          <rect x="61" y="87" width="6" height="9" rx="2" fill="#0E4A22" />
+          <path d="M56 58 Q60 61 64 58" stroke="#091D20" strokeWidth="1.4" fill="none" strokeLinecap="round" />
+          <path d="M49 70 L40 61" stroke="#F5F0E6" strokeWidth="3.5" strokeLinecap="round" />
+          <path d="M71 70 L80 63" stroke="#F5F0E6" strokeWidth="3.5" strokeLinecap="round" />
+          <line x1="80" y1="63" x2="80" y2="48" stroke="#1B545F" strokeWidth="1.8" />
+          <path d="M80 48 L91 52 L80 56Z" fill="#2E8B9E" />
+          <rect x="53" y="87" width="6" height="9" rx="2" fill="#1B545F" />
+          <rect x="61" y="87" width="6" height="9" rx="2" fill="#1B545F" />
         </svg>
       </div>
       {/* Name badge */}
@@ -383,10 +385,10 @@ export default function TravelerDashboard() {
   ];
 
   const stats = [
-    { label: 'Bookings', value: allBookings.length, icon: '📋', color: 'from-emerald-400 to-green-600' },
-    { label: 'Upcoming', value: upcomingCount, icon: '✈️', color: 'from-green-400 to-emerald-500' },
-    { label: 'Spent', value: `$${totalSpent.toFixed(0)}`, icon: '💳', color: 'from-emerald-500 to-green-700' },
-    { label: 'Wishlist', value: wishlist.length, icon: '❤️', color: 'from-green-300 to-emerald-500' },
+    { label: 'Bookings', value: allBookings.length, icon: '📋', color: 'from-sea-400 to-sea-600' },
+    { label: 'Upcoming', value: upcomingCount, icon: '✈️', color: 'from-sea-300 to-sea-500' },
+    { label: 'Spent', value: `$${totalSpent.toFixed(0)}`, icon: '💳', color: 'from-sea-500 to-sea-700' },
+    { label: 'Wishlist', value: wishlist.length, icon: '❤️', color: 'from-sea-200 to-sea-500' },
   ];
 
   const isSameDay = (a: Date, b: Date) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
@@ -398,7 +400,7 @@ export default function TravelerDashboard() {
       style={{ width: '240px', minHeight: '100vh' }}
     >
       {/* Top green accent bar */}
-      <div className="h-1 bg-gradient-to-r from-emerald-400 via-green-500 to-emerald-600 shrink-0" />
+      <div className="h-1 bg-gradient-to-r from-sea-400 via-sea-500 to-sea-600 shrink-0" />
 
       <div className="flex-1 overflow-y-auto px-4 pt-4 pb-2">
         {/* Illustration */}
@@ -407,15 +409,15 @@ export default function TravelerDashboard() {
         {/* User info */}
         <div className="flex flex-col items-center mt-4 mb-5">
           <div className="relative group">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-green-600 flex items-center justify-center text-white font-bold text-lg shadow-lg ring-4 ring-emerald-50 transition-all duration-300 group-hover:scale-110 group-hover:ring-emerald-200 overflow-hidden">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-sea-400 to-sea-600 flex items-center justify-center text-white font-bold text-lg shadow-lg ring-4 ring-sea-50 transition-all duration-300 group-hover:scale-110 group-hover:ring-sea-200 overflow-hidden">
               {user.profile?.profilePhotoUrl
                 ? <img src={user.profile.profilePhotoUrl} alt={firstName} className="w-14 h-14 object-cover" />
                 : avatarInitial}
             </div>
-            <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-emerald-400 rounded-full border-2 border-white animate-pulse" />
+            <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-sea-400 rounded-full border-2 border-white animate-pulse" />
           </div>
           <p className="mt-2.5 text-sm font-bold text-gray-900 text-center truncate max-w-[180px]">{displayName}</p>
-          <span className="mt-0.5 text-xs text-emerald-600 font-medium bg-emerald-50 px-2.5 py-0.5 rounded-full">✈️ Traveler</span>
+          <span className="mt-0.5 text-xs text-sea-600 font-medium bg-sea-50 px-2.5 py-0.5 rounded-full">✈️ Traveler</span>
         </div>
 
         {/* Navigation */}
@@ -424,13 +426,13 @@ export default function TravelerDashboard() {
             const active = tab === item.key && !item.href;
             const cls = `w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 group relative overflow-hidden ${
               active
-                ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-md shadow-emerald-900/20'
-                : 'text-gray-500 hover:bg-emerald-50 hover:text-emerald-700'
+                ? 'bg-gradient-to-r from-sea-500 to-sea-600 text-white shadow-md shadow-sea-900/20'
+                : 'text-gray-500 hover:bg-sea-50 hover:text-sea-700'
             }`;
             if (item.href) {
               return (
                 <Link key={item.key} href={item.href} className={cls} onClick={() => setSidebarOpen(false)}>
-                  <span className={`transition-transform duration-200 ${active ? '' : 'group-hover:scale-110 group-hover:text-emerald-600'}`}><NavIcon name={item.icon} /></span>
+                  <span className={`transition-transform duration-200 ${active ? '' : 'group-hover:scale-110 group-hover:text-sea-600'}`}><NavIcon name={item.icon} /></span>
                   {item.label}
                 </Link>
               );
@@ -461,12 +463,55 @@ export default function TravelerDashboard() {
   // ── DISCOVER / DASHBOARD MAIN SECTION ──────────────────────────────────
   const renderDiscoverSection = () => (
     <>
+      {/* Featured hero — Resort App "Recently Visited" style */}
+      {featured && (
+        <div className="featured-hero-card relative overflow-hidden p-6 mb-6 animate-rise-in">
+          <div className="absolute inset-0 featured-shine" />
+          <div className="absolute -right-8 -top-8 w-48 h-48 rounded-full bg-white/5 blur-2xl" />
+          <div className="relative flex flex-col sm:flex-row sm:items-center gap-5">
+            <div className="flex-1 min-w-0">
+              <p className="text-sea-100 text-[10px] font-bold uppercase tracking-widest mb-1">Recently viewed</p>
+              <h2 className="text-xl sm:text-2xl font-black text-white leading-tight">{featured.title}</h2>
+              <p className="text-white/70 text-sm mt-1 truncate">{featured.location?.address || 'Accra, Ghana'}</p>
+              <div className="flex items-center gap-3 mt-3">
+                <span className="text-white font-bold text-lg">{featured.price.currency} {featured.price.amount.toFixed(0)}</span>
+                <StarRating value={featured.averageRating || 4.5} readonly size="sm" />
+              </div>
+            </div>
+            {featured.images?.[0] && (
+              <div className="relative w-full sm:w-36 h-28 rounded-2xl overflow-hidden shrink-0 border border-white/20 shadow-lg">
+                <img src={featured.images[0].thumbnailUrl || featured.images[0].url} alt={featured.title} className="w-full h-full object-cover" />
+              </div>
+            )}
+            <Link
+              href={`/experiences/${featured.id}`}
+              className="shrink-0 inline-flex items-center justify-center bg-white text-sea-700 px-6 py-3 rounded-2xl text-sm font-bold hover:bg-beige transition-colors shadow-lg"
+            >
+              Visit →
+            </Link>
+          </div>
+          {experiences.length > 1 && (
+            <div className="relative flex justify-center gap-1.5 mt-4">
+              {experiences.slice(0, 5).map((exp) => (
+                <button
+                  key={exp.id}
+                  type="button"
+                  onClick={() => setFeaturedId(exp.id)}
+                  className={`h-1.5 rounded-full transition-all ${featured.id === exp.id ? 'w-6 bg-white' : 'w-1.5 bg-white/40 hover:bg-white/60'}`}
+                  aria-label={`Featured: ${exp.title}`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* KPI Stats Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         {stats.map((stat, i) => (
           <div
             key={stat.label}
-            className="relative overflow-hidden bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm dashboard-card-hover animate-slide-up group"
+            className="relative overflow-hidden bg-white rounded-2xl border border-sea-100 p-4 shadow-sm dashboard-card-hover animate-slide-up group premium-card"
             style={{ animationDelay: `${i * 80}ms` }}
           >
             <div className={`absolute top-0 right-0 w-16 h-16 rounded-full bg-gradient-to-br ${stat.color} opacity-10 translate-x-4 -translate-y-4 group-hover:opacity-20 transition-opacity duration-300`} />
@@ -485,14 +530,14 @@ export default function TravelerDashboard() {
           <div className="mb-4 animate-rise-in">
             <div className="flex items-center justify-between mb-1">
               <h2 className="text-xl font-black text-gray-900">Discover the world</h2>
-              <Link href="/experiences" className="text-xs text-emerald-600 font-semibold hover:underline">View all →</Link>
+              <Link href="/experiences" className="text-xs text-sea-600 font-semibold hover:underline">View all →</Link>
             </div>
             <div className="flex gap-5 border-b border-gray-100 mt-3">
               {(['recommended', 'popular', 'trending'] as DiscoverTab[]).map((t) => (
                 <button key={t} type="button" onClick={() => setDiscoverTab(t)}
-                  className={`pb-2.5 text-sm font-semibold capitalize transition-all relative ${discoverTab === t ? 'text-emerald-600' : 'text-gray-400 hover:text-gray-600'}`}>
+                  className={`pb-2.5 text-sm font-semibold capitalize transition-all relative ${discoverTab === t ? 'text-sea-600' : 'text-gray-400 hover:text-gray-600'}`}>
                   {t}
-                  {discoverTab === t && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-400 to-green-600 rounded-full" />}
+                  {discoverTab === t && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-sea-400 to-sea-600 rounded-full" />}
                 </button>
               ))}
             </div>
@@ -502,14 +547,14 @@ export default function TravelerDashboard() {
           {discoverLoading ? (
             <div className="flex gap-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="w-40 h-60 shrink-0 rounded-2xl bg-gradient-to-br from-emerald-50 to-green-100 animate-pulse" />
+                <div key={i} className="w-40 h-60 shrink-0 rounded-2xl bg-gradient-to-br from-sea-50 to-sea-100 animate-pulse" />
               ))}
             </div>
           ) : experiences.length === 0 ? (
-            <div className="text-center py-12 bg-gradient-to-br from-emerald-50 to-white rounded-2xl border border-emerald-100">
+            <div className="text-center py-12 bg-gradient-to-br from-sea-50 to-white rounded-2xl border border-sea-100">
               <div className="text-4xl mb-2">🌍</div>
               <p className="text-gray-500 text-sm">No experiences found</p>
-              <Link href="/experiences" className="inline-block mt-2 text-sm text-emerald-600 font-semibold hover:underline">Browse all →</Link>
+              <Link href="/experiences" className="inline-block mt-2 text-sm text-sea-600 font-semibold hover:underline">Browse all →</Link>
             </div>
           ) : (
             <DraggableScroll>
@@ -523,12 +568,12 @@ export default function TravelerDashboard() {
                     tabIndex={0}
                     onClick={() => setFeaturedId(exp.id)}
                     onKeyDown={(e) => { if (e.key === 'Enter') setFeaturedId(exp.id); }}
-                    className={`relative shrink-0 w-40 h-60 rounded-2xl overflow-hidden cursor-pointer snap-start animate-slide-up transition-all duration-300 ${isFeatured ? 'ring-2 ring-emerald-500 ring-offset-2 scale-[1.04]' : 'hover:scale-[1.02]'}`}
+                    className={`relative shrink-0 w-40 h-60 rounded-2xl overflow-hidden cursor-pointer snap-start animate-slide-up transition-all duration-300 ${isFeatured ? 'ring-2 ring-sea-500 ring-offset-2 scale-[1.04]' : 'hover:scale-[1.02]'}`}
                     style={{ animationDelay: `${i * 90}ms` }}
                   >
                     {img
                       ? <img src={img.thumbnailUrl || img.url} alt={exp.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-110" />
-                      : <div className="absolute inset-0 bg-gradient-to-br from-emerald-300 to-green-600" />
+                      : <div className="absolute inset-0 bg-gradient-to-br from-sea-300 to-sea-600" />
                     }
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
                     {/* Wishlist btn */}
@@ -551,7 +596,7 @@ export default function TravelerDashboard() {
                         <svg className="w-2.5 h-2.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                         {exp.location?.address || 'Ghana'}
                       </p>
-                      <span className="inline-block mt-1.5 text-[10px] font-bold bg-emerald-500/80 rounded-full px-2 py-0.5">
+                      <span className="inline-block mt-1.5 text-[10px] font-bold bg-sea-500/80 rounded-full px-2 py-0.5">
                         {exp.price.currency} {exp.price.amount.toFixed(0)}
                       </span>
                     </div>
@@ -565,7 +610,7 @@ export default function TravelerDashboard() {
           <div className="mt-8">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-base font-black text-gray-900">Event Dates</h3>
-              <span className="text-xs text-emerald-600 font-semibold bg-emerald-50 px-2.5 py-1 rounded-full">
+              <span className="text-xs text-sea-600 font-semibold bg-sea-50 px-2.5 py-1 rounded-full">
                 {selectedDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
               </span>
             </div>
@@ -578,8 +623,8 @@ export default function TravelerDashboard() {
                   <button key={date.toISOString()} type="button" onClick={() => setSelectedDate(date)}
                     className={`shrink-0 flex flex-col items-center px-3.5 py-2.5 rounded-2xl min-w-[3.5rem] transition-all duration-200 ${
                       active
-                        ? 'bg-gradient-to-b from-emerald-500 to-green-600 text-white shadow-lg shadow-emerald-900/20 scale-110'
-                        : 'bg-white border border-emerald-100 text-gray-600 hover:border-emerald-300 hover:bg-emerald-50 hover:-translate-y-0.5'
+                        ? 'bg-gradient-to-b from-sea-500 to-sea-600 text-white shadow-lg shadow-sea-900/20 scale-110'
+                        : 'bg-white border border-sea-100 text-gray-600 hover:border-sea-300 hover:bg-sea-50 hover:-translate-y-0.5'
                     }`}>
                     <span className="text-[9px] font-bold uppercase tracking-wide">{date.toLocaleDateString('en-US', { weekday: 'short' })}</span>
                     <span className="text-base font-black mt-0.5">{date.getDate()}</span>
@@ -598,12 +643,12 @@ export default function TravelerDashboard() {
                     href={`/experiences/${exp.id}/book?date=${selectedDate.toISOString().split('T')[0]}`}
                     className={`shrink-0 flex items-center gap-2.5 rounded-2xl border transition-all dashboard-card-hover ${
                       isFirst
-                        ? 'bg-gradient-to-r from-emerald-50 to-green-50 border-emerald-200 pl-2 pr-3 py-1.5 min-w-[200px]'
-                        : 'w-14 h-14 overflow-hidden border-emerald-100'
+                        ? 'bg-gradient-to-r from-sea-50 to-sea-50 border-sea-200 pl-2 pr-3 py-1.5 min-w-[200px]'
+                        : 'w-14 h-14 overflow-hidden border-sea-100'
                     }`}>
                     {img
                       ? <img src={img.thumbnailUrl || img.url} alt={exp.title} className={`object-cover rounded-xl ${isFirst ? 'w-12 h-12' : 'w-full h-full'}`} />
-                      : <div className={`bg-gradient-to-br from-emerald-200 to-green-300 rounded-xl ${isFirst ? 'w-12 h-12' : 'w-full h-full'}`} />
+                      : <div className={`bg-gradient-to-br from-sea-200 to-sea-300 rounded-xl ${isFirst ? 'w-12 h-12' : 'w-full h-full'}`} />
                     }
                     {isFirst && (
                       <>
@@ -611,7 +656,7 @@ export default function TravelerDashboard() {
                           <p className="text-xs font-bold text-gray-900 truncate">{exp.title}</p>
                           <p className="text-[10px] text-gray-400 truncate">{exp.location?.address}</p>
                         </div>
-                        <span className="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-500 to-green-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                        <span className="w-7 h-7 rounded-full bg-gradient-to-br from-sea-500 to-sea-600 text-white flex items-center justify-center shrink-0 shadow-sm">
                           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
                         </span>
                       </>
@@ -626,7 +671,7 @@ export default function TravelerDashboard() {
         {/* RIGHT COLUMN — Featured + More to explore */}
         <div className="xl:w-72 shrink-0">
           {featured && (
-            <div className="bg-white rounded-2xl border border-emerald-100 shadow-xl overflow-hidden animate-rise-in sticky top-6">
+            <div className="bg-white rounded-2xl border border-sea-100 shadow-xl overflow-hidden animate-rise-in sticky top-6">
               {/* Featured image */}
               {featured.images?.[0] && (
                 <div className="relative h-44 overflow-hidden group">
@@ -634,7 +679,7 @@ export default function TravelerDashboard() {
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                   <div className="absolute top-2.5 left-2.5 flex items-center gap-1 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full px-2.5 py-1">
-                    <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+                    <div className="w-1.5 h-1.5 bg-sea-400 rounded-full animate-pulse" />
                     <span className="text-white text-[10px] font-bold">Featured</span>
                   </div>
                 </div>
@@ -642,7 +687,7 @@ export default function TravelerDashboard() {
 
               <div className="p-4">
                 <h3 className="text-base font-black text-gray-900 leading-tight">{featured.title}</h3>
-                <p className="text-xs text-emerald-600 mt-0.5 font-medium flex items-center gap-1">
+                <p className="text-xs text-sea-600 mt-0.5 font-medium flex items-center gap-1">
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                   {featured.location?.address || 'Accra, Ghana'}
                 </p>
@@ -650,42 +695,42 @@ export default function TravelerDashboard() {
                   {featured.description || 'An unforgettable local experience curated just for you. Book now and explore with expert guides.'}
                 </p>
 
-                <div className="flex items-center justify-between mt-3 p-2.5 bg-emerald-50 rounded-xl">
+                <div className="flex items-center justify-between mt-3 p-2.5 bg-sea-50 rounded-xl">
                   <div>
                     <p className="text-[10px] text-gray-400 font-medium">Price</p>
-                    <span className="text-lg font-black text-emerald-700">{featured.price.currency} {featured.price.amount.toFixed(0)}</span>
+                    <span className="text-lg font-black text-sea-700">{featured.price.currency} {featured.price.amount.toFixed(0)}</span>
                   </div>
                   <StarRating value={featured.averageRating || 4.5} readonly size="sm" />
                 </div>
 
                 <Link href={`/experiences/${featured.id}/book?date=${selectedDate.toISOString().split('T')[0]}`}
-                  className="mt-3 w-full block text-center bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 text-white py-3 rounded-xl font-bold text-sm shadow-md hover:shadow-emerald-900/25 hover:from-emerald-600 hover:to-green-700 transition-all animate-pulse-green">
+                  className="mt-3 w-full block text-center bg-gradient-to-r from-sea-500 via-sea-500 to-sea-600 text-white py-3 rounded-xl font-bold text-sm shadow-md hover:shadow-sea-900/25 hover:from-sea-600 hover:to-sea-700 transition-all animate-pulse-green">
                   🌍 Book Now
                 </Link>
-                <Link href={`/experiences/${featured.id}`} className="mt-1.5 w-full block text-center text-xs text-emerald-500 font-semibold hover:underline">
+                <Link href={`/experiences/${featured.id}`} className="mt-1.5 w-full block text-center text-xs text-sea-500 font-semibold hover:underline">
                   View details →
                 </Link>
               </div>
 
               {/* More to explore */}
-              <div className="border-t border-emerald-50 px-4 py-3 space-y-1.5">
+              <div className="border-t border-sea-50 px-4 py-3 space-y-1.5">
                 <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2">More to explore</p>
                 {sidebarRecommendations.map((exp, idx) => {
                   const img = exp.images?.[0];
                   return (
                     <button key={exp.id} type="button" onClick={() => setFeaturedId(exp.id)}
-                      className="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-emerald-50 transition-all text-left group animate-slide-up"
+                      className="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-sea-50 transition-all text-left group animate-slide-up"
                       style={{ animationDelay: `${idx * 80}ms` }}>
                       {img
                         ? <img src={img.thumbnailUrl || img.url} alt={exp.title} className="w-10 h-10 rounded-xl object-cover shrink-0 group-hover:scale-105 transition-transform" />
-                        : <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-100 to-green-200 shrink-0" />
+                        : <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sea-100 to-sea-200 shrink-0" />
                       }
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-bold text-gray-800 truncate group-hover:text-emerald-700 transition-colors">{exp.title}</p>
+                        <p className="text-xs font-bold text-gray-800 truncate group-hover:text-sea-700 transition-colors">{exp.title}</p>
                         <p className="text-[10px] text-gray-400 truncate">{exp.location?.address}</p>
                       </div>
-                      <div className="shrink-0 w-7 h-7 rounded-full border-2 border-emerald-100 flex items-center justify-center group-hover:border-emerald-500 group-hover:bg-emerald-500 transition-all">
-                        <svg className="w-3 h-3 text-emerald-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
+                      <div className="shrink-0 w-7 h-7 rounded-full border-2 border-sea-100 flex items-center justify-center group-hover:border-sea-500 group-hover:bg-sea-500 transition-all">
+                        <svg className="w-3 h-3 text-sea-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
                       </div>
                     </button>
                   );
@@ -707,24 +752,24 @@ export default function TravelerDashboard() {
           <button key={s} type="button" onClick={() => setBookingFilter(s)}
             className={`px-4 py-2 rounded-xl text-sm font-semibold capitalize transition-all ${
               bookingFilter === s
-                ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-md'
-                : 'bg-white text-gray-500 border border-emerald-100 hover:border-emerald-300 hover:bg-emerald-50'
+                ? 'bg-gradient-to-r from-sea-500 to-sea-600 text-white shadow-md'
+                : 'bg-white text-gray-500 border border-sea-100 hover:border-sea-300 hover:bg-sea-50'
             }`}>{s}</button>
         ))}
       </div>
       {loading ? (
-        <div className="space-y-3">{[1,2,3].map((i) => <div key={i} className="h-24 bg-gradient-to-r from-emerald-50 to-white rounded-2xl border border-emerald-100 animate-pulse" />)}</div>
+        <div className="space-y-3">{[1,2,3].map((i) => <div key={i} className="h-24 bg-gradient-to-r from-sea-50 to-white rounded-2xl border border-sea-100 animate-pulse" />)}</div>
       ) : bookings.length === 0 ? (
-        <div className="text-center py-14 bg-gradient-to-br from-emerald-50 to-white rounded-2xl border border-emerald-100">
+        <div className="text-center py-14 bg-gradient-to-br from-sea-50 to-white rounded-2xl border border-sea-100">
           <div className="text-4xl mb-2">🗓</div>
           <p className="text-gray-500 font-semibold text-sm">No {bookingFilter} bookings</p>
-          <Link href="/experiences" className="inline-block mt-2 text-sm text-emerald-600 font-semibold hover:underline">Browse experiences →</Link>
+          <Link href="/experiences" className="inline-block mt-2 text-sm text-sea-600 font-semibold hover:underline">Browse experiences →</Link>
         </div>
       ) : (
         <div className="space-y-3">
           {bookings.map((booking) => (
-            <div key={booking.id} className="bg-white rounded-2xl border border-emerald-100 shadow-sm overflow-hidden dashboard-card-hover">
-              <div className="h-0.5 bg-gradient-to-r from-emerald-400 to-green-500" />
+            <div key={booking.id} className="bg-white rounded-2xl border border-sea-100 shadow-sm overflow-hidden dashboard-card-hover">
+              <div className="h-0.5 bg-gradient-to-r from-sea-400 to-sea-500" />
               <div className="flex gap-3 p-4">
                 {booking.experience?.images?.[0]?.url && (
                   <img src={booking.experience.images[0].url} alt={booking.experience.title} className="w-16 h-16 rounded-xl object-cover shrink-0" />
@@ -732,7 +777,7 @@ export default function TravelerDashboard() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <Link href={`/experiences/${booking.experience?.id}`} className="font-bold text-gray-900 text-sm hover:text-emerald-700 transition-colors">
+                      <Link href={`/experiences/${booking.experience?.id}`} className="font-bold text-gray-900 text-sm hover:text-sea-700 transition-colors">
                         {booking.experience?.title || 'Experience'}
                       </Link>
                       <p className="text-xs text-gray-400 mt-0.5">
@@ -742,7 +787,7 @@ export default function TravelerDashboard() {
                     </div>
                     <div className="text-right shrink-0">
                       <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
-                        booking.status === 'confirmed' ? 'bg-emerald-100 text-emerald-700'
+                        booking.status === 'confirmed' ? 'bg-sea-100 text-sea-700'
                         : booking.status === 'completed' ? 'bg-blue-100 text-blue-700'
                         : 'bg-gray-100 text-gray-400'
                       }`}>{booking.status}</span>
@@ -755,7 +800,7 @@ export default function TravelerDashboard() {
                       <button type="button" onClick={() => setCancelModal(booking)} className="text-[10px] text-red-500 border border-red-200 px-2.5 py-1 rounded-lg hover:bg-red-50 font-semibold transition-colors">Cancel</button>
                     )}
                     {booking.status === 'completed' && (
-                      <button type="button" onClick={() => setReviewModal({ bookingId: booking.id, experienceId: booking.experience?.id || '' })} className="text-[10px] text-emerald-600 border border-emerald-200 px-2.5 py-1 rounded-lg hover:bg-emerald-50 font-semibold transition-colors">★ Review</button>
+                      <button type="button" onClick={() => setReviewModal({ bookingId: booking.id, experienceId: booking.experience?.id || '' })} className="text-[10px] text-sea-600 border border-sea-200 px-2.5 py-1 rounded-lg hover:bg-sea-50 font-semibold transition-colors">★ Review</button>
                     )}
                     <button type="button" onClick={() => downloadConfirmation(booking.id)} className="text-[10px] text-gray-400 border border-gray-200 px-2.5 py-1 rounded-lg hover:bg-gray-50 transition-colors">Download</button>
                     {booking.paymentId && (
@@ -776,30 +821,30 @@ export default function TravelerDashboard() {
     <div className="animate-fade-in">
       <div className="flex justify-between items-center mb-5">
         <h2 className="text-xl font-black text-gray-900">Saved Itineraries</h2>
-        <Link href="/trip-planner" className="text-sm bg-gradient-to-r from-emerald-500 to-green-600 text-white px-4 py-2 rounded-xl hover:from-emerald-600 hover:to-green-700 font-semibold shadow-sm transition-all">
+        <Link href="/trip-planner" className="text-sm bg-gradient-to-r from-sea-500 to-sea-600 text-white px-4 py-2 rounded-xl hover:from-sea-600 hover:to-sea-700 font-semibold shadow-sm transition-all">
           + New Itinerary
         </Link>
       </div>
       {itineraries.length === 0 ? (
-        <div className="text-center py-14 bg-gradient-to-br from-emerald-50 to-white rounded-2xl border border-emerald-100">
+        <div className="text-center py-14 bg-gradient-to-br from-sea-50 to-white rounded-2xl border border-sea-100">
           <div className="text-4xl mb-2">🗺</div>
           <p className="text-gray-500 font-semibold text-sm">No saved itineraries yet</p>
-          <Link href="/trip-planner" className="inline-block mt-2 text-sm text-emerald-600 font-semibold hover:underline">Plan your first trip →</Link>
+          <Link href="/trip-planner" className="inline-block mt-2 text-sm text-sea-600 font-semibold hover:underline">Plan your first trip →</Link>
         </div>
       ) : (
         <div className="space-y-3">
           {itineraries.map((itin) => (
-            <div key={itin.id} className="bg-white rounded-2xl border border-emerald-100 shadow-sm p-4 dashboard-card-hover">
-              <div className="h-0.5 bg-gradient-to-r from-emerald-400 to-green-500 rounded-full mb-3" />
+            <div key={itin.id} className="bg-white rounded-2xl border border-sea-100 shadow-sm p-4 dashboard-card-hover">
+              <div className="h-0.5 bg-gradient-to-r from-sea-400 to-sea-500 rounded-full mb-3" />
               <div className="flex items-start justify-between">
                 <div>
                   <p className="font-bold text-gray-900 text-sm">{itin.experiences.length} experience{itin.experiences.length !== 1 ? 's' : ''}</p>
                   <p className="text-xs text-gray-400 mt-0.5">Generated {new Date(itin.generatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
                   <p className="text-[10px] text-gray-300 mt-0.5">{itin.experiences.slice(0, 3).map((e) => e.experience?.title || e.experienceId).join(' · ')}{itin.experiences.length > 3 && ` +${itin.experiences.length - 3} more`}</p>
                 </div>
-                <span className="font-black text-emerald-700">{itin.totalCost.currency} {itin.totalCost.amount.toFixed(0)}</span>
+                <span className="font-black text-sea-700">{itin.totalCost.currency} {itin.totalCost.amount.toFixed(0)}</span>
               </div>
-              <Link href={`/trip-planner?itinerary=${itin.id}`} className="inline-block mt-2 text-xs text-emerald-600 border border-emerald-200 px-3 py-1.5 rounded-lg hover:bg-emerald-50 font-semibold transition-colors">
+              <Link href={`/trip-planner?itinerary=${itin.id}`} className="inline-block mt-2 text-xs text-sea-600 border border-sea-200 px-3 py-1.5 rounded-lg hover:bg-sea-50 font-semibold transition-colors">
                 View in Trip Planner →
               </Link>
             </div>
@@ -814,15 +859,15 @@ export default function TravelerDashboard() {
     <div className="animate-fade-in">
       <h2 className="text-xl font-black text-gray-900 mb-5">Saved Experiences</h2>
       {wishlist.length === 0 ? (
-        <div className="text-center py-14 bg-gradient-to-br from-emerald-50 to-white rounded-2xl border border-emerald-100">
+        <div className="text-center py-14 bg-gradient-to-br from-sea-50 to-white rounded-2xl border border-sea-100">
           <div className="text-4xl mb-2">❤️</div>
           <p className="text-gray-500 font-semibold text-sm">Your wishlist is empty</p>
-          <Link href="/experiences" className="inline-block mt-2 text-sm text-emerald-600 font-semibold hover:underline">Browse experiences →</Link>
+          <Link href="/experiences" className="inline-block mt-2 text-sm text-sea-600 font-semibold hover:underline">Browse experiences →</Link>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {wishlist.map((item) => (
-            <div key={item.id} className="bg-white rounded-2xl border border-emerald-100 shadow-sm overflow-hidden dashboard-card-hover group">
+            <div key={item.id} className="bg-white rounded-2xl border border-sea-100 shadow-sm overflow-hidden dashboard-card-hover group">
               {item.images?.[0]?.url && (
                 <div className="relative h-32 overflow-hidden">
                   <img src={item.images[0].url} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
@@ -830,13 +875,13 @@ export default function TravelerDashboard() {
                 </div>
               )}
               <div className="p-3">
-                <Link href={`/experiences/${item.id}`} className="font-bold text-gray-900 text-sm hover:text-emerald-700 transition-colors block">{item.title}</Link>
+                <Link href={`/experiences/${item.id}`} className="font-bold text-gray-900 text-sm hover:text-sea-700 transition-colors block">{item.title}</Link>
                 <div className="flex items-center justify-between mt-2">
                   <div className="flex items-center gap-1.5">
                     <StarRating value={item.averageRating} readonly size="sm" />
                     <span className="text-sm font-black text-gray-900">{item.price.currency} {item.price.amount.toFixed(2)}</span>
                   </div>
-                  <Link href={`/experiences/${item.id}/book`} className="text-[10px] text-white bg-gradient-to-r from-emerald-500 to-green-600 px-2.5 py-1 rounded-lg hover:from-emerald-600 hover:to-green-700 font-semibold shadow-sm">Book</Link>
+                  <Link href={`/experiences/${item.id}/book`} className="text-[10px] text-white bg-gradient-to-r from-sea-500 to-sea-600 px-2.5 py-1 rounded-lg hover:from-sea-600 hover:to-sea-700 font-semibold shadow-sm">Book</Link>
                 </div>
                 <button type="button" onClick={() => removeFromWishlist(item.id)} className="mt-1.5 text-[10px] text-red-400 hover:text-red-600 border border-red-100 hover:border-red-300 px-2 py-0.5 rounded-lg transition-colors">Remove</button>
               </div>
@@ -849,47 +894,47 @@ export default function TravelerDashboard() {
 
   // ── PROFILE TAB ─────────────────────────────────────────────────────────
   const renderProfileTab = () => (
-    <div className="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 max-w-lg animate-fade-in">
-      <div className="h-1 bg-gradient-to-r from-emerald-400 to-green-600 rounded-full mb-5" />
+    <div className="bg-white rounded-2xl border border-sea-100 shadow-sm p-5 max-w-lg animate-fade-in">
+      <div className="h-1 bg-gradient-to-r from-sea-400 to-sea-600 rounded-full mb-5" />
       <h2 className="text-xl font-black text-gray-900 mb-4">Edit Profile</h2>
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-1">First name</label>
-            <input value={profileForm.firstName} onChange={(e) => setProfileForm((p) => ({ ...p, firstName: e.target.value }))} className="w-full border border-emerald-100 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent" />
+            <input value={profileForm.firstName} onChange={(e) => setProfileForm((p) => ({ ...p, firstName: e.target.value }))} className="w-full border border-sea-100 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sea-400 focus:border-transparent" />
           </div>
           <div>
             <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-1">Last name</label>
-            <input value={profileForm.lastName} onChange={(e) => setProfileForm((p) => ({ ...p, lastName: e.target.value }))} className="w-full border border-emerald-100 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent" />
+            <input value={profileForm.lastName} onChange={(e) => setProfileForm((p) => ({ ...p, lastName: e.target.value }))} className="w-full border border-sea-100 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sea-400 focus:border-transparent" />
           </div>
         </div>
         <div>
           <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-1">Profile photo URL</label>
-          <input type="url" value={profileForm.profilePhotoUrl} onChange={(e) => setProfileForm((p) => ({ ...p, profilePhotoUrl: e.target.value }))} placeholder="https://example.com/photo.jpg" className="w-full border border-emerald-100 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent" />
-          {profileForm.profilePhotoUrl && <img src={profileForm.profilePhotoUrl} alt="Preview" className="mt-2 w-14 h-14 rounded-full object-cover border-2 border-emerald-100" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />}
+          <input type="url" value={profileForm.profilePhotoUrl} onChange={(e) => setProfileForm((p) => ({ ...p, profilePhotoUrl: e.target.value }))} placeholder="https://example.com/photo.jpg" className="w-full border border-sea-100 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sea-400 focus:border-transparent" />
+          {profileForm.profilePhotoUrl && <img src={profileForm.profilePhotoUrl} alt="Preview" className="mt-2 w-14 h-14 rounded-full object-cover border-2 border-sea-100" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />}
         </div>
         <div>
           <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-1">Bio</label>
-          <textarea value={profileForm.bio} onChange={(e) => setProfileForm((p) => ({ ...p, bio: e.target.value }))} rows={3} className="w-full border border-emerald-100 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent resize-none" placeholder="Tell us about yourself..." />
+          <textarea value={profileForm.bio} onChange={(e) => setProfileForm((p) => ({ ...p, bio: e.target.value }))} rows={3} className="w-full border border-sea-100 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sea-400 focus:border-transparent resize-none" placeholder="Tell us about yourself..." />
         </div>
         <div>
           <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-1">Travel preferences</label>
           <div className="flex gap-2 mb-2">
-            <input value={prefInput} onChange={(e) => setPrefInput(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addPreference(); } }} placeholder="e.g. food, adventure, culture" className="flex-1 border border-emerald-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent" />
-            <button type="button" onClick={addPreference} className="px-3 py-2 bg-emerald-50 text-emerald-700 rounded-xl text-sm hover:bg-emerald-100 font-bold transition-colors">Add</button>
+            <input value={prefInput} onChange={(e) => setPrefInput(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addPreference(); } }} placeholder="e.g. food, adventure, culture" className="flex-1 border border-sea-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sea-400 focus:border-transparent" />
+            <button type="button" onClick={addPreference} className="px-3 py-2 bg-sea-50 text-sea-700 rounded-xl text-sm hover:bg-sea-100 font-bold transition-colors">Add</button>
           </div>
           {profileForm.travelPreferences.length > 0 && (
             <div className="flex flex-wrap gap-1.5">
               {profileForm.travelPreferences.map((pref) => (
-                <span key={pref} className="inline-flex items-center gap-1 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs px-2.5 py-0.5 rounded-full font-semibold">
+                <span key={pref} className="inline-flex items-center gap-1 bg-sea-50 border border-sea-200 text-sea-700 text-xs px-2.5 py-0.5 rounded-full font-semibold">
                   {pref}
-                  <button type="button" onClick={() => removePreference(pref)} className="hover:text-emerald-900 leading-none">×</button>
+                  <button type="button" onClick={() => removePreference(pref)} className="hover:text-sea-900 leading-none">×</button>
                 </span>
               ))}
             </div>
           )}
         </div>
-        <button type="button" onClick={saveProfile} disabled={profileSaving} className="w-full bg-gradient-to-r from-emerald-500 to-green-600 text-white py-3 rounded-xl text-sm font-bold hover:from-emerald-600 hover:to-green-700 disabled:opacity-50 transition-all shadow-md">
+        <button type="button" onClick={saveProfile} disabled={profileSaving} className="w-full bg-gradient-to-r from-sea-500 to-sea-600 text-white py-3 rounded-xl text-sm font-bold hover:from-sea-600 hover:to-sea-700 disabled:opacity-50 transition-all shadow-md">
           {profileSaving ? 'Saving…' : 'Save Changes'}
         </button>
       </div>
@@ -902,9 +947,9 @@ export default function TravelerDashboard() {
 
       {/* Animated background orbs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <FloatingOrb className="w-80 h-80 bg-emerald-200 top-[-8%] left-[15%]" />
-        <FloatingOrb className="w-56 h-56 bg-green-200 bottom-[8%] right-[8%]" />
-        <FloatingOrb className="w-44 h-44 bg-emerald-100 top-[45%] left-[55%]" />
+        <FloatingOrb className="w-80 h-80 bg-sea-200 top-[-8%] left-[15%]" />
+        <FloatingOrb className="w-56 h-56 bg-sea-200 bottom-[8%] right-[8%]" />
+        <FloatingOrb className="w-44 h-44 bg-sea-100 top-[45%] left-[55%]" />
       </div>
       <Particles />
 
@@ -919,11 +964,11 @@ export default function TravelerDashboard() {
       <div className="flex-1 flex flex-col min-h-screen min-w-0 relative z-10">
 
         {/* Sticky header */}
-        <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-emerald-100/60 px-4 lg:px-6 py-3.5 shadow-sm">
+        <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-sea-100/60 px-4 lg:px-6 py-3.5 shadow-sm">
           <div className="flex items-center gap-3">
             {/* Mobile hamburger */}
             <button type="button" onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-2 rounded-xl hover:bg-emerald-50 text-gray-500 transition-colors" aria-label="Open menu">
+              className="lg:hidden p-2 rounded-xl hover:bg-sea-50 text-gray-500 transition-colors" aria-label="Open menu">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
@@ -932,14 +977,14 @@ export default function TravelerDashboard() {
             {/* Search bar — matches image design */}
             <form onSubmit={handleDashboardSearch} className="flex-1 max-w-lg">
               <div className="relative">
-                <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-sea-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 <input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search for places…"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-emerald-100 bg-white/90 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-300 text-sm transition-all shadow-sm placeholder:text-gray-300"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-sea-100 bg-white/90 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sea-300 text-sm transition-all shadow-sm placeholder:text-gray-300"
                 />
               </div>
             </form>
@@ -948,7 +993,7 @@ export default function TravelerDashboard() {
             <div className="flex items-center gap-2 shrink-0 ml-auto">
               {/* Filters */}
               <Link href="/experiences"
-                className="w-9 h-9 rounded-xl border border-emerald-100 bg-white flex items-center justify-center text-gray-400 hover:bg-emerald-50 hover:text-emerald-600 transition-colors shadow-sm"
+                className="w-9 h-9 rounded-xl border border-sea-100 bg-white flex items-center justify-center text-gray-400 hover:bg-sea-50 hover:text-sea-600 transition-colors shadow-sm"
                 title="Browse experiences">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
@@ -956,16 +1001,16 @@ export default function TravelerDashboard() {
               </Link>
               {/* Notifications */}
               <Link href="/settings/notifications"
-                className="relative w-9 h-9 rounded-xl border border-emerald-100 bg-white flex items-center justify-center text-gray-400 hover:bg-emerald-50 hover:text-emerald-600 transition-colors shadow-sm"
+                className="relative w-9 h-9 rounded-xl border border-sea-100 bg-white flex items-center justify-center text-gray-400 hover:bg-sea-50 hover:text-sea-600 transition-colors shadow-sm"
                 title="Notifications">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                 </svg>
-                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-sea-500 rounded-full animate-pulse" />
               </Link>
               {/* Brand + greeting */}
               <div className="hidden sm:flex items-center gap-2 pl-2 border-l border-gray-100">
-                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-400 to-green-600 flex items-center justify-center text-white text-xs font-bold overflow-hidden shadow-sm">
+                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-sea-400 to-sea-600 flex items-center justify-center text-white text-xs font-bold overflow-hidden shadow-sm">
                   {user.profile?.profilePhotoUrl
                     ? <img src={user.profile.profilePhotoUrl} alt={firstName} className="w-7 h-7 object-cover" />
                     : avatarInitial}
@@ -983,7 +1028,7 @@ export default function TravelerDashboard() {
             {/* Page greeting banner (dashboard tab only) */}
             {tab === 'dashboard' && (
               <div className="mb-6 animate-rise-in">
-                <div className="relative overflow-hidden bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 rounded-2xl p-5 shadow-lg">
+                <div className="relative overflow-hidden bg-gradient-to-r from-sea-500 via-sea-500 to-sea-600 rounded-2xl p-5 shadow-lg">
                   {/* Animated shine */}
                   <div className="absolute inset-0 featured-shine" />
                   {/* Background pattern */}
@@ -994,12 +1039,12 @@ export default function TravelerDashboard() {
                       <circle cx="150" cy="50" r="20" stroke="white" strokeWidth="1" />
                     </svg>
                   </div>
-                  <p className="text-emerald-100 text-xs font-semibold uppercase tracking-widest mb-1">Welcome back</p>
+                  <p className="text-sea-100 text-xs font-semibold uppercase tracking-widest mb-1">Welcome back</p>
                   <h1 className="text-xl font-black text-white mb-0.5">Hello, {firstName}! 👋</h1>
-                  <p className="text-emerald-100 text-sm">Ready for your next adventure?</p>
+                  <p className="text-sea-100 text-sm">Ready for your next adventure?</p>
                   <div className="flex gap-2 mt-4">
                     <Link href="/experiences"
-                      className="bg-white text-emerald-700 px-4 py-2 rounded-xl text-sm font-bold hover:bg-emerald-50 transition-colors shadow-sm">
+                      className="bg-white text-sea-700 px-4 py-2 rounded-xl text-sm font-bold hover:bg-sea-50 transition-colors shadow-sm">
                       Explore Now
                     </Link>
                     <Link href="/trip-planner"
@@ -1045,7 +1090,7 @@ export default function TravelerDashboard() {
       {reviewModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl animate-scale-in">
-            <div className="h-1 bg-gradient-to-r from-emerald-400 to-green-500 rounded-full mb-4" />
+            <div className="h-1 bg-gradient-to-r from-sea-400 to-sea-500 rounded-full mb-4" />
             <h3 className="font-black text-gray-900 mb-4">Leave a Review</h3>
             <div className="mb-3">
               <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-1.5">Rating</label>
@@ -1053,11 +1098,11 @@ export default function TravelerDashboard() {
             </div>
             <div className="mb-4">
               <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-1.5">Comment <span className="text-gray-300 font-normal normal-case">({reviewComment.length}/1000)</span></label>
-              <textarea value={reviewComment} onChange={(e) => setReviewComment(e.target.value.slice(0, 1000))} rows={3} className="w-full border border-emerald-100 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent resize-none" placeholder="Share your experience..." />
+              <textarea value={reviewComment} onChange={(e) => setReviewComment(e.target.value.slice(0, 1000))} rows={3} className="w-full border border-sea-100 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sea-400 focus:border-transparent resize-none" placeholder="Share your experience..." />
             </div>
             <div className="flex gap-2">
               <button type="button" onClick={() => setReviewModal(null)} className="flex-1 border border-gray-200 text-gray-600 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-50 transition-colors">Cancel</button>
-              <button type="button" onClick={submitReview} className="flex-1 bg-gradient-to-r from-emerald-500 to-green-600 text-white py-2.5 rounded-xl text-sm font-bold hover:from-emerald-600 hover:to-green-700 transition-all shadow-sm">Submit Review</button>
+              <button type="button" onClick={submitReview} className="flex-1 bg-gradient-to-r from-sea-500 to-sea-600 text-white py-2.5 rounded-xl text-sm font-bold hover:from-sea-600 hover:to-sea-700 transition-all shadow-sm">Submit Review</button>
             </div>
           </div>
         </div>
