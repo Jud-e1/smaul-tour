@@ -173,8 +173,8 @@ export default function ExperiencesPage() {
         </div>
 
         {/* Search + filter bar */}
-        <div className="flex items-center gap-3 mb-5">
-          <div className="flex-1 search-pill flex items-center gap-2 px-4 py-1">
+        <div className="flex items-center gap-3 mb-5 premium-card p-2 rounded-full relative z-10 animate-slide-up border border-white">
+          <div className="flex-1 flex items-center gap-2 px-3">
             <svg className="w-5 h-5 text-sea-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
@@ -183,27 +183,29 @@ export default function ExperiencesPage() {
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
               placeholder="Search experiences..."
-              className="flex-1 py-2.5 text-sm text-gray-800 placeholder-gray-400 outline-none bg-transparent"
+              className="flex-1 py-2 text-sm text-gray-800 placeholder-gray-400 outline-none bg-transparent"
             />
+          </div>
+          <div className="flex items-center gap-2 shrink-0 border-l border-gray-100 pl-3">
+            <select
+              value={sortBy}
+              onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
+              className="text-xs text-gray-700 outline-none bg-transparent font-medium cursor-pointer"
+            >
+              {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+            </select>
             <button
               onClick={() => setDrawerOpen(true)}
-              className={`shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all ${
-                hasActiveFilters ? 'bg-accra-green text-white' : 'bg-beige text-gray-600 hover:bg-sea-100'
+              className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
+                hasActiveFilters ? 'bg-sea-500 text-white' : 'bg-sea-50 text-sea-600 hover:bg-sea-100'
               }`}
               aria-label="Open filters"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
               </svg>
             </button>
           </div>
-          <select
-            value={sortBy}
-            onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
-            className="shrink-0 search-pill px-4 py-3 text-sm text-gray-700 outline-none cursor-pointer"
-          >
-            {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-          </select>
         </div>
 
         {/* Category pills */}

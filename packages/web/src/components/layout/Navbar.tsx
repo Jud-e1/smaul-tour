@@ -47,10 +47,12 @@ export default function Navbar() {
     setMenuOpen(false);
   };
 
-  if (pathname?.startsWith('/dashboard')) return null;
+  const isDashboard = pathname?.startsWith('/dashboard');
 
   return (
-    <nav className="bg-white/80 backdrop-blur-md border-b border-black/5 sticky top-0 z-40">
+    <>
+      {!isDashboard && (
+        <nav className="bg-white/80 backdrop-blur-md border-b border-black/5 sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-20 gap-4">
 
@@ -232,5 +234,47 @@ export default function Navbar() {
         </div>
       )}
     </nav>
+    )}
+
+    {/* Modern Bottom Navigation (Mobile) */}
+    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bottom-nav-glass px-6 pb-6 pt-3 flex items-center justify-between rounded-t-[32px]">
+      <Link href={dashboardHref} className="flex flex-col items-center gap-1 group">
+        <svg className={`w-6 h-6 ${pathname === dashboardHref ? 'text-sea' : 'text-gray-400 group-hover:text-sea-light'}`} fill={pathname === dashboardHref ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg>
+        <span className={`text-[10px] font-semibold ${pathname === dashboardHref ? 'text-sea' : 'text-gray-400 group-hover:text-sea-light'}`}>Home</span>
+      </Link>
+      
+      <Link href="/experiences" className="flex flex-col items-center gap-1 group">
+        <svg className={`w-6 h-6 ${pathname === '/experiences' ? 'text-sea' : 'text-gray-400 group-hover:text-sea-light'}`} fill={pathname === '/experiences' ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <span className={`text-[10px] font-semibold ${pathname === '/experiences' ? 'text-sea' : 'text-gray-400 group-hover:text-sea-light'}`}>Explore</span>
+      </Link>
+
+      <div className="relative -top-6">
+        <Link href="/trip-planner" className="w-14 h-14 rounded-full fab-button flex items-center justify-center text-white hover:scale-105 transition-transform border-4 border-white">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+          </svg>
+        </Link>
+      </div>
+
+      <button onClick={() => { if (!user) router.push('/login'); else router.push(`${dashboardHref}?tab=wishlist`); }} className="flex flex-col items-center gap-1 group">
+        <svg className="w-6 h-6 text-gray-400 group-hover:text-sea-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+        </svg>
+        <span className="text-[10px] font-semibold text-gray-400 group-hover:text-sea-light">Wishlist</span>
+      </button>
+
+      <Link href="/settings/notifications" className="flex flex-col items-center gap-1 group">
+        <svg className={`w-6 h-6 ${pathname?.startsWith('/settings') ? 'text-sea' : 'text-gray-400 group-hover:text-sea-light'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        <span className={`text-[10px] font-semibold ${pathname?.startsWith('/settings') ? 'text-sea' : 'text-gray-400 group-hover:text-sea-light'}`}>Settings</span>
+      </Link>
+    </div>
+  </>
   );
 }

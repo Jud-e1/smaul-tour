@@ -251,15 +251,15 @@ body {
 
 /* ── Premium card surface (Resort / Findora style) ─────────────────────── */
 .premium-card {
-  border-radius: 1.5rem;
+  border-radius: 2rem;
   background: #fff;
   border: 1px solid rgba(46, 139, 158, 0.08);
-  box-shadow: 0 4px 24px -4px rgba(46, 139, 158, 0.08);
+  box-shadow: 0 8px 32px -8px rgba(46, 139, 158, 0.12);
   transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
 }
 .premium-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 40px -12px rgba(46, 139, 158, 0.18);
+  box-shadow: 0 24px 48px -12px rgba(46, 139, 158, 0.2);
 }
 
 /* Pill search bar */
@@ -314,7 +314,21 @@ body {
 
 /* Soft page background */
 .page-bg-soft {
-  background: linear-gradient(180deg, #FDFCF9 0%, #F5F0E6 40%, #EBF6F9 100%);
+  background: linear-gradient(135deg, #FDFDFD 0%, #F5F7FA 30%, #E8F3F5 70%, #D4EAEF 100%);
+}
+
+/* ── Bottom Nav Glass ──────────────────────────────────────────────────── */
+.bottom-nav-glass {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 -8px 32px rgba(46, 139, 158, 0.08);
+}
+
+.fab-button {
+  background: linear-gradient(135deg, var(--sea-light) 0%, var(--sea) 100%);
+  box-shadow: 0 8px 24px rgba(46, 139, 158, 0.3);
 }
 
 /* ── Reduced-motion overrides ──────────────────────────────────────────── */
