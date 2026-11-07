@@ -159,7 +159,8 @@ describe('RecommendationService', () => {
       // Average: (0.4+0.2)/2=0.3, (0.8+0.4)/2=0.6, (1.0+0.6)/2=0.8
       // Compare element-wise: averaging floats yields e.g. 0.30000000000000004.
       expect(mockVectorDatabaseService.upsertUserPreferenceEmbedding).toHaveBeenCalledTimes(1);
-      const [userId, embedding] = mockVectorDatabaseService.upsertUserPreferenceEmbedding.mock.calls[0];
+      const [userId, embedding] = mockVectorDatabaseService.upsertUserPreferenceEmbedding.mock
+        .calls[0] as [string, number[]];
       expect(userId).toBe('user-1');
       expect(embedding).toHaveLength(3);
       [0.3, 0.6, 0.8].forEach((expected, i) => expect(embedding[i]).toBeCloseTo(expected, 10));

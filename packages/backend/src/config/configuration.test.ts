@@ -400,6 +400,10 @@ database:
     });
 
     it('should handle missing environment variables', () => {
+      // CI sets DB_HOST/DB_PORT etc. for its Postgres service, so unset them explicitly.
+      delete process.env.PORT;
+      delete process.env.DB_HOST;
+
       const envConfig = parser.loadFromEnv();
       expect(envConfig.server?.port).toBeUndefined();
       expect(envConfig.database?.host).toBeUndefined();
