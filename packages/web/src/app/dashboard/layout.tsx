@@ -1,3 +1,3 @@
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  return <div className="min-h-screen bg-[#F7F7F4]">{children}</div>;
+  return <div className="min-h-screen bg-white">{children}</div>;
 }

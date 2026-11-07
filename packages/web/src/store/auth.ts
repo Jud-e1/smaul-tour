@@ -116,9 +116,16 @@ export const useAuthStore = create<AuthState>((set: (state: Partial<AuthState> |
       const { data } = await authApi.me();
       set({ user: data, isAuthenticated: true, isLoading: false });
     } catch {
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
       set({ user: null, isAuthenticated: false, isLoading: false });
     }
   },
 
   clearError: () => set({ error: null }),
 }));
+
+/** True while a saved token exists but the user hasn't been restored yet (page refresh). */
+export function hasStoredSession(): boolean {
+  return typeof window !== 'undefined' && !!localStorage.getItem('access_token');
+}

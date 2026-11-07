@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { authApi } from '@/lib/api';
+import AuthShell from '@/components/auth/AuthShell';
 
 type Status = 'verifying' | 'success' | 'error' | 'missing';
 
@@ -34,100 +35,27 @@ function VerifyEmailPage() {
       });
   }, [searchParams, router]);
 
+  const states: Record<Status, { icon: string; title: string; body: string; cta?: [string, string] }> = {
+    verifying: { icon: '', title: 'Verifying your email…', body: 'This only takes a moment.' },
+    success: { icon: '✅', title: 'Email verified', body: 'Your account is active. Taking you to log in…', cta: ['Go to log in', '/login'] },
+    error: { icon: '⚠️', title: 'We couldn’t verify that link', body: errorMsg, cta: ['Request a new link', '/reset-password'] },
+    missing: { icon: '🔗', title: 'This link looks incomplete', body: 'No verification token found. Open the link from your email again.', cta: ['Back to log in', '/login'] },
+  };
+  const st = states[status];
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-canvas px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border border-black/[0.07] p-8 text-center">
-        {status === 'verifying' && (
-          <>
-            <div className="w-12 h-12 border-4 border-forest-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-            <h1 className="font-display text-xl font-bold text-ink">Verifying your email...</h1>
-            <p className="text-ink-muted text-sm mt-2">Please wait a moment.</p>
-          </>
+    <AuthShell title="Verify email" caption="Explore · Experience · Belong" topLink={{ prompt: 'Need help?', label: 'Log in', href: '/login' }}>
+      <div className="text-center py-6 animate-fade-in" aria-live="polite">
+        {status === 'verifying' ? (
+          <div className="w-12 h-12 mx-auto rounded-full border-[3px] border-[#EBEBEB] border-t-ink animate-spin" />
+        ) : (
+          <div className="mx-auto w-14 h-14 rounded-full bg-fog flex items-center justify-center text-2xl" aria-hidden>{st.icon}</div>
         )}
-
-        {status === 'success' && (
-          <>
-            <svg
-              className="w-12 h-12 text-forest-500 mx-auto mb-3"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <h1 className="font-display text-xl font-bold text-ink">Email verified!</h1>
-            <p className="text-ink-muted text-sm mt-2">
-              Your account is now active. Redirecting to login...
-            </p>
-            <Link
-              href="/login"
-              className="mt-4 inline-block text-forest-600 hover:underline text-sm"
-            >
-              Go to login
-            </Link>
-          </>
-        )}
-
-        {status === 'error' && (
-          <>
-            <svg
-              className="w-12 h-12 text-red-500 mx-auto mb-3"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <h1 className="font-display text-xl font-bold text-ink">Verification failed</h1>
-            <p className="text-ink-muted text-sm mt-2">{errorMsg}</p>
-            <Link
-              href="/reset-password"
-              className="mt-4 inline-block text-forest-600 hover:underline text-sm"
-            >
-              Request a new link
-            </Link>
-          </>
-        )}
-
-        {status === 'missing' && (
-          <>
-            <svg
-              className="w-12 h-12 text-yellow-500 mx-auto mb-3"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
-              />
-            </svg>
-            <h1 className="font-display text-xl font-bold text-ink">Invalid link</h1>
-            <p className="text-ink-muted text-sm mt-2">
-              No verification token found. Check your email for the correct link.
-            </p>
-            <Link
-              href="/login"
-              className="mt-4 inline-block text-forest-600 hover:underline text-sm"
-            >
-              Back to login
-            </Link>
-          </>
-        )}
+        <h2 className="mt-4 text-[22px] font-semibold">{st.title}</h2>
+        <p className="mt-2 text-ink-muted">{st.body}</p>
+        {st.cta && <Link href={st.cta[1]} className="btn-primary w-full mt-6">{st.cta[0]}</Link>}
       </div>
-    </div>
+    </AuthShell>
   );
 }
 
@@ -135,7 +63,7 @@ export default function VerifyEmailRoute() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-canvas px-4">
+        <div className="min-h-[60vh] flex items-center justify-center px-4">
           <p className="text-sm text-ink-muted">Verifying your email…</p>
         </div>
       }

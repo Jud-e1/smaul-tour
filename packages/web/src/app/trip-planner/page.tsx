@@ -3,7 +3,7 @@
 import { Suspense, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { tripPlannerApi } from '@/lib/api';
-import { useAuthStore } from '@/store/auth';
+import { useAuthStore, hasStoredSession } from '@/store/auth';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 interface ExperienceRec {
@@ -34,12 +34,12 @@ interface Itinerary {
 function ItinerarySkeleton() {
   return (
     <div className="space-y-4 animate-pulse">
-      <div className="bg-white rounded-2xl border border-black/[0.07] p-6">
+      <div className="bg-white rounded-2xl border border-[#DDDDDD] p-6">
         <div className="h-6 bg-gray-200 rounded w-40 mb-4" />
         <div className="h-12 bg-forest-50 rounded-lg mb-4" />
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="flex gap-4 p-4 border border-black/[0.07] rounded-lg">
+            <div key={i} className="flex gap-4 p-4 border border-[#DDDDDD] rounded-lg">
               <div className="w-8 h-8 bg-gray-200 rounded-full shrink-0" />
               <div className="flex-1 space-y-2">
                 <div className="h-4 bg-gray-200 rounded w-48" />
@@ -66,7 +66,7 @@ function TripPlannerPage() {
 
   // Redirect unauthenticated users
   useEffect(() => {
-    if (!authLoading && !user) {
+    if (!authLoading && !user && !hasStoredSession()) {
       router.push('/login');
     }
   }, [user, authLoading, router]);
@@ -148,164 +148,176 @@ function TripPlannerPage() {
 
   if (!user) return null;
 
-  return (
-    <div className="min-h-screen bg-canvas">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-        <p className="eyebrow flex items-center gap-2"><span className="h-px w-6 bg-sun" aria-hidden />AI trip planner</p>
-        <h1 className="mt-3 font-display text-4xl sm:text-[56px] leading-[1] font-bold text-ink mb-4">Say it like you&apos;d tell a friend.</h1>
-        <p className="text-ink-muted text-lg mb-8 max-w-xl">Describe your ideal days in Accra and get a personalized, bookable itinerary in seconds.</p>
+  const EXAMPLES = [
+    '3 days in Accra, street food and history, one beach evening, around $300',
+    'A relaxed weekend with art studios, markets and great coffee',
+    'Day trip from Accra to Cape Coast castles with a local historian',
+    'Nature and adventure: canopy walks, waterfalls and hikes for 4 days',
+  ];
+  const money = (amount: number, currency: string) => `${currency === 'USD' ? '$' : `${currency} `}${amount.toFixed(amount % 1 ? 2 : 0)}`;
+  const Spinner = () => (
+    <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+    </svg>
+  );
 
-        {/* Natural language input */}
-        <div className="bg-white rounded-card border border-black/[0.07] shadow-soft p-5 sm:p-7 mb-6">
-          <label htmlFor="trip-input" className="block text-sm font-semibold text-ink mb-2">
-            Tell us about your trip
-          </label>
-          <textarea
-            id="trip-input"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="e.g. 3 days in Accra, love street food and history, one relaxed beach evening, budget around $300…"
-            rows={4}
-            className="field resize-none text-[15px] leading-relaxed bg-canvas"
-            aria-label="Trip description"
-          />
-          {error && <p className="text-red-500 text-sm mt-2" role="alert">{error}</p>}
-          <button
-            onClick={() => generate(input)}
-            disabled={loading || !input.trim()}
-            className="mt-4 btn-accent px-7 py-3.5 disabled:opacity-50 disabled:shadow-none"
-            aria-busy={loading}
-          >
-            {loading && !itinerary ? (
-              <span className="flex items-center gap-2">
-                <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                </svg>
-                Generating...
-              </span>
-            ) : 'Generate Itinerary'}
-          </button>
+  return (
+    <div className="bg-white">
+      <div className="max-w-[1120px] mx-auto px-6 sm:px-10 pt-8 md:pt-14 pb-10">
+        <div className="grid lg:grid-cols-[1fr_400px] gap-10 lg:gap-16 items-start">
+          {/* ── Prompt ─────────────────────────────────────────────────── */}
+          <div>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-sun-50 text-sun-700 text-xs font-semibold px-3 py-1">✨ AI trip planner</span>
+            <h1 className="mt-4 text-[34px] sm:text-[48px] leading-[1.05] font-bold tracking-[-0.03em] text-ink">
+              Tell us the trip.<br />We’ll plan every day.
+            </h1>
+            <p className="mt-4 text-[17px] text-ink-muted max-w-xl leading-relaxed">
+              Describe your ideal days in Accra — pace, budget, what you love — and get a bookable, day-by-day itinerary in seconds.
+            </p>
+
+            <div className="mt-8 rounded-2xl border border-[#DDDDDD] shadow-[0_6px_16px_rgba(0,0,0,0.08)] focus-within:shadow-[0_6px_20px_rgba(0,0,0,0.14)] focus-within:border-ink transition-shadow">
+              <label htmlFor="trip-input" className="block px-5 pt-4 text-xs font-semibold text-ink">Tell us about your trip</label>
+              <textarea
+                id="trip-input"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="e.g. 3 days in Accra, love street food and history, one relaxed beach evening, budget around $300…"
+                rows={4}
+                className="w-full px-5 pt-1 pb-3 bg-transparent resize-none text-[16px] leading-relaxed outline-none placeholder:text-ink-muted"
+                aria-label="Trip description"
+                onKeyDown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && input.trim()) generate(input); }}
+              />
+              <div className="flex items-center justify-between gap-3 border-t border-[#EBEBEB] px-4 py-3">
+                <span className="hidden sm:block text-xs text-ink-muted">Ctrl + Enter to generate</span>
+                <button
+                  onClick={() => generate(input)}
+                  disabled={loading || !input.trim()}
+                  className="btn-accent ml-auto !py-2.5"
+                  aria-busy={loading}
+                >
+                  {loading && !itinerary ? <><Spinner /> Planning…</> : 'Generate itinerary'}
+                </button>
+              </div>
+            </div>
+            {error && <p className="mt-3 text-sm text-[#C13515]" role="alert">⚠ {error}</p>}
+
+            <p className="mt-6 text-sm font-semibold">Try one of these</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {EXAMPLES.map((ex) => (
+                <button key={ex} type="button" onClick={() => setInput(ex)} className="text-left rounded-full border border-[#DDDDDD] px-4 py-2 text-sm hover:border-ink transition-colors">
+                  {ex}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* ── How it works ─────────────────────────────────────────── */}
+          <aside className="rounded-2xl bg-fog p-6 sm:p-8">
+            <h2 className="text-lg font-semibold">How it works</h2>
+            <ol className="mt-5 space-y-5">
+              {[
+                ['Describe it', 'Dates, budget, interests — in your own words.'],
+                ['Get a plan', 'We match verified local experiences to each day.'],
+                ['Tweak & book', 'Ask for changes, export a PDF or share the link.'],
+              ].map(([t, d], i) => (
+                <li key={t} className="flex gap-4">
+                  <span className="w-8 h-8 rounded-full bg-white border border-[#DDDDDD] text-sm font-semibold flex items-center justify-center shrink-0">{i + 1}</span>
+                  <div>
+                    <p className="font-semibold">{t}</p>
+                    <p className="text-sm text-ink-muted">{d}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </aside>
         </div>
 
         {/* Loading skeleton while generating */}
-        {loading && !itinerary && <ItinerarySkeleton />}
+        {loading && !itinerary && <div className="mt-12"><ItinerarySkeleton /></div>}
 
-        {/* Itinerary result */}
+        {/* ── Itinerary result ─────────────────────────────────────────── */}
         {itinerary && (
-          <div className="space-y-4">
-            <div className="bg-white rounded-2xl border border-black/[0.07] p-6">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
-                <h2 className="text-xl font-semibold text-ink">Your Itinerary</h2>
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={exportPdf}
-                    className="text-sm border border-black/[0.12] px-3 py-1.5 rounded-lg hover:bg-canvas"
-                  >
-                    Export PDF
-                  </button>
-                  <button
-                    onClick={shareLink}
-                    className="text-sm border border-black/[0.12] px-3 py-1.5 rounded-lg hover:bg-canvas"
-                  >
-                    Share Link
-                  </button>
+          <section className="mt-14 grid lg:grid-cols-[1fr_400px] gap-10 lg:gap-16 items-start animate-fade-in">
+            <div>
+              <div className="flex flex-wrap items-end justify-between gap-4 pb-6 border-b border-[#DDDDDD]">
+                <div>
+                  <p className="text-sm text-ink-muted">Your itinerary</p>
+                  <h2 className="text-[26px] font-semibold">{itinerary.experiences.length} stops across Accra</h2>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={exportPdf} className="btn-outline !py-2 !px-4 text-sm">Export PDF</button>
+                  <button onClick={shareLink} className="btn-outline !py-2 !px-4 text-sm">Share link</button>
                 </div>
               </div>
 
-              {/* Total estimated cost */}
-              <div className="bg-forest-50 rounded-lg p-3 mb-4 flex items-center justify-between">
-                <span className="text-sm text-forest-700">Total estimated cost</span>
-                <span className="font-bold text-forest-900">
-                  {itinerary.totalCost.currency} {itinerary.totalCost.amount.toFixed(2)}
-                </span>
-              </div>
-
-              {/* Experience list */}
-              <div className="space-y-3">
+              <ol className="relative mt-8 space-y-6 before:absolute before:left-[19px] before:top-2 before:bottom-2 before:w-px before:bg-[#DDDDDD]">
                 {itinerary.experiences.map((rec, i) => (
-                  <div key={rec.experienceId} className="flex gap-4 p-4 border border-black/[0.07] rounded-lg">
-                    <div className="w-8 h-8 bg-forest-100 text-forest-700 rounded-full flex items-center justify-center text-sm font-bold shrink-0">
+                  <li key={rec.experienceId} className="relative flex gap-5">
+                    <span className="relative z-10 w-10 h-10 rounded-full bg-ink text-white text-sm font-semibold flex items-center justify-center shrink-0 ring-4 ring-white">
                       {i + 1}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1">
-                          <Link
-                            href={`/experiences/${rec.experienceId}`}
-                            className="font-medium text-ink hover:text-forest-600"
-                          >
+                    </span>
+                    <div className="flex-1 min-w-0 rounded-2xl border border-[#DDDDDD] p-5 hover:shadow-[0_6px_16px_rgba(0,0,0,0.1)] transition-shadow">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-xs font-semibold text-ink-muted">
+                            {rec.suggestedDate ? new Date(rec.suggestedDate).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' }) : `Stop ${i + 1}`}
+                            {rec.experience?.duration ? ` · ${rec.experience.duration} hrs` : ''}
+                          </p>
+                          <Link href={`/experiences/${rec.experienceId}`} className="mt-1 block text-lg font-semibold leading-snug hover:underline">
                             {rec.experience?.title || `Experience ${i + 1}`}
                           </Link>
-                          <div className="flex items-center gap-3 mt-0.5">
-                            {rec.suggestedDate && (
-                              <p className="text-xs text-ink-muted">
-                                {new Date(rec.suggestedDate).toLocaleDateString()}
-                              </p>
-                            )}
-                            {rec.experience?.duration && (
-                              <p className="text-xs text-ink-muted">{rec.experience.duration}h</p>
-                            )}
-                            {/* Relevance score badge */}
-                            <span
-                              className="text-xs px-1.5 py-0.5 bg-forest-50 text-forest-700 rounded font-medium"
-                              title="AI relevance score"
-                            >
-                              {Math.round(rec.relevanceScore * 100)}% match
-                            </span>
-                          </div>
-                          {rec.experience?.location?.address && (
-                            <p className="text-xs text-ink-soft mt-0.5">{rec.experience.location.address}</p>
-                          )}
-                          <p className="text-sm text-ink-muted mt-1">{rec.reasoning}</p>
+                          {rec.experience?.location?.address && <p className="text-sm text-ink-muted">{rec.experience.location.address}</p>}
                         </div>
                         {rec.experience?.price && (
-                          <span className="text-sm font-medium text-ink shrink-0">
-                            {rec.experience.price.currency} {rec.experience.price.amount.toFixed(2)}
-                          </span>
+                          <span className="text-[15px] font-semibold shrink-0">{money(rec.experience.price.amount, rec.experience.price.currency)}</span>
                         )}
                       </div>
+                      <p className="mt-3 text-[15px] text-ink leading-relaxed">{rec.reasoning}</p>
+                      <div className="mt-4 flex items-center justify-between">
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-leaf-50 text-leaf-700 text-xs font-semibold px-2.5 py-1" title="AI relevance score">
+                          {Math.round(rec.relevanceScore * 100)}% match
+                        </span>
+                        <Link href={`/experiences/${rec.experienceId}`} className="text-sm font-semibold underline underline-offset-2">View &amp; book</Link>
+                      </div>
                     </div>
-                  </div>
+                  </li>
                 ))}
-              </div>
+              </ol>
             </div>
 
-            {/* Follow-up modification input */}
-            <div className="bg-white rounded-2xl border border-black/[0.07] p-6">
-              <h3 className="font-medium text-ink mb-1">Modify your itinerary</h3>
-              <p className="text-sm text-ink-muted mb-3">
-                Describe changes in natural language and we&apos;ll update your plan.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3">
+            <aside className="lg:sticky lg:top-28 space-y-6">
+              <div className="rounded-2xl border border-[#DDDDDD] shadow-[0_6px_16px_rgba(0,0,0,0.12)] p-6">
+                <p className="text-sm text-ink-muted">Total estimated cost</p>
+                <p className="mt-1 text-[32px] font-semibold leading-none">{money(itinerary.totalCost.amount, itinerary.totalCost.currency)}</p>
+                <p className="mt-1 text-sm text-ink-muted">per guest · {itinerary.experiences.length} experiences</p>
+                {itinerary.parameters?.preferences?.length > 0 && (
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    {itinerary.parameters.preferences.map((p) => (
+                      <span key={p} className="rounded-full bg-fog px-3 py-1 text-xs font-semibold capitalize">{p}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="rounded-2xl border border-[#DDDDDD] p-6">
+                <h3 className="font-semibold">Change something?</h3>
+                <p className="text-sm text-ink-muted mt-1 mb-4">Describe it in plain words and we’ll update the plan.</p>
                 <input
                   type="text"
                   value={modification}
                   onChange={(e) => setModification(e.target.value)}
-                  placeholder="e.g. Replace the food tour with a hiking experience..."
-                  className="flex-1 border border-black/[0.12] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-forest-700 focus:ring-4 focus:ring-forest-700/10"
+                  placeholder="e.g. Swap the food tour for a hike"
+                  className="w-full rounded-lg border border-[#B0B0B0] px-3.5 py-3 text-[15px] outline-none focus:border-ink focus:shadow-[0_0_0_1px_#222]"
                   onKeyDown={(e) => e.key === 'Enter' && modify()}
                   aria-label="Itinerary modification request"
                 />
-                <button
-                  onClick={modify}
-                  disabled={loading || !modification.trim()}
-                  className="bg-forest-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-forest-700 disabled:opacity-50"
-                  aria-busy={loading}
-                >
-                  {loading ? (
-                    <span className="flex items-center gap-1.5">
-                      <svg className="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                      </svg>
-                      Updating...
-                    </span>
-                  ) : 'Update'}
+                <button onClick={modify} disabled={loading || !modification.trim()} className="btn-primary w-full mt-3" aria-busy={loading}>
+                  {loading ? <><Spinner /> Updating…</> : 'Update plan'}
                 </button>
               </div>
-            </div>
-          </div>
+            </aside>
+          </section>
         )}
       </div>
     </div>

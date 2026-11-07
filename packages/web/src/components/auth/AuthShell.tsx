@@ -1,106 +1,69 @@
 'use client';
 
-import { ReactNode, useEffect, useRef, useState } from 'react';
+import { ReactNode } from 'react';
 import Link from 'next/link';
 import BrandLogo from '@/components/brand/BrandLogo';
 
-/** Filled, borderless input styling shared by the auth forms. */
+/** Airbnb-style field: grey outline, black focus ring. */
 export const authInputClass =
-  'w-full rounded-xl bg-white border border-black/10 px-4 py-3.5 text-[15px] text-ink placeholder:text-ink-soft outline-none transition-all hover:border-black/25 focus:border-forest-700 focus:ring-4 focus:ring-forest-700/10';
+  'w-full rounded-lg bg-white border border-[#B0B0B0] px-3.5 py-3.5 text-[15px] text-ink placeholder:text-ink-muted outline-none transition-shadow focus:border-ink focus:shadow-[0_0_0_1px_#222]';
 
-export const authLabelClass = 'block text-[13px] font-semibold text-ink mb-1.5';
+export const authLabelClass = 'block text-sm font-semibold text-ink mb-1.5';
 
 interface AuthShellProps {
-  /** Headline shown over the illustration. */
-  headline: ReactNode;
-  /** Small caption pinned to the bottom of the illustration panel. */
+  /** Kept for API compatibility with existing pages. */
+  headline?: ReactNode;
+  /** Quiet tagline shown under the card. */
   caption: string;
-  /** Illustration served from /public. */
-  image: string;
-  imageAlt: string;
-  /** Link rendered in the top-right corner of the form panel. */
+  /** Kept for API compatibility with existing pages. */
+  image?: string;
+  imageAlt?: string;
+  /** Link rendered under the card, e.g. "New here? Create account". */
   topLink: { prompt: string; label: string; href: string };
+  /** Title in the card's header bar. */
+  title?: string;
   children: ReactNode;
 }
 
-/** Pointer-driven parallax offsets, in pixels, for the illustration layers. */
-function useParallax(ref: React.RefObject<HTMLElement>) {
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
+const STRIP = ['/photos/labadi.jpg', '/photos/kente.jpg', '/photos/waakye.jpg', '/photos/capecoast.jpg', '/photos/drums.jpg'];
 
-  useEffect(() => {
-    const element = ref.current;
-    if (!element) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    const onMove = (event: PointerEvent) => {
-      const rect = element.getBoundingClientRect();
-      setOffset({
-        x: ((event.clientX - rect.left) / rect.width - 0.5) * 2,
-        y: ((event.clientY - rect.top) / rect.height - 0.5) * 2,
-      });
-    };
-    const onLeave = () => setOffset({ x: 0, y: 0 });
-
-    element.addEventListener('pointermove', onMove);
-    element.addEventListener('pointerleave', onLeave);
-    return () => {
-      element.removeEventListener('pointermove', onMove);
-      element.removeEventListener('pointerleave', onLeave);
-    };
-  }, [ref]);
-
-  return offset;
-}
-
-export default function AuthShell({ headline, caption, image, imageAlt, topLink, children }: AuthShellProps) {
-  const panelRef = useRef<HTMLDivElement>(null);
-  const { x, y } = useParallax(panelRef);
+/** Airbnb's "Log in or sign up" card: centred, header bar with close, content below. */
+export default function AuthShell(props: AuthShellProps) {
+  const { topLink, children, caption } = props;
+  const title = props.title ?? (topLink.href === '/register' ? 'Log in' : 'Sign up');
 
   return (
-    <div className="relative lg:min-h-[calc(100vh-72px)] bg-canvas px-3 sm:px-6 pt-4 pb-8 sm:py-10 flex items-start lg:items-center justify-center">
-      <div className="relative w-full max-w-6xl bg-white rounded-[28px] border border-black/[0.06] shadow-card overflow-hidden grid lg:grid-cols-[1.05fr_1fr]">
-        {/* Photo panel — deep forest surface */}
-        <div
-          ref={panelRef}
-          className="grain relative min-h-[180px] sm:min-h-[260px] lg:min-h-[680px] overflow-hidden bg-forest-900 m-2 rounded-[22px]"
-        >
-          <div
-            className="absolute inset-0 bg-cover bg-center transition-transform duration-500 ease-out"
-            style={{
-              backgroundImage: `url('${image}')`,
-              transform: `translate3d(${x * -10}px, ${y * -10}px, 0) scale(1.08)`,
-            }}
-            role="img"
-            aria-label={imageAlt}
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-forest-950/95 via-forest-950/30 to-forest-950/10" />
+    <div className="min-h-[calc(100vh-80px)] bg-white md:bg-fog flex flex-col items-center justify-start md:justify-center md:px-6 md:py-12">
+      <div className="w-full md:max-w-[568px] bg-white md:rounded-xl md:shadow-[0_8px_28px_rgba(0,0,0,0.14)] overflow-hidden animate-scale-in">
+        <header className="relative h-16 flex items-center justify-center border-b border-[#EBEBEB] px-6">
+          <Link href="/" className="absolute left-5 w-8 h-8 rounded-full hover:bg-fog flex items-center justify-center" aria-label="Back to home">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24" aria-hidden>
+              <path strokeLinecap="round" d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </Link>
+          <h1 className="text-base font-semibold text-ink">{title}</h1>
+        </header>
 
-          <div className="relative h-full flex flex-col justify-between p-6 sm:p-8 lg:p-10 text-white">
-            <Link href="/" className="inline-flex items-center gap-2 w-fit rounded-full bg-white/95 backdrop-blur pl-1.5 pr-4 py-1.5 shadow-lg" aria-label="Nsoroma home">
-              <BrandLogo variant="mark" decorative className="h-8 w-8 object-contain" />
-              <span className="font-display text-lg font-extrabold tracking-[-0.04em] text-ink">Nsoroma</span>
-            </Link>
-            <div
-              className="transition-transform duration-300 ease-out max-w-md"
-              style={{ transform: `translate3d(${x * 5}px, ${y * 5}px, 0)` }}
-            >
-              <span className="inline-block h-1 w-10 rounded-full bg-sun mb-5" aria-hidden />
-              <h2 className="font-display text-[28px] lg:text-[40px] font-bold leading-[1.05] tracking-[-0.03em]">{headline}</h2>
-              <p className="mt-4 text-sm text-white/75 leading-relaxed">{caption}</p>
-            </div>
-          </div>
-        </div>
+        <div className="px-6 sm:px-8 pt-6 pb-8">{children}</div>
 
-        {/* Form panel */}
-        <div className="px-5 py-6 sm:px-10 sm:py-10 lg:px-14 lg:py-12 flex flex-col">
-          <p className="text-sm text-ink-muted text-right animate-rise-in">
-            {topLink.prompt}{' '}
-            <Link href={topLink.href} className="font-semibold text-ink underline underline-offset-4 decoration-black/20 hover:decoration-ink">
-              {topLink.label}
-            </Link>
-          </p>
-          <div className="mt-6 flex-1 flex flex-col justify-center w-full max-w-md mx-auto">{children}</div>
+        {/* A quiet strip of the places you'll book */}
+        <div className="hidden md:flex h-16 border-t border-[#EBEBEB]" aria-hidden>
+          {STRIP.map((src) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img key={src} src={src} alt="" className="flex-1 min-w-0 object-cover" />
+          ))}
         </div>
+      </div>
+
+      <div className="w-full md:max-w-[568px] px-6 md:px-0 py-6 md:py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm">
+        <span className="flex items-center gap-2 text-ink-muted">
+          <BrandLogo variant="mark" decorative className="w-5 h-5 object-contain" />
+          {caption}
+        </span>
+        <span className="text-ink-muted">
+          {topLink.prompt}{' '}
+          <Link href={topLink.href} className="font-semibold text-ink underline underline-offset-2">{topLink.label}</Link>
+        </span>
       </div>
     </div>
   );

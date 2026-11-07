@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import BrandLogo from '@/components/brand/BrandLogo';
 import { experiencesApi, bookingsApi, paymentsApi, userApi, reviewsApi } from '@/lib/api';
-import { useAuthStore } from '@/store/auth';
+import { useAuthStore, hasStoredSession } from '@/store/auth';
 import { useToast } from '@/components/ui/Toast';
 import StarRating from '@/components/ui/StarRating';
 
@@ -91,7 +91,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function GuideDashboard() {
-  const { user, logout } = useAuthStore();
+  const { user, logout, isLoading: authLoading } = useAuthStore();
   const router = useRouter();
   const { toast } = useToast();
   const [tab, setTab] = useState<Tab>('experiences');
@@ -120,7 +120,7 @@ export default function GuideDashboard() {
   const [profileSaving, setProfileSaving] = useState(false);
 
   useEffect(() => {
-    if (!user) { router.push('/login'); return; }
+    if (!user) { if (!authLoading && !hasStoredSession()) void router.push('/login'); return; }
     if (user.role !== 'guide') { router.push('/dashboard/traveler'); return; }
     setProfileForm({
       firstName: user.profile?.firstName || '',
@@ -129,7 +129,7 @@ export default function GuideDashboard() {
       profilePhotoUrl: user.profile?.profilePhotoUrl || '',
       phone: '',
     });
-  }, [user, router]);
+  }, [user, router, authLoading]);
 
   const loadExperiences = useCallback(async () => {
     if (!user) return;
@@ -287,93 +287,81 @@ export default function GuideDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-canvas">
-      {/* Hero Header */}
-      <div className="bg-white border-b border-black/[0.07] shadow-sm">
-        <div className="max-w-5xl mx-auto px-4 py-5">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-3 min-w-0">
-              <Link href="/" className="shrink-0" aria-label="Nsoroma home">
-                <BrandLogo variant="mark" decorative className="h-12 w-12 object-contain" />
-              </Link>
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-forest-400 to-forest-600 flex items-center justify-center text-white font-bold text-lg shadow-md overflow-hidden">
-                {user.profile?.profilePhotoUrl
-                  ? <img src={user.profile.profilePhotoUrl} alt={firstName} className="w-12 h-12 object-cover" />
-                  : avatarInitial}
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs text-ink-soft font-medium uppercase tracking-wide">Guide Dashboard</p>
-                <h1 className="font-display text-xl font-bold text-ink truncate">{firstName}</h1>
-                {avgRating > 0 && (
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <StarRating value={Math.round(avgRating)} readonly size="sm" />
-                    <span className="text-xs text-ink-muted">{avgRating.toFixed(1)} avg rating</span>
-                  </div>
-                )}
-              </div>
+    <div className="bg-white">
+      <div className="max-w-[1120px] mx-auto px-6 sm:px-10 pt-8 md:pt-12 pb-10">
+        {/* Header */}
+        <div className="flex flex-wrap items-center justify-between gap-6">
+          <div className="flex items-center gap-4 min-w-0">
+            <Link href="/" className="hidden sm:block shrink-0" aria-label="Nsoroma home">
+              <BrandLogo variant="mark" decorative className="h-10 w-10 object-contain" />
+            </Link>
+            <div className="w-14 h-14 rounded-full bg-ink text-white flex items-center justify-center text-xl font-semibold overflow-hidden shrink-0">
+              {user.profile?.profilePhotoUrl
+                // eslint-disable-next-line @next/next/no-img-element
+                ? <img src={user.profile.profilePhotoUrl} alt={firstName} className="w-14 h-14 object-cover" />
+                : avatarInitial}
             </div>
-            <div className="flex items-center gap-3">
-              <Link href="/" className="p-2 rounded-full hover:bg-gray-100 text-ink-muted hover:text-ink/80 transition-colors" title="Home">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                </svg>
-              </Link>
-              <Link href="/notifications" className="p-2 rounded-full hover:bg-gray-100 text-ink-muted hover:text-ink/80 transition-colors" title="Notifications">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                </svg>
-              </Link>
-              <button onClick={() => { logout(); router.push('/'); }} className="text-sm text-ink-muted hover:text-ink/80 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors">
-                Sign out
-              </button>
+            <div className="min-w-0">
+              <p className="text-sm text-ink-muted">Hosting dashboard</p>
+              <h1 className="text-[28px] sm:text-[32px] font-semibold leading-tight truncate">Welcome back, {firstName}</h1>
+              {avgRating > 0 && (
+                <div className="flex items-center gap-2 mt-0.5">
+                  <StarRating value={Math.round(avgRating)} readonly size="sm" />
+                  <span className="text-sm text-ink-muted">{avgRating.toFixed(1)} average rating</span>
+                </div>
+              )}
             </div>
           </div>
-
-          {/* KPI Stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-5">
-            {[
-              { label: 'Total Earnings', value: `$${totalEarnings.toFixed(0)}`, icon: '💰', color: 'from-forest-50 to-forest-100', text: 'text-forest-700' },
-              { label: 'Pending Payout', value: `$${pendingEarnings.toFixed(0)}`, icon: '⏳', color: 'from-purple-50 to-purple-100', text: 'text-purple-700' },
-              { label: 'Total Bookings', value: allBookings.length, icon: '🗓', color: 'from-forest-50 to-forest-100', text: 'text-forest-700' },
-              { label: 'Active Listings', value: activeExperiences, icon: '🌟', color: 'from-forest-50 to-forest-100', text: 'text-forest-800' },
-              { label: 'Avg Rating', value: avgRating > 0 ? avgRating.toFixed(1) : '—', icon: '⭐', color: 'from-amber-50 to-amber-100', text: 'text-amber-700' },
-            ].map((stat) => (
-              <div key={stat.label} className={`bg-gradient-to-br ${stat.color} rounded-2xl p-4`}>
-                <div className="text-2xl mb-1">{stat.icon}</div>
-                <div className={`text-2xl font-bold ${stat.text}`}>{stat.value}</div>
-                <div className="text-xs text-ink-muted mt-0.5">{stat.label}</div>
-              </div>
-            ))}
+          <div className="flex items-center gap-2">
+            <Link href="/settings/notifications" className="btn-outline !py-2.5 text-sm">Notifications</Link>
+            <button onClick={() => { logout(); router.push('/'); }} className="text-sm font-semibold underline underline-offset-2 px-3">
+              Log out
+            </button>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-5xl mx-auto px-4 py-6">
-        {/* Tabs */}
-        <div className="flex gap-1 bg-white border border-black/[0.07] rounded-2xl p-1 mb-6 w-fit shadow-sm flex-wrap">
-          {tabs.map((t) => (
-            <button key={t.key} onClick={() => setTab(t.key)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                tab === t.key ? 'bg-gradient-to-r from-forest-600 to-forest-600 text-white shadow-sm' : 'text-ink-muted hover:bg-gray-100'
-              }`}>
-              <span>{t.icon}</span><span>{t.label}</span>
-            </button>
+        {/* KPI strip */}
+        <div className="mt-8 grid grid-cols-2 sm:grid-cols-5 rounded-2xl border border-[#DDDDDD] overflow-hidden">
+          {[
+            { label: 'Total earnings', value: `$${totalEarnings.toFixed(0)}`, icon: '💰' },
+            { label: 'Pending payout', value: `$${pendingEarnings.toFixed(0)}`, icon: '⏳' },
+            { label: 'Total bookings', value: allBookings.length, icon: '🗓️' },
+            { label: 'Active listings', value: activeExperiences, icon: '🌟' },
+            { label: 'Avg rating', value: avgRating > 0 ? avgRating.toFixed(1) : '—', icon: '⭐' },
+          ].map((stat, i) => (
+            <div key={stat.label} className={`p-5 sm:p-6 border-[#DDDDDD] ${i % 2 === 0 ? 'border-r' : ''} sm:border-r sm:last:border-r-0 ${i < 4 ? 'border-b sm:border-b-0' : ''}`}>
+              <div className="text-xl" aria-hidden>{stat.icon}</div>
+              <div className="mt-3 text-[28px] font-semibold leading-none tracking-[-0.02em]">{stat.value}</div>
+              <div className="mt-1.5 text-sm text-ink-muted">{stat.label}</div>
+            </div>
           ))}
         </div>
+
+        {/* Tabs */}
+        <nav className="mt-10 mb-8 flex gap-6 sm:gap-8 overflow-x-auto scrollbar-hide border-b border-[#DDDDDD]" aria-label="Hosting">
+          {tabs.map((t) => (
+            <button key={t.key} onClick={() => setTab(t.key)} aria-current={tab === t.key ? 'page' : undefined}
+              className={`flex items-center gap-2 pb-3 -mb-px border-b-2 text-[15px] whitespace-nowrap transition-colors ${
+                tab === t.key ? 'border-ink text-ink font-semibold' : 'border-transparent text-ink-muted hover:text-ink hover:border-[#DDDDDD]'
+              }`}>
+              <span aria-hidden>{t.icon}</span><span>{t.label}</span>
+            </button>
+          ))}
+        </nav>
 
         {/* ── Experiences Tab ── */}
         {tab === 'experiences' && (
           <div>
             <div className="flex justify-between items-center mb-5">
               <h2 className="font-semibold text-ink">My Experiences</h2>
-              <button onClick={openCreateForm} className="bg-gradient-to-r from-forest-600 to-forest-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:from-forest-700 hover:to-forest-700 shadow-sm transition-all">
+              <button onClick={openCreateForm} className="bg-ink text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-black shadow-sm transition-all">
                 + New Experience
               </button>
             </div>
             {expLoading ? (
-              <div className="space-y-3">{[1,2,3].map((i) => <div key={i} className="h-28 bg-white rounded-2xl border border-black/[0.07] animate-pulse" />)}</div>
+              <div className="space-y-3">{[1,2,3].map((i) => <div key={i} className="h-28 bg-white rounded-2xl border border-[#DDDDDD] animate-pulse" />)}</div>
             ) : experiences.length === 0 ? (
-              <div className="text-center py-16 bg-white rounded-2xl border border-black/[0.07]">
+              <div className="text-center py-16 bg-white rounded-2xl border border-[#DDDDDD]">
                 <div className="text-5xl mb-3">🌟</div>
                 <p className="text-ink-muted font-medium">No experiences yet</p>
                 <button onClick={openCreateForm} className="inline-block mt-3 text-sm text-forest-600 hover:text-forest-700 font-medium">Create your first experience →</button>
@@ -381,7 +369,7 @@ export default function GuideDashboard() {
             ) : (
               <div className="space-y-3">
                 {experiences.map((exp) => (
-                  <div key={exp.id} className="bg-white rounded-2xl border border-black/[0.07] shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                  <div key={exp.id} className="bg-white rounded-2xl border border-[#DDDDDD] overflow-hidden hover:shadow-md transition-shadow">
                     <div className="flex gap-4 p-4">
                       {exp.images?.[0]?.url ? (
                         <img src={exp.images[0].url} alt={exp.title} className="w-20 h-20 rounded-xl object-cover shrink-0" />
@@ -436,16 +424,16 @@ export default function GuideDashboard() {
               {(['upcoming', 'past', 'cancelled'] as BookingFilter[]).map((s) => (
                 <button key={s} onClick={() => setBookingFilter(s)}
                   className={`px-4 py-2 rounded-xl text-sm font-medium capitalize transition-all ${
-                    bookingFilter === s ? 'bg-gray-900 text-white shadow-sm' : 'bg-white text-ink-muted border border-black/[0.07] hover:border-black/[0.12]'
+                    bookingFilter === s ? 'bg-gray-900 text-white shadow-sm' : 'bg-white text-ink-muted border border-[#DDDDDD] hover:border-[#DDDDDD]'
                   }`}>
                   {s}
                 </button>
               ))}
             </div>
             {bookingsLoading ? (
-              <div className="space-y-3">{[1,2,3].map((i) => <div key={i} className="h-20 bg-white rounded-2xl border border-black/[0.07] animate-pulse" />)}</div>
+              <div className="space-y-3">{[1,2,3].map((i) => <div key={i} className="h-20 bg-white rounded-2xl border border-[#DDDDDD] animate-pulse" />)}</div>
             ) : bookings.length === 0 ? (
-              <div className="text-center py-16 bg-white rounded-2xl border border-black/[0.07]">
+              <div className="text-center py-16 bg-white rounded-2xl border border-[#DDDDDD]">
                 <div className="text-5xl mb-3">🗓</div>
                 <p className="text-ink-muted font-medium">No {bookingFilter} bookings</p>
               </div>
@@ -456,7 +444,7 @@ export default function GuideDashboard() {
                     ? `${booking.traveler.profile.firstName || ''} ${booking.traveler.profile.lastName || ''}`.trim()
                     : booking.traveler?.email || 'Traveler';
                   return (
-                    <div key={booking.id} className="bg-white rounded-2xl border border-black/[0.07] shadow-sm p-4 hover:shadow-md transition-shadow">
+                    <div key={booking.id} className="bg-white rounded-2xl border border-[#DDDDDD] p-4 hover:shadow-md transition-shadow">
                       <div className="flex items-start justify-between gap-4">
                         <div>
                           <p className="font-semibold text-ink">{booking.experience?.title || 'Experience'}</p>
@@ -485,9 +473,9 @@ export default function GuideDashboard() {
           <div>
             <h2 className="font-semibold text-ink mb-5">Payments</h2>
             {paymentsLoading ? (
-              <div className="space-y-3">{[1,2].map((i) => <div key={i} className="h-20 bg-white rounded-2xl border border-black/[0.07] animate-pulse" />)}</div>
+              <div className="space-y-3">{[1,2].map((i) => <div key={i} className="h-20 bg-white rounded-2xl border border-[#DDDDDD] animate-pulse" />)}</div>
             ) : payments.length === 0 ? (
-              <div className="text-center py-16 bg-white rounded-2xl border border-black/[0.07]">
+              <div className="text-center py-16 bg-white rounded-2xl border border-[#DDDDDD]">
                 <div className="text-5xl mb-3">💰</div>
                 <p className="text-ink-muted font-medium">No payments yet</p>
               </div>
@@ -505,7 +493,7 @@ export default function GuideDashboard() {
                       <h3 className={`text-sm font-semibold mb-3 flex items-center gap-1.5 ${color}`}>{icon} {label}</h3>
                       <div className="space-y-3">
                         {group.map((payment) => (
-                          <div key={payment.id} className="bg-white rounded-2xl border border-black/[0.07] shadow-sm p-4">
+                          <div key={payment.id} className="bg-white rounded-2xl border border-[#DDDDDD] p-4">
                             <div className="flex items-center justify-between">
                               <div>
                                 <p className="font-semibold text-ink">{payment.booking?.experience?.title || 'Experience'}</p>
@@ -537,9 +525,9 @@ export default function GuideDashboard() {
           <div>
             <h2 className="font-semibold text-ink mb-5">Reviews</h2>
             {reviewsLoading ? (
-              <div className="space-y-3">{[1,2,3].map((i) => <div key={i} className="h-20 bg-white rounded-2xl border border-black/[0.07] animate-pulse" />)}</div>
+              <div className="space-y-3">{[1,2,3].map((i) => <div key={i} className="h-20 bg-white rounded-2xl border border-[#DDDDDD] animate-pulse" />)}</div>
             ) : reviews.length === 0 ? (
-              <div className="text-center py-16 bg-white rounded-2xl border border-black/[0.07]">
+              <div className="text-center py-16 bg-white rounded-2xl border border-[#DDDDDD]">
                 <div className="text-5xl mb-3">⭐</div>
                 <p className="text-ink-muted font-medium">No reviews yet</p>
               </div>
@@ -550,7 +538,7 @@ export default function GuideDashboard() {
                     ? `${review.traveler.profile.firstName || ''} ${review.traveler.profile.lastName || ''}`.trim() || 'Traveler'
                     : 'Traveler';
                   return (
-                    <div key={review.id} className="bg-white rounded-2xl border border-black/[0.07] shadow-sm p-4 hover:shadow-md transition-shadow">
+                    <div key={review.id} className="bg-white rounded-2xl border border-[#DDDDDD] p-4 hover:shadow-md transition-shadow">
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
@@ -572,35 +560,35 @@ export default function GuideDashboard() {
 
         {/* ── Profile Tab ── */}
         {tab === 'profile' && (
-          <div className="bg-white rounded-2xl border border-black/[0.07] shadow-sm p-6 max-w-lg">
+          <div className="bg-white rounded-2xl border border-[#DDDDDD] p-6 max-w-lg">
             <h2 className="font-semibold text-ink mb-5">Edit Profile</h2>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-ink-muted uppercase tracking-wide mb-1.5">First name</label>
-                  <input value={profileForm.firstName} onChange={(e) => setProfileForm((p) => ({ ...p, firstName: e.target.value }))} className="w-full border border-black/[0.07] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-forest-400 focus:border-transparent" />
+                  <label className="block text-sm font-semibold text-ink mb-1.5">First name</label>
+                  <input value={profileForm.firstName} onChange={(e) => setProfileForm((p) => ({ ...p, firstName: e.target.value }))} className="w-full border border-[#DDDDDD] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-ink-muted uppercase tracking-wide mb-1.5">Last name</label>
-                  <input value={profileForm.lastName} onChange={(e) => setProfileForm((p) => ({ ...p, lastName: e.target.value }))} className="w-full border border-black/[0.07] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-forest-400 focus:border-transparent" />
+                  <label className="block text-sm font-semibold text-ink mb-1.5">Last name</label>
+                  <input value={profileForm.lastName} onChange={(e) => setProfileForm((p) => ({ ...p, lastName: e.target.value }))} className="w-full border border-[#DDDDDD] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" />
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-ink-muted uppercase tracking-wide mb-1.5">Profile photo URL</label>
-                <input type="url" value={profileForm.profilePhotoUrl} onChange={(e) => setProfileForm((p) => ({ ...p, profilePhotoUrl: e.target.value }))} placeholder="https://example.com/photo.jpg" className="w-full border border-black/[0.07] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-forest-400 focus:border-transparent" />
+                <label className="block text-sm font-semibold text-ink mb-1.5">Profile photo URL</label>
+                <input type="url" value={profileForm.profilePhotoUrl} onChange={(e) => setProfileForm((p) => ({ ...p, profilePhotoUrl: e.target.value }))} placeholder="https://example.com/photo.jpg" className="w-full border border-[#DDDDDD] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" />
                 {profileForm.profilePhotoUrl && (
-                  <img src={profileForm.profilePhotoUrl} alt="Preview" className="mt-2 w-16 h-16 rounded-full object-cover border-2 border-black/[0.07]" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                  <img src={profileForm.profilePhotoUrl} alt="Preview" className="mt-2 w-16 h-16 rounded-full object-cover border-2 border-[#DDDDDD]" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                 )}
               </div>
               <div>
-                <label className="block text-xs font-semibold text-ink-muted uppercase tracking-wide mb-1.5">Bio</label>
-                <textarea value={profileForm.bio} onChange={(e) => setProfileForm((p) => ({ ...p, bio: e.target.value }))} rows={3} placeholder="Tell travelers about yourself..." className="w-full border border-black/[0.07] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-forest-400 focus:border-transparent resize-none" />
+                <label className="block text-sm font-semibold text-ink mb-1.5">Bio</label>
+                <textarea value={profileForm.bio} onChange={(e) => setProfileForm((p) => ({ ...p, bio: e.target.value }))} rows={3} placeholder="Tell travelers about yourself..." className="w-full border border-[#DDDDDD] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink resize-none" />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-ink-muted uppercase tracking-wide mb-1.5">Phone / Contact</label>
-                <input type="tel" value={profileForm.phone} onChange={(e) => setProfileForm((p) => ({ ...p, phone: e.target.value }))} placeholder="+1 555 000 0000" className="w-full border border-black/[0.07] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-forest-400 focus:border-transparent" />
+                <label className="block text-sm font-semibold text-ink mb-1.5">Phone / Contact</label>
+                <input type="tel" value={profileForm.phone} onChange={(e) => setProfileForm((p) => ({ ...p, phone: e.target.value }))} placeholder="+1 555 000 0000" className="w-full border border-[#DDDDDD] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" />
               </div>
-              <button onClick={saveProfile} disabled={profileSaving} className="w-full bg-gradient-to-r from-forest-600 to-forest-600 text-white py-2.5 rounded-xl text-sm font-semibold hover:from-forest-700 hover:to-forest-700 disabled:opacity-50 transition-all shadow-sm">
+              <button onClick={saveProfile} disabled={profileSaving} className="w-full bg-ink text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-black disabled:opacity-50 transition-all shadow-sm">
                 {profileSaving ? 'Saving…' : 'Save Changes'}
               </button>
             </div>
@@ -615,45 +603,45 @@ export default function GuideDashboard() {
             <h3 className="font-bold text-ink text-lg mb-4">{editingExp ? 'Edit Experience' : 'New Experience'}</h3>
             <div className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-ink-muted uppercase tracking-wide mb-1.5">Title</label>
-                <input value={expForm.title} onChange={(e) => setExpForm((f) => ({ ...f, title: e.target.value }))} className="w-full border border-black/[0.07] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-forest-400 focus:border-transparent" placeholder="e.g. Sunset Kayaking Tour" />
+                <label className="block text-sm font-semibold text-ink mb-1.5">Title</label>
+                <input value={expForm.title} onChange={(e) => setExpForm((f) => ({ ...f, title: e.target.value }))} className="w-full border border-[#DDDDDD] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="e.g. Sunset Kayaking Tour" />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-ink-muted uppercase tracking-wide mb-1.5">Description</label>
-                <textarea value={expForm.description} onChange={(e) => setExpForm((f) => ({ ...f, description: e.target.value }))} rows={3} className="w-full border border-black/[0.07] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-forest-400 focus:border-transparent resize-none" placeholder="Describe your experience..." />
+                <label className="block text-sm font-semibold text-ink mb-1.5">Description</label>
+                <textarea value={expForm.description} onChange={(e) => setExpForm((f) => ({ ...f, description: e.target.value }))} rows={3} className="w-full border border-[#DDDDDD] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink resize-none" placeholder="Describe your experience..." />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-ink-muted uppercase tracking-wide mb-1.5">Address</label>
-                <input value={expForm.address} onChange={(e) => setExpForm((f) => ({ ...f, address: e.target.value }))} className="w-full border border-black/[0.07] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-forest-400 focus:border-transparent" placeholder="123 Main St, City, Country" />
+                <label className="block text-sm font-semibold text-ink mb-1.5">Address</label>
+                <input value={expForm.address} onChange={(e) => setExpForm((f) => ({ ...f, address: e.target.value }))} className="w-full border border-[#DDDDDD] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="123 Main St, City, Country" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-ink-muted uppercase tracking-wide mb-1.5">Latitude</label>
-                  <input type="number" step="any" value={expForm.latitude} onChange={(e) => setExpForm((f) => ({ ...f, latitude: e.target.value }))} className="w-full border border-black/[0.07] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-forest-400 focus:border-transparent" placeholder="40.7128" />
+                  <label className="block text-sm font-semibold text-ink mb-1.5">Latitude</label>
+                  <input type="number" step="any" value={expForm.latitude} onChange={(e) => setExpForm((f) => ({ ...f, latitude: e.target.value }))} className="w-full border border-[#DDDDDD] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="40.7128" />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-ink-muted uppercase tracking-wide mb-1.5">Longitude</label>
-                  <input type="number" step="any" value={expForm.longitude} onChange={(e) => setExpForm((f) => ({ ...f, longitude: e.target.value }))} className="w-full border border-black/[0.07] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-forest-400 focus:border-transparent" placeholder="-74.0060" />
+                  <label className="block text-sm font-semibold text-ink mb-1.5">Longitude</label>
+                  <input type="number" step="any" value={expForm.longitude} onChange={(e) => setExpForm((f) => ({ ...f, longitude: e.target.value }))} className="w-full border border-[#DDDDDD] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="-74.0060" />
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <div className="col-span-2">
-                  <label className="block text-xs font-semibold text-ink-muted uppercase tracking-wide mb-1.5">Price</label>
-                  <input type="number" min="0" step="0.01" value={expForm.price} onChange={(e) => setExpForm((f) => ({ ...f, price: e.target.value }))} className="w-full border border-black/[0.07] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-forest-400 focus:border-transparent" placeholder="49.99" />
+                  <label className="block text-sm font-semibold text-ink mb-1.5">Price</label>
+                  <input type="number" min="0" step="0.01" value={expForm.price} onChange={(e) => setExpForm((f) => ({ ...f, price: e.target.value }))} className="w-full border border-[#DDDDDD] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="49.99" />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-ink-muted uppercase tracking-wide mb-1.5">Currency</label>
-                  <input value={expForm.currency} onChange={(e) => setExpForm((f) => ({ ...f, currency: e.target.value.toUpperCase() }))} maxLength={3} className="w-full border border-black/[0.07] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-forest-400 focus:border-transparent" placeholder="USD" />
+                  <label className="block text-sm font-semibold text-ink mb-1.5">Currency</label>
+                  <input value={expForm.currency} onChange={(e) => setExpForm((f) => ({ ...f, currency: e.target.value.toUpperCase() }))} maxLength={3} className="w-full border border-[#DDDDDD] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="USD" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-ink-muted uppercase tracking-wide mb-1.5">Duration (hours)</label>
-                  <input type="number" min="0.5" step="0.5" value={expForm.duration} onChange={(e) => setExpForm((f) => ({ ...f, duration: e.target.value }))} className="w-full border border-black/[0.07] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-forest-400 focus:border-transparent" placeholder="2" />
+                  <label className="block text-sm font-semibold text-ink mb-1.5">Duration (hours)</label>
+                  <input type="number" min="0.5" step="0.5" value={expForm.duration} onChange={(e) => setExpForm((f) => ({ ...f, duration: e.target.value }))} className="w-full border border-[#DDDDDD] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="2" />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-ink-muted uppercase tracking-wide mb-1.5">Cancellation Policy</label>
-                  <select value={expForm.cancellationPolicy} onChange={(e) => setExpForm((f) => ({ ...f, cancellationPolicy: e.target.value as ExperienceForm['cancellationPolicy'] }))} className="w-full border border-black/[0.07] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-forest-400 focus:border-transparent">
+                  <label className="block text-sm font-semibold text-ink mb-1.5">Cancellation Policy</label>
+                  <select value={expForm.cancellationPolicy} onChange={(e) => setExpForm((f) => ({ ...f, cancellationPolicy: e.target.value as ExperienceForm['cancellationPolicy'] }))} className="w-full border border-[#DDDDDD] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink">
                     <option value="flexible">Flexible</option>
                     <option value="moderate">Moderate</option>
                     <option value="strict">Strict</option>
@@ -661,19 +649,19 @@ export default function GuideDashboard() {
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-ink-muted uppercase tracking-wide mb-1.5">Categories <span className="text-ink-soft font-normal normal-case">(comma-separated)</span></label>
-                <input value={expForm.category} onChange={(e) => setExpForm((f) => ({ ...f, category: e.target.value }))} className="w-full border border-black/[0.07] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-forest-400 focus:border-transparent" placeholder="food, culture, adventure" />
+                <label className="block text-sm font-semibold text-ink mb-1.5">Categories <span className="text-ink-soft font-normal normal-case">(comma-separated)</span></label>
+                <input value={expForm.category} onChange={(e) => setExpForm((f) => ({ ...f, category: e.target.value }))} className="w-full border border-[#DDDDDD] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="food, culture, adventure" />
               </div>
               {!editingExp && (
                 <div>
-                  <label className="block text-xs font-semibold text-ink-muted uppercase tracking-wide mb-1.5">Image URL <span className="text-ink-soft font-normal normal-case">(optional)</span></label>
-                  <input type="url" value={expForm.imageUrl} onChange={(e) => setExpForm((f) => ({ ...f, imageUrl: e.target.value }))} className="w-full border border-black/[0.07] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-forest-400 focus:border-transparent" placeholder="https://example.com/image.jpg" />
+                  <label className="block text-sm font-semibold text-ink mb-1.5">Image URL <span className="text-ink-soft font-normal normal-case">(optional)</span></label>
+                  <input type="url" value={expForm.imageUrl} onChange={(e) => setExpForm((f) => ({ ...f, imageUrl: e.target.value }))} className="w-full border border-[#DDDDDD] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="https://example.com/image.jpg" />
                 </div>
               )}
             </div>
             <div className="flex gap-3 mt-5">
-              <button onClick={() => setShowExpForm(false)} className="flex-1 border border-black/[0.07] text-ink/80 py-2.5 rounded-xl text-sm font-medium hover:bg-canvas">Cancel</button>
-              <button onClick={saveExperience} disabled={expSaving} className="flex-1 bg-gradient-to-r from-forest-600 to-forest-600 text-white py-2.5 rounded-xl text-sm font-semibold hover:from-forest-700 hover:to-forest-700 disabled:opacity-50">
+              <button onClick={() => setShowExpForm(false)} className="flex-1 border border-[#DDDDDD] text-ink/80 py-2.5 rounded-xl text-sm font-medium hover:bg-canvas">Cancel</button>
+              <button onClick={saveExperience} disabled={expSaving} className="flex-1 bg-ink text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-black disabled:opacity-50">
                 {expSaving ? 'Saving…' : editingExp ? 'Save Changes' : 'Create Experience'}
               </button>
             </div>
@@ -690,7 +678,7 @@ export default function GuideDashboard() {
               Are you sure you want to delete <span className="font-semibold">{deleteConfirm.title}</span>? This cannot be undone.
             </p>
             <div className="flex gap-3">
-              <button onClick={() => setDeleteConfirm(null)} className="flex-1 border border-black/[0.07] text-ink/80 py-2.5 rounded-xl text-sm font-medium hover:bg-canvas">Cancel</button>
+              <button onClick={() => setDeleteConfirm(null)} className="flex-1 border border-[#DDDDDD] text-ink/80 py-2.5 rounded-xl text-sm font-medium hover:bg-canvas">Cancel</button>
               <button onClick={deleteExperience} className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-red-600">Delete</button>
             </div>
           </div>

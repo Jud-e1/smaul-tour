@@ -1,14 +1,14 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Bricolage_Grotesque } from 'next/font/google';
+import { Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/layout/Navbar';
+import SiteFooter from '@/components/layout/SiteFooter';
 import { ToastProvider } from '@/components/ui/Toast';
 
-const body = Inter({ subsets: ['latin'], variable: '--font-body', display: 'swap' });
-const display = Bricolage_Grotesque({
+const body = Plus_Jakarta_Sans({
   subsets: ['latin'],
-  weight: ['500', '600', '700', '800'],
-  variable: '--font-display',
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-body',
   display: 'swap',
 });
 
@@ -20,16 +20,17 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#0C2F1E',
+  themeColor: '#FFFFFF',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${body.variable} ${display.variable}`}>
-      <body className="font-sans min-h-screen overflow-x-hidden bg-canvas text-ink">
+    <html lang="en" className={body.variable}>
+      <body className="font-sans min-h-screen overflow-x-hidden bg-white text-ink">
         <ToastProvider>
           <Navbar />
-          <main className="pb-28 lg:pb-0">{children}</main>
+          <main className="min-h-[60vh]">{children}</main>
+          <SiteFooter />
         </ToastProvider>
       </body>
     </html>

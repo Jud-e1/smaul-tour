@@ -8,12 +8,21 @@ import ExperienceCard, { Experience } from '@/components/experiences/ExperienceC
 import { useAuthStore } from '@/store/auth';
 import { userApi } from '@/lib/api';
 
-const CATEGORIES = ['Food & Drink', 'Culture', 'Adventure', 'Nature', 'Art', 'Sports', 'Wellness'];
+const CATEGORIES: { label: string; icon: string }[] = [
+  { label: 'Food & Drink', icon: '🍲' },
+  { label: 'Culture', icon: '🥁' },
+  { label: 'Adventure', icon: '🧗🏾' },
+  { label: 'Nature', icon: '🌿' },
+  { label: 'Art', icon: '🎨' },
+  { label: 'Sports', icon: '⚽' },
+  { label: 'Wellness', icon: '🧘🏾' },
+  { label: 'Beaches', icon: '🏖️' },
+];
 const SORT_OPTIONS = [
-  { value: 'rating', label: 'Top Rated' },
-  { value: 'price_asc', label: 'Price: Low to High' },
-  { value: 'price_desc', label: 'Price: High to Low' },
-  { value: 'popularity', label: 'Most Popular' },
+  { value: 'rating', label: 'Top rated' },
+  { value: 'price_asc', label: 'Price: low to high' },
+  { value: 'price_desc', label: 'Price: high to low' },
+  { value: 'popularity', label: 'Most popular' },
 ];
 const PAGE_SIZE = 12;
 const MAX_PAGE_BUTTONS = 7;
@@ -54,7 +63,18 @@ function ExperiencesPage() {
   const [durationMax, setDurationMax] = useState('');
   const [minRating, setMinRating] = useState('');
   const [locationRadius, setLocationRadius] = useState('');
-  const [sortBy, setSortBy] = useState('rating');
+  const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'rating');
+
+  // Keep state in sync when the header search changes the URL while we're already here.
+  const qParam = searchParams.get('q') || '';
+  const catParam = searchParams.get('categories') || '';
+  const sortParam = searchParams.get('sort') || '';
+  useEffect(() => {
+    setSearch(qParam);
+    setSelectedCategories(catParam.split(',').filter(Boolean));
+    if (sortParam) setSortBy(sortParam);
+    setPage(1);
+  }, [qParam, catParam, sortParam]);
 
   const fetchExperiences = useCallback(async () => {
     setLoading(true);
@@ -121,135 +141,144 @@ function ExperiencesPage() {
     durationMin || durationMax, minRating, locationRadius,
   ].filter(Boolean).length;
 
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setDrawerOpen(false); };
+    window.addEventListener('keydown', onKey);
+    return () => { document.body.style.overflow = prev; window.removeEventListener('keydown', onKey); };
+  }, [drawerOpen]);
+
+  const numberField = 'w-full rounded-xl border border-[#B0B0B0] px-4 pt-6 pb-2 text-[15px] text-ink outline-none focus:border-ink focus:ring-1 focus:ring-ink peer';
+
   return (
-    <div className="min-h-screen page-bg-soft">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-
-        {/* Header — Findora-inspired */}
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 pt-4 sm:pt-8 mb-8 animate-rise-in">
-          <div className="flex-1 min-w-0">
-            <p className="eyebrow flex items-center gap-2">
-              <span className="h-px w-6 bg-sun" aria-hidden />
-              Accra, Ghana · Explore
-            </p>
-            <h1 className="mt-3 font-display text-4xl sm:text-5xl lg:text-[56px] leading-[1] font-bold text-ink">
-              Find your next experience
-            </h1>
-            <p className="text-ink-muted mt-3 max-w-lg">
-              Food crawls, heritage walks, beach days and more — hosted by verified locals.
-            </p>
-          </div>
-          <Link
-            href="/trip-planner"
-            className="group shrink-0 flex items-center gap-3 rounded-2xl bg-white border border-black/[0.07] hover:border-black/20 pl-3 pr-4 py-3 transition-colors"
-          >
-            <span className="w-10 h-10 rounded-xl bg-forest-700 text-white flex items-center justify-center">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" aria-hidden>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-              </svg>
-            </span>
-            <span>
-              <span className="block text-sm font-semibold text-ink">Not sure where to start?</span>
-              <span className="block text-xs text-ink-muted">Let the AI planner build your days →</span>
-            </span>
-          </Link>
-        </div>
-
-        {/* Search + filter bar */}
-        <div className="sticky top-[72px] z-20 -mx-4 px-4 sm:mx-0 sm:px-0 py-2 bg-canvas/90 backdrop-blur-md">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 search-pill p-2 rounded-3xl sm:rounded-full">
-          <div className="flex-1 flex items-center gap-2 px-1 sm:px-3 min-w-0">
-            <svg className="w-5 h-5 text-ink-muted shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              placeholder="Search experiences..."
-              className="flex-1 min-w-0 py-2 text-sm text-ink placeholder:text-ink-soft outline-none bg-transparent"
-            />
-          </div>
-          <div className="flex items-center gap-2 shrink-0 sm:border-l sm:border-black/[0.07] sm:pl-3">
-            <select
-              value={sortBy}
-              onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
-              className="min-w-0 flex-1 sm:flex-none text-xs text-ink/80 outline-none bg-transparent font-medium cursor-pointer"
+    <div className="bg-white">
+      {/* ── Category bar + Filters (Airbnb) ─────────────────────────────── */}
+      <div className="sticky top-[70px] md:top-20 z-30 bg-white border-b border-[#EBEBEB]">
+        <div className="max-w-page mx-auto px-5 sm:px-10 xl:px-20 flex items-center gap-6">
+          <div className="flex-1 min-w-0 flex gap-8 overflow-x-auto scrollbar-hide">
+            <button
+              onClick={() => { setSelectedCategories([]); setPage(1); }}
+              className={`group shrink-0 flex flex-col items-center gap-1.5 pt-4 pb-3 border-b-2 transition-colors ${
+                selectedCategories.length === 0 ? 'border-ink text-ink' : 'border-transparent text-ink-muted hover:text-ink hover:border-[#DDDDDD]'
+              }`}
             >
-              {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-            </select>
+              <span className={`text-2xl leading-none ${selectedCategories.length === 0 ? '' : 'opacity-70 group-hover:opacity-100'}`} aria-hidden>✨</span>
+              <span className="text-xs font-semibold whitespace-nowrap">All</span>
+            </button>
+            {CATEGORIES.map((cat) => {
+              const active = selectedCategories.includes(cat.label);
+              return (
+                <button
+                  key={cat.label}
+                  onClick={() => toggleCategory(cat.label)}
+                  aria-pressed={active}
+                  className={`group shrink-0 flex flex-col items-center gap-1.5 pt-4 pb-3 border-b-2 transition-colors ${
+                    active ? 'border-ink text-ink' : 'border-transparent text-ink-muted hover:text-ink hover:border-[#DDDDDD]'
+                  }`}
+                >
+                  <span className={`text-2xl leading-none ${active ? '' : 'opacity-70 group-hover:opacity-100'}`} aria-hidden>{cat.icon}</span>
+                  <span className="text-xs font-semibold whitespace-nowrap">{cat.label}</span>
+                </button>
+              );
+            })}
+          </div>
+          <button
+            onClick={() => setDrawerOpen(true)}
+            className={`shrink-0 hidden sm:flex items-center gap-2 h-12 px-4 rounded-xl border text-xs font-semibold transition-colors ${
+              hasActiveFilters ? 'border-ink border-2 bg-fog' : 'border-[#DDDDDD] hover:border-ink'
+            }`}
+            aria-label="Open filters"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden>
+              <path strokeLinecap="round" d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0" />
+              <circle cx="16" cy="6" r="2" /><circle cx="10" cy="12" r="2" /><circle cx="18" cy="18" r="2" />
+            </svg>
+            Filters
+            {activeFilterCount > 0 && (
+              <span className="w-5 h-5 rounded-full bg-ink text-white text-[10px] flex items-center justify-center">{activeFilterCount}</span>
+            )}
+          </button>
+        </div>
+      </div>
+
+      <div className="max-w-page mx-auto px-5 sm:px-10 xl:px-20 pt-6 pb-10">
+        {/* Results header */}
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+          <div className="min-w-0">
+            <h1 className="text-[22px] font-semibold text-ink">
+              {loading ? 'Searching…' : total > 0 ? `${total} experience${total === 1 ? '' : 's'} in Accra` : 'Experiences in Accra'}
+            </h1>
+            {(search || selectedCategories.length > 0) && (
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                {search && (
+                  <button
+                    onClick={() => { setSearch(''); setPage(1); router.replace('/experiences'); }}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-fog border border-[#DDDDDD] px-3 py-1 text-sm hover:border-ink"
+                  >
+                    “{search}” <span aria-hidden>×</span>
+                  </button>
+                )}
+                {selectedCategories.map((c) => (
+                  <button key={c} onClick={() => toggleCategory(c)} className="inline-flex items-center gap-1.5 rounded-full bg-fog border border-[#DDDDDD] px-3 py-1 text-sm hover:border-ink">
+                    {c} <span aria-hidden>×</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
             <button
               onClick={() => setDrawerOpen(true)}
-              className={`h-10 px-4 rounded-full flex items-center justify-center gap-2 text-sm font-semibold transition-all ${
-                hasActiveFilters ? 'bg-ink text-white' : 'bg-sun text-white hover:bg-sun-600'
-              }`}
-              aria-label="Open filters"
+              className="sm:hidden flex items-center gap-2 h-10 px-4 rounded-full border border-[#DDDDDD] text-sm font-semibold"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M7 12h10M10 18h4" />
-              </svg>
               Filters{activeFilterCount > 0 ? ` · ${activeFilterCount}` : ''}
             </button>
+            <label className="flex items-center gap-2 h-10 pl-4 pr-3 rounded-full border border-[#DDDDDD] hover:border-ink text-sm cursor-pointer">
+              <span className="text-ink-muted">Sort</span>
+              <select
+                value={sortBy}
+                onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
+                className="bg-transparent font-semibold text-ink outline-none cursor-pointer"
+              >
+                {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </label>
           </div>
         </div>
-
-        {/* Category pills */}
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide pt-3 pb-1">
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => toggleCategory(cat)}
-              className={`chip shrink-0 ${selectedCategories.includes(cat) ? 'chip-active' : 'chip-inactive'}`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-        </div>
-
-        <div className="mt-6" />
 
         {/* Results */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
-            {Array.from({ length: 8 }).map((_, i) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-x-6 gap-y-10">
+            {Array.from({ length: 10 }).map((_, i) => (
               <div key={i}>
-                <div className="rounded-card shimmer aspect-square" />
-                <div className="mt-3 h-4 w-3/4 rounded-full shimmer" />
-                <div className="mt-2 h-3 w-1/2 rounded-full shimmer" />
+                <div className="rounded-2xl shimmer aspect-[20/19]" />
+                <div className="mt-3 h-4 w-4/5 rounded-full shimmer" />
+                <div className="mt-2 h-3.5 w-1/2 rounded-full shimmer" />
+                <div className="mt-2 h-3.5 w-1/3 rounded-full shimmer" />
               </div>
             ))}
           </div>
         ) : experiences.length === 0 ? (
-          <div className="text-center py-20 px-6 rounded-card bg-white border border-black/[0.07]">
-            <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-forest-50 flex items-center justify-center">
-              <svg className="w-8 h-8 text-forest-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.6} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-              </svg>
-            </div>
-            <p className="font-display text-2xl font-bold text-ink">No experiences match yet</p>
-            <p className="text-sm text-ink-muted mt-2 max-w-sm mx-auto">Try a different search or fewer filters — or let the AI planner suggest something.</p>
-            <div className="mt-6 flex justify-center gap-3 flex-wrap">
-              {hasActiveFilters && (
-                <button onClick={clearFilters} className="btn-ghost">Clear all filters</button>
-              )}
+          <div className="max-w-xl mx-auto text-center py-16 sm:py-24">
+            <div className="text-5xl mb-5" aria-hidden>🧭</div>
+            <h2 className="text-[26px] font-semibold text-ink">No exact matches</h2>
+            <p className="text-ink-muted mt-2">
+              Try changing or removing some of your filters, or searching a different part of Accra.
+            </p>
+            <div className="mt-8 flex justify-center gap-3 flex-wrap">
+              {hasActiveFilters || search ? (
+                <button onClick={() => { clearFilters(); setSearch(''); router.replace('/experiences'); }} className="btn-ghost">
+                  Remove all filters
+                </button>
+              ) : null}
               <Link href="/trip-planner" className="btn-primary">Ask the AI planner</Link>
             </div>
           </div>
         ) : (
           <>
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-bold text-ink">
-                Nearby Experiences
-                <span className="ml-2 text-sm font-normal text-ink-soft">({total} found)</span>
-              </h2>
-              {activeFilterCount > 0 && (
-                <button onClick={clearFilters} className="text-xs text-accra-green font-semibold hover:underline">
-                  Clear {activeFilterCount} filter{activeFilterCount !== 1 ? 's' : ''}
-                </button>
-              )}
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-x-6 gap-y-10">
               {experiences.map((exp) => (
                 <ExperienceCard
                   key={exp.id}
@@ -261,26 +290,24 @@ function ExperiencesPage() {
             </div>
 
             {totalPages > 1 && (
-              <div className="flex justify-center items-center gap-1 mt-12 overflow-x-auto pb-1">
+              <nav className="flex justify-center items-center gap-2 mt-14" aria-label="Pagination">
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="px-4 py-2.5 border border-black/[0.07] rounded-full text-sm disabled:opacity-40 hover:bg-white disabled:cursor-not-allowed bg-white/80"
+                  className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-fog disabled:opacity-30 disabled:hover:bg-transparent"
                   aria-label="Previous page"
                 >
-                  ‹
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={3.5} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
                 </button>
                 {paginationRange.map((item, idx) =>
                   item === '...' ? (
-                    <span key={`ellipsis-${idx}`} className="px-2 py-2 text-sm text-ink-soft">…</span>
+                    <span key={`ellipsis-${idx}`} className="w-8 text-center text-sm text-ink-muted">…</span>
                   ) : (
                     <button
                       key={item}
                       onClick={() => setPage(item as number)}
-                      className={`px-4 py-2.5 border rounded-full text-sm min-w-[40px] transition-colors ${
-                        page === item
-                          ? 'bg-accra-green border-accra-green text-white font-semibold shadow-md'
-                          : 'border-black/[0.07] hover:bg-white text-ink/80 bg-white/80'
+                      className={`w-8 h-8 rounded-full text-sm transition-colors ${
+                        page === item ? 'bg-ink text-white font-semibold' : 'text-ink hover:bg-fog'
                       }`}
                       aria-label={`Page ${item}`}
                       aria-current={page === item ? 'page' : undefined}
@@ -292,124 +319,142 @@ function ExperiencesPage() {
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
-                  className="px-4 py-2.5 border border-black/[0.07] rounded-full text-sm disabled:opacity-40 hover:bg-white disabled:cursor-not-allowed bg-white/80"
+                  className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-fog disabled:opacity-30 disabled:hover:bg-transparent"
                   aria-label="Next page"
                 >
-                  ›
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={3.5} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
                 </button>
-              </div>
+              </nav>
             )}
           </>
         )}
+
+        {/* AI planner nudge */}
+        <Link
+          href="/trip-planner"
+          className="mt-16 flex flex-col sm:flex-row items-start sm:items-center gap-4 rounded-2xl bg-fog px-6 py-6 hover:bg-[#EFEFEF] transition-colors"
+        >
+          <span className="text-3xl" aria-hidden>✨</span>
+          <div className="flex-1">
+            <p className="font-semibold text-ink">Not sure what to book?</p>
+            <p className="text-sm text-ink-muted">Describe your trip and the AI planner will build a day-by-day itinerary.</p>
+          </div>
+          <span className="btn-primary !py-2.5 text-sm">Plan my trip</span>
+        </Link>
       </div>
 
-      {/* Filter Drawer */}
+      {/* ── Filters modal (Airbnb) ──────────────────────────────────────── */}
       {drawerOpen && (
-        <>
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" onClick={() => setDrawerOpen(false)} />
-          <div className="fixed right-0 top-0 h-full w-80 bg-white z-50 shadow-2xl overflow-y-auto animate-slide-in-right rounded-l-3xl">
-            <div className="flex items-center justify-between px-6 py-5 border-b border-black/[0.07]">
-              <h2 className="font-bold text-ink">Filters</h2>
-              <button onClick={() => setDrawerOpen(false)} className="p-2 rounded-full hover:bg-beige transition-colors">
-                <svg className="w-4 h-4 text-ink-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+        <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center">
+          <button className="absolute inset-0 bg-black/50 cursor-default" onClick={() => setDrawerOpen(false)} aria-label="Close filters" />
+          <div role="dialog" aria-modal="true" aria-labelledby="filters-title" className="relative w-full sm:max-w-[680px] max-h-[92vh] sm:max-h-[86vh] bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col animate-sheet sm:animate-scale-in">
+            <div className="relative flex items-center justify-center h-16 border-b border-[#EBEBEB] shrink-0">
+              <button onClick={() => setDrawerOpen(false)} className="absolute left-5 w-8 h-8 rounded-full hover:bg-fog flex items-center justify-center" aria-label="Close">
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" d="M6 6l12 12M18 6L6 18" /></svg>
               </button>
+              <h2 id="filters-title" className="text-base font-semibold">Filters</h2>
             </div>
 
-            <div className="px-6 py-5 space-y-6">
-              <div>
-                <h3 className="font-semibold text-ink mb-3 text-sm">Category</h3>
-                <div className="space-y-2">
-                  {CATEGORIES.map((cat) => (
-                    <label key={cat} className="flex items-center gap-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={selectedCategories.includes(cat)}
-                        onChange={() => toggleCategory(cat)}
-                        className="accent-accra-green w-4 h-4 rounded"
-                      />
-                      <span className="text-sm text-ink/80">{cat}</span>
-                    </label>
+            <div className="overflow-y-auto px-6 divide-y divide-[#EBEBEB]">
+              <section className="py-8">
+                <h3 className="text-[22px] font-semibold">Type of experience</h3>
+                <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {CATEGORIES.map((cat) => {
+                    const active = selectedCategories.includes(cat.label);
+                    return (
+                      <button
+                        key={cat.label}
+                        onClick={() => toggleCategory(cat.label)}
+                        aria-pressed={active}
+                        className={`text-left rounded-xl border p-4 transition-all ${active ? 'border-ink border-2 bg-fog p-[15px]' : 'border-[#DDDDDD] hover:border-ink'}`}
+                      >
+                        <span className="text-2xl block" aria-hidden>{cat.icon}</span>
+                        <span className="mt-3 block text-sm font-semibold">{cat.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </section>
+
+              <section className="py-8">
+                <h3 className="text-[22px] font-semibold">Price range</h3>
+                <p className="text-sm text-ink-muted mt-1">Per guest, in USD</p>
+                <div className="mt-5 flex items-center gap-4">
+                  <label className="relative flex-1">
+                    <span className="absolute left-4 top-2 text-xs text-ink-muted">Minimum</span>
+                    <input type="number" inputMode="numeric" min={0} value={priceMin} placeholder="$0"
+                      onChange={(e) => { setPriceMin(e.target.value); setPage(1); }} className={numberField} />
+                  </label>
+                  <span className="w-4 h-px bg-[#B0B0B0]" aria-hidden />
+                  <label className="relative flex-1">
+                    <span className="absolute left-4 top-2 text-xs text-ink-muted">Maximum</span>
+                    <input type="number" inputMode="numeric" min={0} value={priceMax} placeholder="Any"
+                      onChange={(e) => { setPriceMax(e.target.value); setPage(1); }} className={numberField} />
+                  </label>
+                </div>
+              </section>
+
+              <section className="py-8">
+                <h3 className="text-[22px] font-semibold">Duration</h3>
+                <p className="text-sm text-ink-muted mt-1">In hours</p>
+                <div className="mt-5 flex items-center gap-4">
+                  <label className="relative flex-1">
+                    <span className="absolute left-4 top-2 text-xs text-ink-muted">At least</span>
+                    <input type="number" min={0} value={durationMin} placeholder="Any"
+                      onChange={(e) => { setDurationMin(e.target.value); setPage(1); }} className={numberField} />
+                  </label>
+                  <span className="w-4 h-px bg-[#B0B0B0]" aria-hidden />
+                  <label className="relative flex-1">
+                    <span className="absolute left-4 top-2 text-xs text-ink-muted">At most</span>
+                    <input type="number" min={0} value={durationMax} placeholder="Any"
+                      onChange={(e) => { setDurationMax(e.target.value); setPage(1); }} className={numberField} />
+                  </label>
+                </div>
+              </section>
+
+              <section className="py-8">
+                <h3 className="text-[22px] font-semibold">Guest rating</h3>
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {[['', 'Any'], ['3', '3.0+'], ['3.5', '3.5+'], ['4', '4.0+'], ['4.5', '4.5+']].map(([v, l]) => (
+                    <button
+                      key={l}
+                      onClick={() => { setMinRating(v); setPage(1); }}
+                      className={`pill-tab ${minRating === v ? 'pill-tab-active' : ''}`}
+                    >
+                      {v && '★ '}{l}
+                    </button>
                   ))}
                 </div>
-              </div>
+              </section>
 
-              <hr className="border-black/[0.07]" />
-
-              <div>
-                <h3 className="font-semibold text-ink mb-3 text-sm">Price Range</h3>
-                <div className="flex gap-2">
-                  <input type="number" placeholder="Min $" value={priceMin} min={0}
-                    onChange={(e) => { setPriceMin(e.target.value); setPage(1); }}
-                    className="w-full border border-black/[0.07] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-forest-700 focus:ring-4 focus:ring-forest-700/10"
-                  />
-                  <input type="number" placeholder="Max $" value={priceMax} min={0}
-                    onChange={(e) => { setPriceMax(e.target.value); setPage(1); }}
-                    className="w-full border border-black/[0.07] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-forest-700 focus:ring-4 focus:ring-forest-700/10"
-                  />
+              <section className="py-8">
+                <h3 className="text-[22px] font-semibold">Distance</h3>
+                <p className="text-sm text-ink-muted mt-1">How far from central Accra</p>
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {[['', 'Any distance'], ['5', '5 km'], ['10', '10 km'], ['25', '25 km'], ['50', '50 km']].map(([v, l]) => (
+                    <button key={l} onClick={() => { setLocationRadius(v); setPage(1); }} className={`pill-tab ${locationRadius === v ? 'pill-tab-active' : ''}`}>
+                      {l}
+                    </button>
+                  ))}
+                  <label className="relative w-32">
+                    <input type="number" min={1} value={locationRadius} placeholder="Custom km"
+                      onChange={(e) => { setLocationRadius(e.target.value); setPage(1); }}
+                      className="w-full h-full rounded-full border border-[#DDDDDD] px-4 py-2 text-sm outline-none focus:border-ink" />
+                  </label>
                 </div>
-              </div>
-
-              <hr className="border-black/[0.07]" />
-
-              <div>
-                <h3 className="font-semibold text-ink mb-3 text-sm">Duration (hours)</h3>
-                <div className="flex gap-2">
-                  <input type="number" placeholder="Min" value={durationMin} min={0}
-                    onChange={(e) => { setDurationMin(e.target.value); setPage(1); }}
-                    className="w-full border border-black/[0.07] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-forest-700 focus:ring-4 focus:ring-forest-700/10"
-                  />
-                  <input type="number" placeholder="Max" value={durationMax} min={0}
-                    onChange={(e) => { setDurationMax(e.target.value); setPage(1); }}
-                    className="w-full border border-black/[0.07] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-forest-700 focus:ring-4 focus:ring-forest-700/10"
-                  />
-                </div>
-              </div>
-
-              <hr className="border-black/[0.07]" />
-
-              <div>
-                <h3 className="font-semibold text-ink mb-3 text-sm">Minimum Rating</h3>
-                <select value={minRating}
-                  onChange={(e) => { setMinRating(e.target.value); setPage(1); }}
-                  className="w-full border border-black/[0.07] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-forest-700 focus:ring-4 focus:ring-forest-700/10 bg-white"
-                >
-                  <option value="">Any rating</option>
-                  <option value="4.5">4.5+ stars</option>
-                  <option value="4">4.0+ stars</option>
-                  <option value="3.5">3.5+ stars</option>
-                  <option value="3">3.0+ stars</option>
-                </select>
-              </div>
-
-              <hr className="border-black/[0.07]" />
-
-              <div>
-                <h3 className="font-semibold text-ink mb-3 text-sm">Location Radius (km)</h3>
-                <input type="number" placeholder="e.g. 10" value={locationRadius} min={1}
-                  onChange={(e) => { setLocationRadius(e.target.value); setPage(1); }}
-                  className="w-full border border-black/[0.07] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-forest-700 focus:ring-4 focus:ring-forest-700/10"
-                />
-              </div>
+              </section>
             </div>
 
-            <div className="sticky bottom-0 bg-white border-t border-black/[0.07] px-6 py-4 flex gap-3">
-              <button
-                onClick={() => { clearFilters(); setDrawerOpen(false); }}
-                className="flex-1 border border-black/[0.07] rounded-xl py-3 text-sm font-semibold text-ink/80 hover:bg-beige transition-colors"
-              >
+            <div className="shrink-0 flex items-center justify-between px-6 py-4 border-t border-[#EBEBEB]">
+              <button onClick={() => { clearFilters(); }} className="text-[15px] font-semibold underline underline-offset-2 disabled:text-ink-soft" disabled={!hasActiveFilters}>
                 Clear all
               </button>
-              <button
-                onClick={() => setDrawerOpen(false)}
-                className="flex-1 bg-accra-green text-white rounded-xl py-3 text-sm font-semibold hover:bg-accra-dark transition-colors shadow-md"
-              >
-                Show results
+              <button onClick={() => setDrawerOpen(false)} className="btn-primary">
+                {loading ? 'Updating…' : `Show ${total || ''} result${total === 1 ? '' : 's'}`.replace('  ', ' ')}
               </button>
             </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
@@ -419,7 +464,7 @@ export default function ExperiencesRoute() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-beige">
+        <div className="min-h-[60vh] flex items-center justify-center">
           <p className="text-sm text-ink-muted">Loading experiences…</p>
         </div>
       }

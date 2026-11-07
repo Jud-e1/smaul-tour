@@ -170,39 +170,41 @@ export default function AdminPage() {
   if (!user || user.role !== 'admin') return null;
 
   return (
-    <div className="min-h-screen bg-canvas">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex items-center gap-3 mb-6">
-          <BrandLogo variant="mark" decorative className="h-12 w-12 object-contain" />
-          <h1 className="font-display text-3xl sm:text-4xl font-bold text-ink">Admin Panel</h1>
+    <div className="bg-white">
+      <div className="max-w-page mx-auto px-6 lg:px-10 xl:px-20 pt-8 md:pt-12 pb-10">
+        <div className="flex items-center gap-4">
+          <BrandLogo variant="mark" decorative className="h-11 w-11 object-contain" />
+          <div>
+            <p className="text-sm text-ink-muted">Nsoroma operations</p>
+            <h1 className="text-[28px] sm:text-[32px] font-semibold leading-tight">Admin console</h1>
+          </div>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex space-x-1 bg-white rounded-lg shadow-sm border border-black/[0.07] p-1 mb-6 overflow-x-auto">
+        <nav className="mt-8 mb-8 flex gap-6 sm:gap-8 overflow-x-auto scrollbar-hide border-b border-[#DDDDDD]" aria-label="Admin">
           {tabs.map((t) => (
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
-              className={`px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors ${
-                tab === t.key
-                  ? 'bg-forest-600 text-white'
-                  : 'text-ink-muted hover:text-ink hover:bg-gray-100'
+              aria-current={tab === t.key ? 'page' : undefined}
+              className={`pb-3 -mb-px border-b-2 text-[15px] whitespace-nowrap transition-colors ${
+                tab === t.key ? 'border-ink text-ink font-semibold' : 'border-transparent text-ink-muted hover:text-ink hover:border-[#DDDDDD]'
               }`}
             >
               {t.label}
             </button>
           ))}
-        </div>
+        </nav>
 
         {loading ? (
-          <div className="text-center py-12 text-ink-muted">Loading...</div>
+          <div className="space-y-3">{[0,1,2].map((i) => <div key={i} className="h-16 rounded-xl shimmer" />)}</div>
         ) : (
           <>
             {/* Verifications Tab */}
             {tab === 'verifications' && (
-              <div className="bg-white rounded-lg shadow-sm border border-black/[0.07]">
-                <div className="p-4 border-b border-black/[0.07]">
-                  <h2 className="font-semibold text-ink">Pending Guide Verifications</h2>
+              <div className="bg-white rounded-2xl border border-[#DDDDDD] overflow-hidden">
+                <div className="p-4 border-b border-[#DDDDDD]">
+                  <h2 className="text-lg font-semibold text-ink">Pending Guide Verifications</h2>
                 </div>
                 {verifications.length === 0 ? (
                   <div className="p-8 text-center text-ink-muted">No pending verifications</div>
@@ -219,7 +221,7 @@ export default function AdminPage() {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => approveVerification(v.id)}
-                            className="px-3 py-1.5 bg-forest-600 text-white text-sm rounded-md hover:bg-forest-700"
+                            className="px-4 py-2 bg-ink text-white text-sm font-semibold rounded-lg hover:bg-black"
                           >
                             Approve
                           </button>
@@ -230,17 +232,17 @@ export default function AdminPage() {
                                 placeholder="Rejection reason"
                                 value={rejectReason}
                                 onChange={(e) => setRejectReason(e.target.value)}
-                                className="border border-black/[0.12] rounded px-2 py-1 text-sm w-48"
+                                className="border border-[#DDDDDD] rounded px-2 py-1 text-sm w-48"
                               />
                               <button
                                 onClick={() => rejectVerification(v.id)}
-                                className="px-3 py-1.5 bg-red-600 text-white text-sm rounded-md hover:bg-red-700"
+                                className="px-4 py-2 bg-[#C13515] text-white text-sm font-semibold rounded-lg hover:bg-[#A42D12]"
                               >
                                 Confirm
                               </button>
                               <button
                                 onClick={() => setActionTarget(null)}
-                                className="px-3 py-1.5 bg-gray-200 text-ink/80 text-sm rounded-md hover:bg-gray-300"
+                                className="px-4 py-2 border border-[#DDDDDD] text-ink text-sm font-semibold rounded-lg hover:border-ink"
                               >
                                 Cancel
                               </button>
@@ -248,7 +250,7 @@ export default function AdminPage() {
                           ) : (
                             <button
                               onClick={() => setActionTarget(v.id)}
-                              className="px-3 py-1.5 bg-red-100 text-red-700 text-sm rounded-md hover:bg-red-200"
+                              className="px-4 py-2 border border-[#DDDDDD] text-[#C13515] text-sm font-semibold rounded-lg hover:border-[#C13515]"
                             >
                               Reject
                             </button>
@@ -263,9 +265,9 @@ export default function AdminPage() {
 
             {/* Experiences Tab */}
             {tab === 'experiences' && (
-              <div className="bg-white rounded-lg shadow-sm border border-black/[0.07]">
-                <div className="p-4 border-b border-black/[0.07]">
-                  <h2 className="font-semibold text-ink">Pending Experience Approvals</h2>
+              <div className="bg-white rounded-2xl border border-[#DDDDDD] overflow-hidden">
+                <div className="p-4 border-b border-[#DDDDDD]">
+                  <h2 className="text-lg font-semibold text-ink">Pending Experience Approvals</h2>
                 </div>
                 {pendingExperiences.length === 0 ? (
                   <div className="p-8 text-center text-ink-muted">No pending experiences</div>
@@ -280,7 +282,7 @@ export default function AdminPage() {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => approveExperience(e.id)}
-                            className="px-3 py-1.5 bg-forest-600 text-white text-sm rounded-md hover:bg-forest-700"
+                            className="px-4 py-2 bg-ink text-white text-sm font-semibold rounded-lg hover:bg-black"
                           >
                             Approve
                           </button>
@@ -291,17 +293,17 @@ export default function AdminPage() {
                                 placeholder="Rejection reason"
                                 value={rejectReason}
                                 onChange={(ex) => setRejectReason(ex.target.value)}
-                                className="border border-black/[0.12] rounded px-2 py-1 text-sm w-48"
+                                className="border border-[#DDDDDD] rounded px-2 py-1 text-sm w-48"
                               />
                               <button
                                 onClick={() => rejectExperience(e.id)}
-                                className="px-3 py-1.5 bg-red-600 text-white text-sm rounded-md hover:bg-red-700"
+                                className="px-4 py-2 bg-[#C13515] text-white text-sm font-semibold rounded-lg hover:bg-[#A42D12]"
                               >
                                 Confirm
                               </button>
                               <button
                                 onClick={() => setActionTarget(null)}
-                                className="px-3 py-1.5 bg-gray-200 text-ink/80 text-sm rounded-md hover:bg-gray-300"
+                                className="px-4 py-2 border border-[#DDDDDD] text-ink text-sm font-semibold rounded-lg hover:border-ink"
                               >
                                 Cancel
                               </button>
@@ -309,7 +311,7 @@ export default function AdminPage() {
                           ) : (
                             <button
                               onClick={() => setActionTarget(e.id)}
-                              className="px-3 py-1.5 bg-red-100 text-red-700 text-sm rounded-md hover:bg-red-200"
+                              className="px-4 py-2 border border-[#DDDDDD] text-[#C13515] text-sm font-semibold rounded-lg hover:border-[#C13515]"
                             >
                               Reject
                             </button>
@@ -324,9 +326,9 @@ export default function AdminPage() {
 
             {/* Flagged Reviews Tab */}
             {tab === 'reviews' && (
-              <div className="bg-white rounded-lg shadow-sm border border-black/[0.07]">
-                <div className="p-4 border-b border-black/[0.07]">
-                  <h2 className="font-semibold text-ink">Flagged Reviews</h2>
+              <div className="bg-white rounded-2xl border border-[#DDDDDD] overflow-hidden">
+                <div className="p-4 border-b border-[#DDDDDD]">
+                  <h2 className="text-lg font-semibold text-ink">Flagged Reviews</h2>
                 </div>
                 {flaggedReviews.length === 0 ? (
                   <div className="p-8 text-center text-ink-muted">No flagged reviews</div>
@@ -343,7 +345,7 @@ export default function AdminPage() {
                           </div>
                           <button
                             onClick={() => removeReview(r.id)}
-                            className="px-3 py-1.5 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 whitespace-nowrap"
+                            className="px-4 py-2 bg-[#C13515] text-white text-sm font-semibold rounded-lg hover:bg-[#A42D12] whitespace-nowrap"
                           >
                             Remove
                           </button>
@@ -357,9 +359,9 @@ export default function AdminPage() {
 
             {/* Users Tab */}
             {tab === 'users' && (
-              <div className="bg-white rounded-lg shadow-sm border border-black/[0.07]">
-                <div className="p-4 border-b border-black/[0.07]">
-                  <h2 className="font-semibold text-ink">User Management</h2>
+              <div className="bg-white rounded-2xl border border-[#DDDDDD] overflow-hidden">
+                <div className="p-4 border-b border-[#DDDDDD]">
+                  <h2 className="text-lg font-semibold text-ink">User Management</h2>
                 </div>
                 {users.length === 0 ? (
                   <div className="p-8 text-center text-ink-muted">No users found</div>
@@ -375,7 +377,7 @@ export default function AdminPage() {
                           {u.status === 'suspended' ? (
                             <button
                               onClick={() => unsuspendUser(u.id)}
-                              className="px-3 py-1.5 bg-forest-100 text-forest-700 text-sm rounded-md hover:bg-forest-200"
+                              className="px-4 py-2 border border-ink text-ink text-sm font-semibold rounded-lg hover:bg-fog"
                             >
                               Unsuspend
                             </button>
@@ -386,17 +388,17 @@ export default function AdminPage() {
                                 placeholder="Suspension reason"
                                 value={suspendReason}
                                 onChange={(ev) => setSuspendReason(ev.target.value)}
-                                className="border border-black/[0.12] rounded px-2 py-1 text-sm w-48"
+                                className="border border-[#DDDDDD] rounded px-2 py-1 text-sm w-48"
                               />
                               <button
                                 onClick={() => suspendUser(u.id)}
-                                className="px-3 py-1.5 bg-red-600 text-white text-sm rounded-md hover:bg-red-700"
+                                className="px-4 py-2 bg-[#C13515] text-white text-sm font-semibold rounded-lg hover:bg-[#A42D12]"
                               >
                                 Confirm
                               </button>
                               <button
                                 onClick={() => setActionTarget(null)}
-                                className="px-3 py-1.5 bg-gray-200 text-ink/80 text-sm rounded-md hover:bg-gray-300"
+                                className="px-4 py-2 border border-[#DDDDDD] text-ink text-sm font-semibold rounded-lg hover:border-ink"
                               >
                                 Cancel
                               </button>
@@ -404,7 +406,7 @@ export default function AdminPage() {
                           ) : (
                             <button
                               onClick={() => setActionTarget(u.id)}
-                              className="px-3 py-1.5 bg-red-100 text-red-700 text-sm rounded-md hover:bg-red-200"
+                              className="px-4 py-2 border border-[#DDDDDD] text-[#C13515] text-sm font-semibold rounded-lg hover:border-[#C13515]"
                             >
                               Suspend
                             </button>
@@ -431,7 +433,7 @@ export default function AdminPage() {
                       { label: 'Revenue', value: `$${metrics.totalRevenue?.toLocaleString()}` },
                       { label: 'Avg Booking Value', value: `$${metrics.averageBookingValue?.toFixed(2)}` },
                     ].map((m) => (
-                      <div key={m.label} className="bg-white rounded-lg shadow-sm border border-black/[0.07] p-4">
+                      <div key={m.label} className="bg-white rounded-2xl border border-[#DDDDDD] overflow-hidden p-4">
                         <div className="text-sm text-ink-muted">{m.label}</div>
                         <div className="text-2xl font-bold text-ink mt-1">{m.value}</div>
                       </div>
@@ -445,9 +447,9 @@ export default function AdminPage() {
 
             {/* Audit Log Tab */}
             {tab === 'audit' && (
-              <div className="bg-white rounded-lg shadow-sm border border-black/[0.07]">
-                <div className="p-4 border-b border-black/[0.07]">
-                  <h2 className="font-semibold text-ink">Audit Log</h2>
+              <div className="bg-white rounded-2xl border border-[#DDDDDD] overflow-hidden">
+                <div className="p-4 border-b border-[#DDDDDD]">
+                  <h2 className="text-lg font-semibold text-ink">Audit Log</h2>
                 </div>
                 {auditLogs.length === 0 ? (
                   <div className="p-8 text-center text-ink-muted">No audit logs</div>

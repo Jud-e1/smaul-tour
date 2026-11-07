@@ -135,7 +135,7 @@ export default function NotificationPreferencesPage() {
           <div className="bg-white rounded-lg shadow overflow-x-auto">
             <table className="w-full min-w-[36rem]">
               <thead>
-                <tr className="bg-canvas border-b border-black/[0.07]">
+                <tr className="bg-canvas border-b border-[#DDDDDD]">
                   <th className="text-left py-3 px-4 text-sm font-semibold text-ink/80 w-1/2">
                     Notification Type
                   </th>
@@ -153,7 +153,7 @@ export default function NotificationPreferencesPage() {
                 {NOTIFICATION_TYPES.map(({ key, label, description }, idx) => (
                   <tr
                     key={key}
-                    className={`border-b border-black/[0.07] ${idx % 2 === 0 ? 'bg-white' : 'bg-canvas'}`}
+                    className={`border-b border-[#DDDDDD] ${idx % 2 === 0 ? 'bg-white' : 'bg-canvas'}`}
                   >
                     <td className="py-4 px-4">
                       <div className="font-medium text-ink text-sm">{label}</div>
@@ -166,7 +166,7 @@ export default function NotificationPreferencesPage() {
                           aria-checked={preferences[key]?.[ch.key] ?? false}
                           aria-label={`${label} ${ch.label}`}
                           onClick={() => toggle(key, ch.key)}
-                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:border-forest-700 focus:ring-4 focus:ring-forest-700/10 focus:ring-offset-1 ${
+                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink focus:ring-offset-1 ${
                             preferences[key]?.[ch.key] ? 'bg-forest-600' : 'bg-gray-300'
                           }`}
                         >
@@ -183,7 +183,7 @@ export default function NotificationPreferencesPage() {
               </tbody>
             </table>
 
-            <div className="p-4 flex items-center justify-between border-t border-black/[0.07]">
+            <div className="p-4 flex items-center justify-between border-t border-[#DDDDDD]">
               {error && <p className="text-sm text-red-600">{error}</p>}
               {saved && !error && (
                 <p className="text-sm text-forest-600">Preferences saved.</p>
