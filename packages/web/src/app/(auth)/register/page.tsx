@@ -84,7 +84,7 @@ export default function RegisterPage() {
                 <label
                   key={opt.role}
                   className={`relative cursor-pointer rounded-xl border p-4 transition-all ${
-                    active ? 'border-ink border-2 p-[15px] bg-fog' : 'border-[#DDDDDD] hover:border-ink'
+                    active ? 'border-ink border-2 p-[15px] bg-fog' : 'border-[#DCE4E5] hover:border-ink'
                   }`}
                 >
                   <input type="radio" value={opt.role} {...register('role')} className="sr-only" />
@@ -172,7 +172,7 @@ export default function RegisterPage() {
             <input
               type="checkbox"
               {...register('agreeToTerms', { required: 'Please accept the terms to continue' })}
-              className="mt-0.5 w-5 h-5 rounded border-[#B0B0B0]"
+              className="mt-0.5 w-5 h-5 rounded border-[#A9B8BA]"
             />
             <span>I agree to Nsoroma’s <span className="font-semibold underline">Terms of Service</span> and <span className="font-semibold underline">Privacy Policy</span>.</span>
           </label>

@@ -33,11 +33,11 @@ function BigSearch({ onSubmit }: { onSubmit: (q: string, cat: string) => void })
     <form
       onSubmit={(e) => { e.preventDefault(); onSubmit(q, cat); }}
       role="search"
-      className={`relative mx-auto flex items-center w-full max-w-[850px] h-[66px] rounded-full border border-[#DDDDDD] shadow-[0_3px_12px_rgba(0,0,0,0.08)] transition-colors ${focus ? 'bg-[#EBEBEB]' : 'bg-white'}`}
+      className={`relative mx-auto flex items-center w-full max-w-[850px] h-[66px] rounded-full border border-[#DCE4E5] shadow-[0_3px_12px_rgba(0,0,0,0.08)] transition-colors ${focus ? 'bg-[#EDF2F2]' : 'bg-white'}`}
     >
       <label
         className={`flex-[1.4] h-full flex flex-col justify-center pl-8 pr-4 rounded-full cursor-text transition-colors ${
-          focus === 'q' ? 'bg-white shadow-[0_6px_20px_rgba(0,0,0,0.15)]' : 'hover:bg-[#EBEBEB]'
+          focus === 'q' ? 'bg-white shadow-[0_6px_20px_rgba(0,0,0,0.15)]' : 'hover:bg-[#EDF2F2]'
         }`}
       >
         <span className="text-xs font-semibold text-ink">Where</span>
@@ -50,10 +50,10 @@ function BigSearch({ onSubmit }: { onSubmit: (q: string, cat: string) => void })
           className="w-full bg-transparent text-sm text-ink placeholder:text-ink-muted outline-none"
         />
       </label>
-      <span className={`w-px h-8 bg-[#DDDDDD] ${focus ? 'opacity-0' : ''}`} aria-hidden />
+      <span className={`w-px h-8 bg-[#DCE4E5] ${focus ? 'opacity-0' : ''}`} aria-hidden />
       <label
         className={`flex-1 h-full flex flex-col justify-center pl-6 pr-24 rounded-full cursor-pointer transition-colors ${
-          focus === 'cat' ? 'bg-white shadow-[0_6px_20px_rgba(0,0,0,0.15)]' : 'hover:bg-[#EBEBEB]'
+          focus === 'cat' ? 'bg-white shadow-[0_6px_20px_rgba(0,0,0,0.15)]' : 'hover:bg-[#EDF2F2]'
         }`}
       >
         <span className="text-xs font-semibold text-ink">Category</span>
@@ -105,9 +105,11 @@ export default function Navbar() {
     user?.role === 'admin' ? '/admin' :
     '/dashboard/traveler';
 
-  const isBrowse = pathname === '/' || pathname === '/experiences';
+  const isHome = pathname === '/';
+  const isBrowse = pathname === '/experiences';
   const isAuth = ['/login', '/register', '/reset-password', '/verify-email'].includes(pathname);
   const showBigSearch = isBrowse && !scrolled;
+  const showTabs = isHome || showBigSearch;
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -157,7 +159,7 @@ export default function Navbar() {
     <>
       {/* ── Desktop / tablet header ───────────────────────────────────── */}
       <header
-        className={`hidden md:block sticky top-0 z-40 bg-white border-b border-[#EBEBEB] transition-shadow ${
+        className={`hidden md:block sticky top-0 z-40 bg-white border-b border-[#EDF2F2] transition-shadow ${
           scrolled ? 'shadow-[0_1px_12px_rgba(0,0,0,0.06)]' : ''
         }`}
       >
@@ -165,10 +167,10 @@ export default function Navbar() {
           <div className="h-20 flex items-center justify-between gap-4">
             <Link href="/" className="flex items-center gap-1.5 shrink-0" aria-label="Nsoroma home">
               <BrandLogo variant="mark" decorative className="h-9 w-9 object-contain" />
-              <span className="hidden lg:inline text-[22px] font-extrabold tracking-[-0.045em] accent-text">nsoroma</span>
+              <span className="hidden lg:inline text-[22px] font-extrabold tracking-[-0.035em] text-ink">Nsoroma</span>
             </Link>
 
-            {showBigSearch ? (
+            {showTabs ? (
               <nav className="flex items-center gap-1 lg:gap-4" aria-label="Main">
                 {NAV_LINKS.map((link) => {
                   const active = isActive(link.href);
@@ -176,15 +178,12 @@ export default function Navbar() {
                     <Link
                       key={link.label}
                       href={link.href}
-                      className={`group relative flex items-center gap-2 px-2 lg:px-3 py-3 text-[15px] transition-colors ${
+                      className={`group relative flex items-center px-2 lg:px-3 py-3 text-[15px] font-medium transition-colors ${
                         active ? 'text-ink font-semibold' : 'text-ink-muted hover:text-ink'
                       }`}
                     >
-                      <span className="text-[26px] leading-none transition-transform duration-200 group-hover:scale-110" aria-hidden>
-                        {link.icon}
-                      </span>
-                      <span className="hidden lg:inline">{link.label}</span>
-                      <span className={`absolute left-2 right-2 -bottom-[12px] h-[3px] rounded-full ${active ? 'bg-ink' : 'bg-transparent group-hover:bg-[#DDDDDD]'}`} />
+                      <span>{link.label}</span>
+                      <span className={`absolute left-2 right-2 -bottom-[12px] h-[3px] rounded-full ${active ? 'bg-sun' : 'bg-transparent group-hover:bg-[#DCE4E5]'}`} />
                     </Link>
                   );
                 })}
@@ -192,7 +191,7 @@ export default function Navbar() {
             ) : !isAuth ? (
               <form
                 onSubmit={(e) => { e.preventDefault(); go(compactQ, ''); }}
-                className="flex items-center h-12 rounded-full border border-[#DDDDDD] shadow-[0_1px_2px_rgba(0,0,0,0.08),0_4px_12px_rgba(0,0,0,0.05)] hover:shadow-[0_2px_6px_rgba(0,0,0,0.18)] transition-shadow pl-5 pr-2 gap-3 w-full max-w-md"
+                className="flex items-center h-12 rounded-full border border-[#DCE4E5] shadow-[0_1px_2px_rgba(0,0,0,0.08),0_4px_12px_rgba(0,0,0,0.05)] hover:shadow-[0_2px_6px_rgba(0,0,0,0.18)] transition-shadow pl-5 pr-2 gap-3 w-full max-w-md"
                 role="search"
               >
                 <span className="text-lg" aria-hidden>🧭</span>
@@ -223,7 +222,7 @@ export default function Navbar() {
                   onClick={() => setUserMenuOpen((o) => !o)}
                   aria-label="Open account menu"
                   aria-expanded={userMenuOpen}
-                  className="flex items-center gap-3 pl-3.5 pr-1.5 py-1.5 rounded-full border border-[#DDDDDD] bg-white hover:shadow-[0_2px_4px_rgba(0,0,0,0.18)] transition-shadow"
+                  className="flex items-center gap-3 pl-3.5 pr-1.5 py-1.5 rounded-full border border-[#DCE4E5] bg-white hover:shadow-[0_2px_4px_rgba(0,0,0,0.18)] transition-shadow"
                 >
                   <svg className="w-4 h-4 text-ink" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24" aria-hidden>
                     <path strokeLinecap="round" d="M4 7h16M4 12h16M4 17h16" />
@@ -231,26 +230,25 @@ export default function Navbar() {
                   {user ? (
                     <span className="w-8 h-8 rounded-full bg-ink text-white text-sm font-semibold flex items-center justify-center overflow-hidden">
                       {user.profile?.profilePhotoUrl
-                        // eslint-disable-next-line @next/next/no-img-element
                         ? <img src={user.profile.profilePhotoUrl} alt="" className="w-full h-full object-cover" />
                         : initial}
                     </span>
                   ) : (
-                    <svg className="w-8 h-8 text-[#6A6A6A]" viewBox="0 0 32 32" fill="currentColor" aria-hidden>
+                    <svg className="w-8 h-8 text-[#5E7377]" viewBox="0 0 32 32" fill="currentColor" aria-hidden>
                       <path d="M16 .7C7.56.7.7 7.56.7 16S7.56 31.3 16 31.3 31.3 24.44 31.3 16 24.44.7 16 .7zm0 28c-4.02 0-7.6-1.88-9.93-4.81a12.43 12.43 0 0 1 6.45-4.4A6.5 6.5 0 0 1 9.5 14a6.5 6.5 0 0 1 13 0 6.51 6.51 0 0 1-3.02 5.5 12.42 12.42 0 0 1 6.45 4.4A12.67 12.67 0 0 1 16 28.7z" />
                     </svg>
                   )}
                 </button>
 
                 {userMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-[0_2px_16px_rgba(0,0,0,0.12)] border border-[#EBEBEB] py-2 animate-fade-in z-50">
+                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-[0_2px_16px_rgba(0,0,0,0.12)] border border-[#EDF2F2] py-2 animate-fade-in z-50">
                     {user ? (
                       <>
                         <div className="px-4 py-2.5">
                           <p className="text-xs text-ink-muted">Signed in as</p>
                           <p className="text-sm font-semibold text-ink truncate">{user.email}</p>
                         </div>
-                        <div className="my-1 border-t border-[#EBEBEB]" />
+                        <div className="my-1 border-t border-[#EDF2F2]" />
                         <Link href={dashboardHref} className={`${menuItem} font-semibold`}>Dashboard</Link>
                         {user.role !== 'guide' && user.role !== 'admin' && (
                           <>
@@ -260,7 +258,7 @@ export default function Navbar() {
                         )}
                         <Link href="/trip-planner" className={menuItem}>Trip planner</Link>
                         <Link href="/settings/notifications" className={menuItem}>Notifications & settings</Link>
-                        <div className="my-1 border-t border-[#EBEBEB]" />
+                        <div className="my-1 border-t border-[#EDF2F2]" />
                         <button onClick={() => { logout(); setUserMenuOpen(false); router.push('/'); }} className={menuItem}>
                           Log out
                         </button>
@@ -269,7 +267,7 @@ export default function Navbar() {
                       <>
                         <Link href="/register" className={`${menuItem} font-semibold`}>Sign up</Link>
                         <Link href="/login" className={menuItem}>Log in</Link>
-                        <div className="my-1 border-t border-[#EBEBEB]" />
+                        <div className="my-1 border-t border-[#EDF2F2]" />
                         <Link href="/trip-planner" className={menuItem}>AI trip planner</Link>
                         <Link href="/register" className={menuItem}>Become a guide</Link>
                         <Link href="/experiences" className={menuItem}>Browse experiences</Link>
@@ -291,18 +289,18 @@ export default function Navbar() {
 
       {/* ── Mobile header ─────────────────────────────────────────────── */}
       {isAuth ? (
-        <header className="md:hidden sticky top-0 z-40 bg-white px-4 h-14 flex items-center border-b border-[#EBEBEB]">
+        <header className="md:hidden sticky top-0 z-40 bg-white px-4 h-14 flex items-center border-b border-[#EDF2F2]">
           <Link href="/" className="flex items-center gap-1.5" aria-label="Nsoroma home">
             <BrandLogo variant="mark" decorative className="h-8 w-8 object-contain" />
-            <span className="text-lg font-extrabold tracking-[-0.045em] accent-text">nsoroma</span>
+            <span className="text-lg font-extrabold tracking-[-0.035em] text-ink">Nsoroma</span>
           </Link>
         </header>
       ) : (
-        <header className="md:hidden sticky top-0 z-40 bg-white px-4 pt-3 pb-3 border-b border-[#EBEBEB]">
+        <header className="md:hidden sticky top-0 z-40 bg-white px-4 pt-3 pb-3 border-b border-[#EDF2F2]">
           <div className="flex items-center gap-2">
             <button
               onClick={() => setSheetOpen(true)}
-              className="flex-1 flex items-center justify-center gap-3 rounded-full border border-[#DDDDDD] shadow-[0_3px_10px_rgba(0,0,0,0.1)] px-4 py-3"
+              className="flex-1 flex items-center justify-center gap-3 rounded-full border border-[#DCE4E5] shadow-[0_3px_10px_rgba(0,0,0,0.1)] px-4 py-3"
             >
               <SearchIcon className="w-[18px] h-[18px] text-ink" />
               <span className="text-sm font-semibold text-ink">Start your search</span>
@@ -314,9 +312,9 @@ export default function Navbar() {
 
       {/* ── Mobile search sheet ───────────────────────────────────────── */}
       {sheetOpen && (
-        <div className="md:hidden fixed inset-0 z-[60] bg-[#F7F7F7] flex flex-col animate-fade-in">
+        <div className="md:hidden fixed inset-0 z-[60] bg-[#F4F7F7] flex flex-col animate-fade-in">
           <div className="flex items-center justify-between px-4 pt-4">
-            <button onClick={() => setSheetOpen(false)} aria-label="Close search" className="w-9 h-9 rounded-full border border-[#DDDDDD] bg-white flex items-center justify-center">
+            <button onClick={() => setSheetOpen(false)} aria-label="Close search" className="w-9 h-9 rounded-full border border-[#DCE4E5] bg-white flex items-center justify-center">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" d="M6 6l12 12M18 6L6 18" /></svg>
             </button>
             <span className="text-[15px] font-semibold">Experiences</span>
@@ -325,7 +323,7 @@ export default function Navbar() {
           <form onSubmit={(e) => { e.preventDefault(); go(sheetQ, sheetCat); }} className="flex-1 flex flex-col px-3 pt-5 gap-3 overflow-y-auto">
             <div className="bg-white rounded-3xl shadow-[0_4px_24px_rgba(0,0,0,0.1)] p-5 animate-scale-in">
               <h2 className="text-[26px] font-bold">Where to?</h2>
-              <label className="mt-4 flex items-center gap-3 rounded-xl border border-[#B0B0B0] px-4 py-3.5 focus-within:border-ink focus-within:ring-1 focus-within:ring-ink">
+              <label className="mt-4 flex items-center gap-3 rounded-xl border border-[#A9B8BA] px-4 py-3.5 focus-within:border-ink focus-within:ring-1 focus-within:ring-ink">
                 <SearchIcon className="w-4 h-4 text-ink" />
                 <input
                   autoFocus
@@ -353,7 +351,7 @@ export default function Navbar() {
               <span className="text-sm text-ink-muted">Not sure where to start?</span>
               <span className="text-sm font-semibold">Ask the AI planner ✨</span>
             </Link>
-            <div className="mt-auto sticky bottom-0 -mx-3 bg-white border-t border-[#EBEBEB] px-6 py-4 flex items-center justify-between">
+            <div className="mt-auto sticky bottom-0 -mx-3 bg-white border-t border-[#EDF2F2] px-6 py-4 flex items-center justify-between">
               <button type="button" onClick={() => { setSheetQ(''); setSheetCat(''); }} className="text-[15px] font-semibold underline">Clear all</button>
               <button type="submit" className="btn-accent px-6">
                 <SearchIcon /> Search
@@ -368,10 +366,10 @@ export default function Navbar() {
         <div className="grid grid-cols-5 pt-2">
           {tabs.map((t) => (
             <Link key={t.label} href={t.href} className="flex flex-col items-center gap-1 py-1" aria-current={t.active ? 'page' : undefined}>
-              <svg className={`w-6 h-6 ${t.active ? 'text-sun' : 'text-[#6A6A6A]'}`} fill="none" stroke="currentColor" strokeWidth={t.active ? 2.2 : 1.7} viewBox="0 0 24 24" aria-hidden>
+              <svg className={`w-6 h-6 ${t.active ? 'text-sun' : 'text-[#5E7377]'}`} fill="none" stroke="currentColor" strokeWidth={t.active ? 2.2 : 1.7} viewBox="0 0 24 24" aria-hidden>
                 <path strokeLinecap="round" strokeLinejoin="round" d={t.icon} />
               </svg>
-              <span className={`text-[10px] ${t.active ? 'text-ink font-semibold' : 'text-[#6A6A6A] font-medium'}`}>{t.label}</span>
+              <span className={`text-[10px] ${t.active ? 'text-ink font-semibold' : 'text-[#5E7377] font-medium'}`}>{t.label}</span>
             </Link>
           ))}
         </div>

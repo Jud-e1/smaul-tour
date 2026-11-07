@@ -32,13 +32,13 @@ const COLUMNS: { heading: string; links: [string, string][] }[] = [
 
 export default function SiteFooter() {
   return (
-    <footer className="bg-fog border-t border-[#DDDDDD] mt-16">
+    <footer className="bg-fog border-t border-[#DCE4E5] mt-16">
       <div className="max-w-page mx-auto px-6 lg:px-10 xl:px-20 pt-12 pb-28 md:pb-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10 border-b border-[#DDDDDD]">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10 border-b border-[#DCE4E5]">
           <div>
             <Link href="/" className="inline-flex items-center gap-1.5" aria-label="Nsoroma home">
               <BrandLogo variant="mark" decorative className="h-8 w-8 object-contain" />
-              <span className="text-xl font-extrabold tracking-[-0.045em] accent-text">nsoroma</span>
+              <span className="text-xl font-extrabold tracking-[-0.035em] text-ink">Nsoroma</span>
             </Link>
             <p className="mt-3 text-sm text-ink-muted max-w-xs leading-relaxed">
               Explore · Experience · Belong. Local experiences across Accra and the Gold Coast, hosted by people who live there.

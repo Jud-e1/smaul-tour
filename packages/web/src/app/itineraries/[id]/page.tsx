@@ -158,7 +158,7 @@ export default function ItineraryPage() {
         {/* Experiences */}
         <div className="space-y-3 mb-6">
           {itinerary.experiences.map((exp, idx) => (
-            <div key={exp.experienceId} className="bg-white rounded-lg border border-[#DDDDDD] p-4">
+            <div key={exp.experienceId} className="bg-white rounded-lg border border-[#DCE4E5] p-4">
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 bg-forest-600 text-white rounded-full flex items-center justify-center text-sm font-bold shrink-0">
                   {idx + 1}
@@ -198,7 +198,7 @@ export default function ItineraryPage() {
 
         {/* Notes */}
         {user && (
-          <div className="bg-white rounded-lg border border-[#DDDDDD] p-4 mb-6">
+          <div className="bg-white rounded-lg border border-[#DCE4E5] p-4 mb-6">
             <h3 className="font-semibold text-ink mb-2">Personal Notes</h3>
             {itinerary.notes && (
               <p className="text-sm text-ink-muted mb-2 p-2 bg-canvas rounded">{itinerary.notes}</p>
@@ -208,7 +208,7 @@ export default function ItineraryPage() {
               onChange={(e) => setNote(e.target.value)}
               placeholder="Add a note to this itinerary..."
               rows={3}
-              className="w-full border border-[#DDDDDD] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink resize-none"
+              className="w-full border border-[#DCE4E5] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink resize-none"
             />
             <div className="flex items-center justify-between mt-2">
               <button
@@ -224,7 +224,7 @@ export default function ItineraryPage() {
 
         {/* Share Section */}
         {user && (
-          <div className="bg-white rounded-lg border border-[#DDDDDD] p-4">
+          <div className="bg-white rounded-lg border border-[#DCE4E5] p-4">
             <h3 className="font-semibold text-ink mb-3">Share Itinerary</h3>
 
             {/* Generate Link */}
@@ -240,7 +240,7 @@ export default function ItineraryPage() {
                   <input
                     readOnly
                     value={shareLink}
-                    className="flex-1 border border-[#DDDDDD] rounded px-3 py-1.5 text-sm bg-canvas"
+                    className="flex-1 border border-[#DCE4E5] rounded px-3 py-1.5 text-sm bg-canvas"
                   />
                   <button
                     onClick={handleCopyLink}
@@ -261,7 +261,7 @@ export default function ItineraryPage() {
                   value={shareEmail}
                   onChange={(e) => setShareEmail(e.target.value)}
                   placeholder="Enter email address"
-                  className="flex-1 border border-[#DDDDDD] rounded px-3 py-1.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink"
+                  className="flex-1 border border-[#DCE4E5] rounded px-3 py-1.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink"
                 />
                 <button
                   onClick={handleSendEmail}

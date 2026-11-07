@@ -20,7 +20,6 @@ export default function BrandLogo({
   const asset = assets[variant];
 
   return (
-    // eslint-disable-next-line @next/next/no-img-element
     <img src={asset.src} alt={decorative ? '' : 'Nsoroma'} className={className} />
   );
 }

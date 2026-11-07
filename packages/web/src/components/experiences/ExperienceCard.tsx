@@ -38,7 +38,7 @@ const STAR =
 export function Stars({ value, count }: { value: number; count?: number }) {
   return (
     <span className="inline-flex items-center gap-1 text-sm text-ink">
-      <svg viewBox="0 0 32 32" className="w-3 h-3" fill="currentColor" aria-hidden><path d={STAR} /></svg>
+      <svg viewBox="0 0 32 32" className="w-3 h-3 text-sun" fill="currentColor" aria-hidden><path d={STAR} /></svg>
       <span>{value.toFixed(2)}</span>
       {count ? <span className="text-ink-muted">({count})</span> : null}
     </span>
@@ -70,7 +70,7 @@ export default function ExperienceCard({
   return (
     <div className="group min-w-0">
       <Link href={link} className="block rounded-2xl">
-        <div className={`relative ${aspectClass} rounded-2xl overflow-hidden bg-[#EBEBEB]`}>
+        <div className={`relative ${aspectClass} rounded-2xl overflow-hidden bg-[#EDF2F2]`}>
           {currentImg ? (
             <Image
               src={currentImg.thumbnailUrl || currentImg.url}

@@ -257,7 +257,7 @@ const Heart = ({ on }: { on: boolean }) => (
 
 
 const EmptyState = ({ icon, title, body, cta, href }: { icon: string; title: string; body: string; cta: string; href: string }) => (
-  <div className="rounded-2xl border border-[#DDDDDD] px-6 py-14 text-center">
+  <div className="rounded-2xl border border-[#DCE4E5] px-6 py-14 text-center">
     <p className="text-4xl" aria-hidden>{icon}</p>
     <h3 className="mt-4 text-[22px] font-semibold">{title}</h3>
     <p className="mt-2 text-ink-muted max-w-sm mx-auto">{body}</p>
@@ -270,7 +270,7 @@ const Modal = ({ title, onClose, children }: { title: string; onClose: () => voi
   <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center">
     <button className="absolute inset-0 bg-black/50 cursor-default" onClick={onClose} aria-label="Close dialog" />
     <div role="dialog" aria-modal="true" aria-label={title} className="relative w-full sm:max-w-[480px] bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl animate-sheet sm:animate-scale-in">
-      <div className="relative h-16 flex items-center justify-center border-b border-[#EBEBEB]">
+      <div className="relative h-16 flex items-center justify-center border-b border-[#EDF2F2]">
         <button onClick={onClose} className="absolute left-5 w-8 h-8 rounded-full hover:bg-fog flex items-center justify-center" aria-label="Close">
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" d="M6 6l12 12M18 6L6 18" /></svg>
         </button>
@@ -542,8 +542,8 @@ function TravelerDashboardInner() {
 
   const money = (amount: number, currency: string) => `${currency === 'USD' ? '$' : `${currency} `}${amount.toFixed(amount % 1 ? 2 : 0)}`;
   const daysUntil = (iso: string) => Math.ceil((new Date(iso).getTime() - Date.now()) / 86400000);
-  const field = 'w-full rounded-lg border border-[#B0B0B0] px-3.5 py-3 text-[15px] text-ink outline-none focus:border-ink focus:shadow-[0_0_0_1px_#222]';
-  const textBtn = 'text-sm font-semibold underline underline-offset-2 hover:text-black disabled:opacity-40';
+  const field = 'w-full rounded-lg border border-[#A9B8BA] px-3.5 py-3 text-[15px] text-ink outline-none focus:border-ink focus:shadow-[0_0_0_1px_#0B2E33]';
+  const textBtn = 'text-sm font-semibold underline underline-offset-2 hover:text-[#072226] disabled:opacity-40';
 
   const renderDiscoverSection = () => (
     <div className="space-y-14 animate-fade-in">
@@ -551,13 +551,13 @@ function TravelerDashboardInner() {
       <section>
         <h2 className="text-[22px] font-semibold mb-5">{nextTrip ? 'Your next trip' : 'Trips'}</h2>
         {nextTrip ? (
-          <div className="grid md:grid-cols-[1fr_1.15fr] rounded-2xl border border-[#DDDDDD] overflow-hidden hover:shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-shadow">
+          <div className="grid md:grid-cols-[1fr_1.15fr] rounded-2xl border border-[#DCE4E5] overflow-hidden hover:shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-shadow">
             <div className="p-6 sm:p-8 flex flex-col order-2 md:order-1">
               <span className="self-start rounded-full bg-leaf-50 text-leaf-700 text-xs font-semibold px-3 py-1">
                 {daysUntil(nextTrip.date) <= 0 ? 'Today' : daysUntil(nextTrip.date) === 1 ? 'Tomorrow' : `In ${daysUntil(nextTrip.date)} days`}
               </span>
               <h3 className="mt-4 text-[26px] font-semibold leading-tight">{nextTrip.experience?.title || 'Confirmed booking'}</h3>
-              <div className="mt-5 grid grid-cols-2 gap-4 text-sm border-y border-[#EBEBEB] py-4">
+              <div className="mt-5 grid grid-cols-2 gap-4 text-sm border-y border-[#EDF2F2] py-4">
                 <div>
                   <p className="font-semibold">Date</p>
                   <p className="text-ink-muted">{new Date(nextTrip.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}</p>
@@ -579,22 +579,20 @@ function TravelerDashboardInner() {
                 )}
               </div>
             </div>
-            <div className="relative min-h-[220px] bg-[#EBEBEB] order-1 md:order-2">
+            <div className="relative min-h-[220px] bg-[#EDF2F2] order-1 md:order-2">
               {nextTrip.experience?.images?.[0]?.url && (
-                // eslint-disable-next-line @next/next/no-img-element
                 <img src={nextTrip.experience.images[0].url} alt={nextTrip.experience.title || 'Upcoming trip'} className="absolute inset-0 w-full h-full object-cover" />
               )}
             </div>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 rounded-2xl border border-[#DDDDDD] overflow-hidden">
+          <div className="grid md:grid-cols-2 rounded-2xl border border-[#DCE4E5] overflow-hidden">
             <div className="p-8 sm:p-10 flex flex-col justify-center">
               <p className="text-3xl" aria-hidden>👋</p>
               <h3 className="mt-4 text-[22px] font-semibold">No trips booked… yet!</h3>
               <p className="mt-2 text-ink-muted">Time to dust off your bags and start planning your next adventure in Accra.</p>
               <Link href="/experiences" className="btn-ghost mt-6 self-start">Start searching</Link>
             </div>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/photos/labadi.jpg" alt="" className="hidden md:block w-full h-full min-h-[260px] object-cover" />
           </div>
         )}
@@ -602,7 +600,7 @@ function TravelerDashboardInner() {
 
       {/* ── Search + quick categories ───────────────────────────────── */}
       <section>
-        <form onSubmit={handleHeroSearch} className="flex items-center gap-2 rounded-full border border-[#DDDDDD] shadow-[0_3px_12px_rgba(0,0,0,0.08)] pl-6 pr-2 py-2 max-w-2xl" role="search">
+        <form onSubmit={handleHeroSearch} className="flex items-center gap-2 rounded-full border border-[#DCE4E5] shadow-[0_3px_12px_rgba(0,0,0,0.08)] pl-6 pr-2 py-2 max-w-2xl" role="search">
           <div className="flex-1 min-w-0">
             <label htmlFor="hero-search" className="block text-xs font-semibold">Where to next?</label>
             <input
@@ -629,7 +627,7 @@ function TravelerDashboardInner() {
       </section>
 
       {/* ── Stats strip ─────────────────────────────────────────────── */}
-      <section className="grid grid-cols-2 lg:grid-cols-4 rounded-2xl border border-[#DDDDDD] divide-[#DDDDDD] [&>*:nth-child(odd)]:border-r lg:divide-x [&>*:nth-child(-n+2)]:border-b lg:[&>*]:border-b-0">
+      <section className="grid grid-cols-2 lg:grid-cols-4 rounded-2xl border border-[#DCE4E5] divide-[#DCE4E5] [&>*:nth-child(odd)]:border-r lg:divide-x [&>*:nth-child(-n+2)]:border-b lg:[&>*]:border-b-0">
         {stats.map((stat) => (
           <div key={stat.label} className="p-5 sm:p-6">
             <StatIcon name={stat.icon} />
@@ -658,9 +656,8 @@ function TravelerDashboardInner() {
         {/* Spotlight */}
         {featured && !discoverLoading && (
           <div className="mb-10 grid md:grid-cols-[1.3fr_1fr] gap-6 md:gap-10 items-center">
-            <Link href={`/experiences/${featured.id}`} className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-[#EBEBEB] group">
+            <Link href={`/experiences/${featured.id}`} className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-[#EDF2F2] group">
               {featured.images?.[0] && (
-                // eslint-disable-next-line @next/next/no-img-element
                 <img src={featured.images[0].url || featured.images[0].thumbnailUrl} alt={featured.title} className="absolute inset-0 w-full h-full object-cover card-img" />
               )}
               {(featured.averageRating || 0) >= 4.5 && <span className="badge absolute top-4 left-4">Top rated</span>}
@@ -681,7 +678,7 @@ function TravelerDashboardInner() {
                 <div className="flex gap-1.5 mt-6">
                   {experiences.slice(0, 5).map((exp) => (
                     <button key={exp.id} type="button" onClick={() => setFeaturedId(exp.id)} aria-label={`Spotlight: ${exp.title}`}
-                      className={`h-1.5 rounded-full transition-all ${featured.id === exp.id ? 'w-6 bg-ink' : 'w-1.5 bg-[#DDDDDD] hover:bg-[#B0B0B0]'}`} />
+                      className={`h-1.5 rounded-full transition-all ${featured.id === exp.id ? 'w-6 bg-ink' : 'w-1.5 bg-[#DCE4E5] hover:bg-[#A9B8BA]'}`} />
                   ))}
                 </div>
               )}
@@ -705,10 +702,9 @@ function TravelerDashboardInner() {
               const duration = formatDuration(exp.duration);
               return (
                 <div key={exp.id} className="group">
-                  <div className="relative aspect-[20/19] rounded-2xl overflow-hidden bg-[#EBEBEB]">
+                  <div className="relative aspect-[20/19] rounded-2xl overflow-hidden bg-[#EDF2F2]">
                     <Link href={`/experiences/${exp.id}`} className="absolute inset-0" aria-label={exp.title}>
                       {img && (
-                        // eslint-disable-next-line @next/next/no-img-element
                         <img src={img.thumbnailUrl || img.url} alt={exp.title} className="w-full h-full object-cover card-img" />
                       )}
                     </Link>
@@ -737,7 +733,7 @@ function TravelerDashboardInner() {
 
       {/* ── Wishlist + itineraries ─────────────────────────────────── */}
       <section className="grid lg:grid-cols-2 gap-6">
-        <div className="rounded-2xl border border-[#DDDDDD] p-6">
+        <div className="rounded-2xl border border-[#DCE4E5] p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">Recently saved</h3>
             <button type="button" onClick={() => setTab('wishlist')} className={textBtn}>See all</button>
@@ -748,9 +744,8 @@ function TravelerDashboardInner() {
             <DraggableScroll>
               {wishlist.slice(0, 8).map((item) => (
                 <Link key={item.id} href={`/experiences/${item.id}`} className="shrink-0 w-40 group" draggable={false}>
-                  <div className="aspect-square rounded-xl overflow-hidden bg-[#EBEBEB]">
+                  <div className="aspect-square rounded-xl overflow-hidden bg-[#EDF2F2]">
                     {item.images?.[0]?.url && (
-                      // eslint-disable-next-line @next/next/no-img-element
                       <img src={item.images[0].url} alt={item.title} className="w-full h-full object-cover card-img" draggable={false} />
                     )}
                   </div>
@@ -762,7 +757,7 @@ function TravelerDashboardInner() {
           )}
         </div>
 
-        <div className="rounded-2xl border border-[#DDDDDD] p-6 flex flex-col">
+        <div className="rounded-2xl border border-[#DCE4E5] p-6 flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">Your itineraries</h3>
             <Link href="/trip-planner" className={textBtn}>Plan a trip</Link>
@@ -777,7 +772,7 @@ function TravelerDashboardInner() {
               <Link href="/trip-planner" className="btn-accent !py-2.5 text-sm shrink-0">Plan my trip</Link>
             </div>
           ) : (
-            <ul className="divide-y divide-[#EBEBEB]">
+            <ul className="divide-y divide-[#EDF2F2]">
               {itineraries.slice(0, 4).map((itin) => (
                 <li key={itin.id}>
                   <Link href={`/trip-planner?itinerary=${itin.id}`} className="flex items-center justify-between gap-3 py-3 hover:bg-fog -mx-3 px-3 rounded-lg transition-colors">
@@ -812,10 +807,9 @@ function TravelerDashboardInner() {
       ) : (
         <ul className="space-y-4">
           {bookings.map((booking) => (
-            <li key={booking.id} className="rounded-2xl border border-[#DDDDDD] overflow-hidden flex flex-col sm:flex-row hover:shadow-[0_6px_16px_rgba(0,0,0,0.1)] transition-shadow">
-              <div className="sm:w-56 h-40 sm:h-auto bg-[#EBEBEB] shrink-0 relative">
+            <li key={booking.id} className="rounded-2xl border border-[#DCE4E5] overflow-hidden flex flex-col sm:flex-row hover:shadow-[0_6px_16px_rgba(0,0,0,0.1)] transition-shadow">
+              <div className="sm:w-56 h-40 sm:h-auto bg-[#EDF2F2] shrink-0 relative">
                 {booking.experience?.images?.[0]?.url && (
-                  // eslint-disable-next-line @next/next/no-img-element
                   <img src={booking.experience.images[0].url} alt={booking.experience.title} className="absolute inset-0 w-full h-full object-cover" />
                 )}
               </div>
@@ -874,7 +868,7 @@ function TravelerDashboardInner() {
       ) : (
         <div className="grid sm:grid-cols-2 gap-5">
           {itineraries.map((itin) => (
-            <Link key={itin.id} href={`/trip-planner?itinerary=${itin.id}`} className="group rounded-2xl border border-[#DDDDDD] p-6 hover:shadow-[0_6px_16px_rgba(0,0,0,0.1)] transition-shadow">
+            <Link key={itin.id} href={`/trip-planner?itinerary=${itin.id}`} className="group rounded-2xl border border-[#DCE4E5] p-6 hover:shadow-[0_6px_16px_rgba(0,0,0,0.1)] transition-shadow">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-xs text-ink-muted">Generated {new Date(itin.generatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
@@ -901,7 +895,7 @@ function TravelerDashboardInner() {
 
   const renderWishlistTab = () => (
     <div className="animate-fade-in">
-      <form onSubmit={handleDashboardSearch} className="mb-8 flex items-center gap-2 max-w-md rounded-full border border-[#DDDDDD] pl-5 pr-1.5 py-1.5 focus-within:border-ink" role="search">
+      <form onSubmit={handleDashboardSearch} className="mb-8 flex items-center gap-2 max-w-md rounded-full border border-[#DCE4E5] pl-5 pr-1.5 py-1.5 focus-within:border-ink" role="search">
         <svg className="w-4 h-4 text-ink-muted shrink-0" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.2-5.2M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z" /></svg>
         <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Find more experiences to save" className="flex-1 min-w-0 bg-transparent text-sm outline-none" />
         <button type="submit" className="btn-primary !py-2 !px-4 text-sm !rounded-full">Search</button>
@@ -912,10 +906,9 @@ function TravelerDashboardInner() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
           {wishlist.map((item) => (
             <div key={item.id} className="group">
-              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-[#EBEBEB]">
+              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-[#EDF2F2]">
                 <Link href={`/experiences/${item.id}`} className="absolute inset-0" aria-label={item.title}>
                   {item.images?.[0]?.url && (
-                    // eslint-disable-next-line @next/next/no-img-element
                     <img src={item.images[0].url} alt={item.title} className="w-full h-full object-cover card-img" />
                   )}
                 </Link>
@@ -948,13 +941,12 @@ function TravelerDashboardInner() {
       <div className="rounded-3xl shadow-[0_6px_20px_rgba(0,0,0,0.15)] p-8 text-center">
         <div className="w-28 h-28 mx-auto rounded-full bg-ink text-white text-4xl font-semibold overflow-hidden flex items-center justify-center">
           {profileForm.profilePhotoUrl || user.profile?.profilePhotoUrl
-            // eslint-disable-next-line @next/next/no-img-element
             ? <img src={profileForm.profilePhotoUrl || user.profile?.profilePhotoUrl} alt={displayName} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
             : avatarInitial}
         </div>
         <p className="mt-4 text-[26px] font-bold leading-tight">{displayName}</p>
         <p className="text-sm font-semibold">Traveler</p>
-        <p className="mt-4 pt-4 border-t border-[#EBEBEB] text-sm text-ink-muted truncate">{user.email}</p>
+        <p className="mt-4 pt-4 border-t border-[#EDF2F2] text-sm text-ink-muted truncate">{user.email}</p>
       </div>
 
       <div className="max-w-xl">
@@ -994,7 +986,7 @@ function TravelerDashboardInner() {
             {profileForm.travelPreferences.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-3">
                 {profileForm.travelPreferences.map((pref) => (
-                  <span key={pref} className="inline-flex items-center gap-2 rounded-full border border-[#DDDDDD] pl-4 pr-2 py-1.5 text-sm">
+                  <span key={pref} className="inline-flex items-center gap-2 rounded-full border border-[#DCE4E5] pl-4 pr-2 py-1.5 text-sm">
                     {pref}
                     <button type="button" onClick={() => removePreference(pref)} className="w-5 h-5 rounded-full hover:bg-fog flex items-center justify-center" aria-label={`Remove ${pref}`}>×</button>
                   </span>
@@ -1002,7 +994,7 @@ function TravelerDashboardInner() {
               </div>
             )}
           </div>
-          <div className="pt-4 border-t border-[#EBEBEB] flex items-center justify-between gap-4">
+          <div className="pt-4 border-t border-[#EDF2F2] flex items-center justify-between gap-4">
             <button type="button" onClick={() => { logout(); void router.push('/'); }} className="text-sm font-semibold underline underline-offset-2">Log out</button>
             <button type="button" onClick={() => { void saveProfile(); }} disabled={profileSaving} className="btn-primary">
               {profileSaving ? 'Saving…' : 'Save'}
@@ -1026,16 +1018,15 @@ function TravelerDashboardInner() {
               Accra, Ghana · {upcomingCount > 0 ? `${upcomingCount} upcoming trip${upcomingCount === 1 ? '' : 's'}` : 'Ready for your next adventure?'}
             </p>
           </div>
-          <button type="button" onClick={() => setTab('profile')} className="hidden sm:flex w-14 h-14 rounded-full bg-ink text-white text-xl font-semibold overflow-hidden items-center justify-center shrink-0 ring-4 ring-fog hover:ring-[#DDDDDD] transition" aria-label="Open profile">
+          <button type="button" onClick={() => setTab('profile')} className="hidden sm:flex w-14 h-14 rounded-full bg-ink text-white text-xl font-semibold overflow-hidden items-center justify-center shrink-0 ring-4 ring-fog hover:ring-[#DCE4E5] transition" aria-label="Open profile">
             {user.profile?.profilePhotoUrl
-              // eslint-disable-next-line @next/next/no-img-element
               ? <img src={user.profile.profilePhotoUrl} alt={firstName} className="w-full h-full object-cover" />
               : avatarInitial}
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="mt-8 flex items-center justify-between gap-6 border-b border-[#DDDDDD]">
+        <div className="mt-8 flex items-center justify-between gap-6 border-b border-[#DCE4E5]">
           <nav className="flex gap-6 sm:gap-8 overflow-x-auto scrollbar-hide -mb-px" aria-label="Dashboard">
             {tabs.map((t) => (
               <button
@@ -1044,7 +1035,7 @@ function TravelerDashboardInner() {
                 onClick={() => setTab(t.key)}
                 aria-current={tab === t.key ? 'page' : undefined}
                 className={`flex items-center gap-2 pb-3 pt-1 border-b-2 text-[15px] whitespace-nowrap transition-colors ${
-                  tab === t.key ? 'border-ink text-ink font-semibold' : 'border-transparent text-ink-muted hover:text-ink hover:border-[#DDDDDD]'
+                  tab === t.key ? 'border-ink text-ink font-semibold' : 'border-transparent text-ink-muted hover:text-ink hover:border-[#DCE4E5]'
                 }`}
               >
                 <span className="hidden sm:inline"><NavIcon name={t.icon} /></span>

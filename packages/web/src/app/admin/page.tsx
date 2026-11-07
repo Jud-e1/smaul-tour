@@ -181,14 +181,14 @@ export default function AdminPage() {
         </div>
 
         {/* Tab Navigation */}
-        <nav className="mt-8 mb-8 flex gap-6 sm:gap-8 overflow-x-auto scrollbar-hide border-b border-[#DDDDDD]" aria-label="Admin">
+        <nav className="mt-8 mb-8 flex gap-6 sm:gap-8 overflow-x-auto scrollbar-hide border-b border-[#DCE4E5]" aria-label="Admin">
           {tabs.map((t) => (
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
               aria-current={tab === t.key ? 'page' : undefined}
               className={`pb-3 -mb-px border-b-2 text-[15px] whitespace-nowrap transition-colors ${
-                tab === t.key ? 'border-ink text-ink font-semibold' : 'border-transparent text-ink-muted hover:text-ink hover:border-[#DDDDDD]'
+                tab === t.key ? 'border-ink text-ink font-semibold' : 'border-transparent text-ink-muted hover:text-ink hover:border-[#DCE4E5]'
               }`}
             >
               {t.label}
@@ -202,8 +202,8 @@ export default function AdminPage() {
           <>
             {/* Verifications Tab */}
             {tab === 'verifications' && (
-              <div className="bg-white rounded-2xl border border-[#DDDDDD] overflow-hidden">
-                <div className="p-4 border-b border-[#DDDDDD]">
+              <div className="bg-white rounded-2xl border border-[#DCE4E5] overflow-hidden">
+                <div className="p-4 border-b border-[#DCE4E5]">
                   <h2 className="text-lg font-semibold text-ink">Pending Guide Verifications</h2>
                 </div>
                 {verifications.length === 0 ? (
@@ -221,7 +221,7 @@ export default function AdminPage() {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => approveVerification(v.id)}
-                            className="px-4 py-2 bg-ink text-white text-sm font-semibold rounded-lg hover:bg-black"
+                            className="px-4 py-2 bg-ink text-white text-sm font-semibold rounded-lg hover:bg-[#072226]"
                           >
                             Approve
                           </button>
@@ -232,7 +232,7 @@ export default function AdminPage() {
                                 placeholder="Rejection reason"
                                 value={rejectReason}
                                 onChange={(e) => setRejectReason(e.target.value)}
-                                className="border border-[#DDDDDD] rounded px-2 py-1 text-sm w-48"
+                                className="border border-[#DCE4E5] rounded px-2 py-1 text-sm w-48"
                               />
                               <button
                                 onClick={() => rejectVerification(v.id)}
@@ -242,7 +242,7 @@ export default function AdminPage() {
                               </button>
                               <button
                                 onClick={() => setActionTarget(null)}
-                                className="px-4 py-2 border border-[#DDDDDD] text-ink text-sm font-semibold rounded-lg hover:border-ink"
+                                className="px-4 py-2 border border-[#DCE4E5] text-ink text-sm font-semibold rounded-lg hover:border-ink"
                               >
                                 Cancel
                               </button>
@@ -250,7 +250,7 @@ export default function AdminPage() {
                           ) : (
                             <button
                               onClick={() => setActionTarget(v.id)}
-                              className="px-4 py-2 border border-[#DDDDDD] text-[#C13515] text-sm font-semibold rounded-lg hover:border-[#C13515]"
+                              className="px-4 py-2 border border-[#DCE4E5] text-[#C13515] text-sm font-semibold rounded-lg hover:border-[#C13515]"
                             >
                               Reject
                             </button>
@@ -265,8 +265,8 @@ export default function AdminPage() {
 
             {/* Experiences Tab */}
             {tab === 'experiences' && (
-              <div className="bg-white rounded-2xl border border-[#DDDDDD] overflow-hidden">
-                <div className="p-4 border-b border-[#DDDDDD]">
+              <div className="bg-white rounded-2xl border border-[#DCE4E5] overflow-hidden">
+                <div className="p-4 border-b border-[#DCE4E5]">
                   <h2 className="text-lg font-semibold text-ink">Pending Experience Approvals</h2>
                 </div>
                 {pendingExperiences.length === 0 ? (
@@ -282,7 +282,7 @@ export default function AdminPage() {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => approveExperience(e.id)}
-                            className="px-4 py-2 bg-ink text-white text-sm font-semibold rounded-lg hover:bg-black"
+                            className="px-4 py-2 bg-ink text-white text-sm font-semibold rounded-lg hover:bg-[#072226]"
                           >
                             Approve
                           </button>
@@ -293,7 +293,7 @@ export default function AdminPage() {
                                 placeholder="Rejection reason"
                                 value={rejectReason}
                                 onChange={(ex) => setRejectReason(ex.target.value)}
-                                className="border border-[#DDDDDD] rounded px-2 py-1 text-sm w-48"
+                                className="border border-[#DCE4E5] rounded px-2 py-1 text-sm w-48"
                               />
                               <button
                                 onClick={() => rejectExperience(e.id)}
@@ -303,7 +303,7 @@ export default function AdminPage() {
                               </button>
                               <button
                                 onClick={() => setActionTarget(null)}
-                                className="px-4 py-2 border border-[#DDDDDD] text-ink text-sm font-semibold rounded-lg hover:border-ink"
+                                className="px-4 py-2 border border-[#DCE4E5] text-ink text-sm font-semibold rounded-lg hover:border-ink"
                               >
                                 Cancel
                               </button>
@@ -311,7 +311,7 @@ export default function AdminPage() {
                           ) : (
                             <button
                               onClick={() => setActionTarget(e.id)}
-                              className="px-4 py-2 border border-[#DDDDDD] text-[#C13515] text-sm font-semibold rounded-lg hover:border-[#C13515]"
+                              className="px-4 py-2 border border-[#DCE4E5] text-[#C13515] text-sm font-semibold rounded-lg hover:border-[#C13515]"
                             >
                               Reject
                             </button>
@@ -326,8 +326,8 @@ export default function AdminPage() {
 
             {/* Flagged Reviews Tab */}
             {tab === 'reviews' && (
-              <div className="bg-white rounded-2xl border border-[#DDDDDD] overflow-hidden">
-                <div className="p-4 border-b border-[#DDDDDD]">
+              <div className="bg-white rounded-2xl border border-[#DCE4E5] overflow-hidden">
+                <div className="p-4 border-b border-[#DCE4E5]">
                   <h2 className="text-lg font-semibold text-ink">Flagged Reviews</h2>
                 </div>
                 {flaggedReviews.length === 0 ? (
@@ -359,8 +359,8 @@ export default function AdminPage() {
 
             {/* Users Tab */}
             {tab === 'users' && (
-              <div className="bg-white rounded-2xl border border-[#DDDDDD] overflow-hidden">
-                <div className="p-4 border-b border-[#DDDDDD]">
+              <div className="bg-white rounded-2xl border border-[#DCE4E5] overflow-hidden">
+                <div className="p-4 border-b border-[#DCE4E5]">
                   <h2 className="text-lg font-semibold text-ink">User Management</h2>
                 </div>
                 {users.length === 0 ? (
@@ -388,7 +388,7 @@ export default function AdminPage() {
                                 placeholder="Suspension reason"
                                 value={suspendReason}
                                 onChange={(ev) => setSuspendReason(ev.target.value)}
-                                className="border border-[#DDDDDD] rounded px-2 py-1 text-sm w-48"
+                                className="border border-[#DCE4E5] rounded px-2 py-1 text-sm w-48"
                               />
                               <button
                                 onClick={() => suspendUser(u.id)}
@@ -398,7 +398,7 @@ export default function AdminPage() {
                               </button>
                               <button
                                 onClick={() => setActionTarget(null)}
-                                className="px-4 py-2 border border-[#DDDDDD] text-ink text-sm font-semibold rounded-lg hover:border-ink"
+                                className="px-4 py-2 border border-[#DCE4E5] text-ink text-sm font-semibold rounded-lg hover:border-ink"
                               >
                                 Cancel
                               </button>
@@ -406,7 +406,7 @@ export default function AdminPage() {
                           ) : (
                             <button
                               onClick={() => setActionTarget(u.id)}
-                              className="px-4 py-2 border border-[#DDDDDD] text-[#C13515] text-sm font-semibold rounded-lg hover:border-[#C13515]"
+                              className="px-4 py-2 border border-[#DCE4E5] text-[#C13515] text-sm font-semibold rounded-lg hover:border-[#C13515]"
                             >
                               Suspend
                             </button>
@@ -433,7 +433,7 @@ export default function AdminPage() {
                       { label: 'Revenue', value: `$${metrics.totalRevenue?.toLocaleString()}` },
                       { label: 'Avg Booking Value', value: `$${metrics.averageBookingValue?.toFixed(2)}` },
                     ].map((m) => (
-                      <div key={m.label} className="bg-white rounded-2xl border border-[#DDDDDD] overflow-hidden p-4">
+                      <div key={m.label} className="bg-white rounded-2xl border border-[#DCE4E5] overflow-hidden p-4">
                         <div className="text-sm text-ink-muted">{m.label}</div>
                         <div className="text-2xl font-bold text-ink mt-1">{m.value}</div>
                       </div>
@@ -447,8 +447,8 @@ export default function AdminPage() {
 
             {/* Audit Log Tab */}
             {tab === 'audit' && (
-              <div className="bg-white rounded-2xl border border-[#DDDDDD] overflow-hidden">
-                <div className="p-4 border-b border-[#DDDDDD]">
+              <div className="bg-white rounded-2xl border border-[#DCE4E5] overflow-hidden">
+                <div className="p-4 border-b border-[#DCE4E5]">
                   <h2 className="text-lg font-semibold text-ink">Audit Log</h2>
                 </div>
                 {auditLogs.length === 0 ? (

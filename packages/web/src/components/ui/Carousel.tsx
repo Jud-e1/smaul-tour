@@ -69,7 +69,7 @@ export default function Carousel({
                 onClick={() => page(d === 'prev' ? -1 : 1)}
                 disabled={disabled}
                 aria-label={d === 'prev' ? 'Previous' : 'Next'}
-                className="w-8 h-8 rounded-full border border-[#DDDDDD] bg-white flex items-center justify-center text-ink hover:shadow-md transition-shadow disabled:opacity-30 disabled:hover:shadow-none disabled:cursor-not-allowed"
+                className="w-8 h-8 rounded-full border border-[#DCE4E5] bg-white flex items-center justify-center text-ink hover:shadow-md transition-shadow disabled:opacity-30 disabled:hover:shadow-none disabled:cursor-not-allowed"
               >
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={4} viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" d={d === 'prev' ? 'M15 19l-7-7 7-7' : 'M9 5l7 7-7 7'} />

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import ExperienceCard, { Experience } from '@/components/experiences/ExperienceCard';
 import Carousel from '@/components/ui/Carousel';
 import BrandLogo from '@/components/brand/BrandLogo';
@@ -74,6 +75,16 @@ const DAY_TRIPS: Seed[] = [
   ['Drumming village weekend in the north', IMG.drumsNorth, 'Culture', 48, 120, 4.92, 64, 'Northern Region'],
 ];
 
+const CHIPS = [
+  { label: 'Food & Drink', icon: '🍲' },
+  { label: 'Culture', icon: '🥁' },
+  { label: 'Nature', icon: '🌿' },
+  { label: 'Beaches', icon: '🏖️' },
+  { label: 'Adventure', icon: '🧗🏾' },
+  { label: 'Art', icon: '🎨' },
+  { label: 'Wellness', icon: '🧘🏾' },
+];
+
 const INSPIRATION: Record<string, [string, string][]> = {
   Popular: [['Jamestown', 'Heritage walks'], ['Osu', 'Street food'], ['Labadi', 'Beach evenings'], ['Makola', 'Markets'], ['Aburi', 'Gardens & hikes'], ['Cape Coast', 'Castles'], ['Kakum', 'Canopy walk'], ['Elmina', 'History'], ['Ada Foah', 'River & beach'], ['Kokrobite', 'Surf & reggae'], ['Akosombo', 'Lake Volta'], ['Mole', 'Safari']],
   Culture: [['Kente weaving', 'Bonwire'], ['Drumming', 'La'], ['Independence', 'Black Star Square'], ['Museums', 'National Museum'], ['Festivals', 'Homowo'], ['Chop bars', 'Local dining']],
@@ -105,7 +116,17 @@ function Check() {
 }
 
 export default function Home() {
+  const router = useRouter();
   const [weather, setWeather] = useState<Weather>(FALLBACK_WEATHER);
+  const [heroQ, setHeroQ] = useState('');
+  const [heroCat, setHeroCat] = useState('');
+  const goSearch = () => {
+    const params = new URLSearchParams();
+    if (heroQ.trim()) params.set('q', heroQ.trim());
+    if (heroCat) params.set('categories', heroCat);
+    const qs = params.toString();
+    router.push(qs ? `/experiences?${qs}` : '/experiences');
+  };
   const [inspoTab, setInspoTab] = useState<keyof typeof INSPIRATION>('Popular');
 
   useEffect(() => {
@@ -134,22 +155,70 @@ export default function Home() {
   return (
     <div className="bg-white">
       <div className="max-w-page mx-auto px-5 sm:px-10 xl:px-20">
-        {/* ── Today in Accra (live weather) ─────────────────────────────── */}
-        <section className="pt-6 md:pt-8">
-          <Link
-            href={`/experiences?categories=${encodeURIComponent(weather.condition.query)}`}
-            className="group flex items-center gap-4 rounded-2xl border border-[#DDDDDD] px-5 py-4 hover:shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-shadow max-w-2xl"
-          >
-            <span className="text-4xl" aria-hidden>{weather.condition.emoji}</span>
-            <div className="min-w-0 flex-1">
-              <p className="text-[15px] font-semibold text-ink">
-                Today in Accra · {weather.temperature}°C, {weather.condition.label.toLowerCase()}
-                <span className="font-normal text-ink-muted"> · {weather.humidity}% humidity</span>
-              </p>
-              <p className="text-sm text-ink-muted truncate">{weather.condition.suggestion}</p>
+        {/* ── Coastal hero: rounded photo + white search card ──────────── */}
+        <section className="pt-4 md:pt-6">
+          <div className="relative overflow-hidden rounded-[28px] min-h-[520px] md:min-h-[560px] flex items-end">
+            <img src={IMG.labadi} alt="Labadi Beach at sunset, Accra" className="absolute inset-0 w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#04282E]/80 via-[#04282E]/25 to-[#04282E]/10" />
+
+            <Link
+              href={`/experiences?categories=${encodeURIComponent(weather.condition.query)}`}
+              className="absolute top-5 left-5 md:top-7 md:left-8 inline-flex items-center gap-2.5 rounded-full bg-white/90 backdrop-blur px-4 py-2 text-sm text-ink shadow-md hover:bg-white transition-colors"
+              title={weather.condition.suggestion}
+            >
+              <span className="text-lg leading-none" aria-hidden>{weather.condition.emoji}</span>
+              <span className="font-semibold">Accra today · {weather.temperature}°C</span>
+              <span className="hidden sm:inline text-ink-muted">{weather.condition.label} · {weather.humidity}% humidity</span>
+            </Link>
+
+            <div className="relative w-full px-5 sm:px-8 md:px-12 pb-8 md:pb-12">
+              <h1 className="text-white text-[40px] sm:text-[56px] md:text-[64px] leading-[1.02] font-bold tracking-[-0.035em] max-w-3xl">
+                Unforgettable things to do in Accra
+              </h1>
+              <p className="mt-3 text-white/90 text-[17px] max-w-xl">{weather.condition.suggestion} Book verified local guides — pay only after it happens.</p>
+
+              <form
+                onSubmit={(e) => { e.preventDefault(); goSearch(); }}
+                role="search"
+                className="mt-7 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-0 bg-white rounded-3xl sm:rounded-full p-2 shadow-[0_14px_40px_rgba(0,0,0,0.25)] max-w-[760px]"
+              >
+                <label className="flex-1 px-4 sm:px-6 py-2 rounded-full hover:bg-fog transition-colors cursor-text">
+                  <span className="block text-xs font-bold text-ink">Where</span>
+                  <input
+                    value={heroQ}
+                    onChange={(e) => setHeroQ(e.target.value)}
+                    placeholder="Search experiences, places or guides"
+                    className="w-full bg-transparent text-sm text-ink placeholder:text-ink-muted outline-none"
+                  />
+                </label>
+                <span className="hidden sm:block w-px h-8 bg-[#DCE4E5]" aria-hidden />
+                <label className="sm:w-56 px-4 sm:px-6 py-2 rounded-full hover:bg-fog transition-colors cursor-pointer">
+                  <span className="block text-xs font-bold text-ink">Category</span>
+                  <select value={heroCat} onChange={(e) => setHeroCat(e.target.value)} className={`w-full bg-transparent text-sm outline-none cursor-pointer ${heroCat ? 'text-ink' : 'text-ink-muted'}`}>
+                    <option value="">Any type</option>
+                    {CHIPS.map((c) => <option key={c.label} value={c.label}>{c.label}</option>)}
+                  </select>
+                </label>
+                <button type="submit" className="btn-accent !rounded-full h-12 sm:h-14 !px-8 text-[15px]">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.2-5.2M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z" /></svg>
+                  Search
+                </button>
+              </form>
             </div>
-            <span className="hidden sm:inline text-sm font-semibold underline underline-offset-2 shrink-0">See ideas</span>
-          </Link>
+          </div>
+
+          {/* Category chips */}
+          <div className="mt-6 flex gap-2.5 overflow-x-auto scrollbar-hide -mx-5 px-5 sm:mx-0 sm:px-0">
+            {CHIPS.map((c) => (
+              <Link
+                key={c.label}
+                href={`/experiences?categories=${encodeURIComponent(c.label)}`}
+                className="shrink-0 inline-flex items-center gap-2 rounded-full border border-[#DCE4E5] px-4 py-2.5 text-sm font-medium text-ink hover:border-ink hover:bg-fog transition-colors"
+              >
+                <span aria-hidden>{c.icon}</span>{c.label}
+              </Link>
+            ))}
+          </div>
         </section>
 
         {/* ── Rows ──────────────────────────────────────────────────────── */}
@@ -170,7 +239,7 @@ export default function Home() {
         {/* ── Vetted for quality ───────────────────────────────────────── */}
         <section className="my-12 md:my-16 grid md:grid-cols-[1fr_1.2fr] gap-10 md:gap-16 items-center rounded-3xl bg-fog px-6 py-12 sm:px-12 md:px-16 md:py-16">
           <div className="text-center md:text-left">
-            <div className="mx-auto md:mx-0 relative w-24 h-24 rounded-full flex items-center justify-center shadow-[0_8px_24px_rgba(235,90,35,0.35),inset_0_-4px_10px_rgba(0,0,0,0.15)]" style={{ background: 'radial-gradient(circle at 35% 30%, #FFC28A 0%, #F28A1D 35%, #EB5A23 70%, #C8401A 100%)' }}>
+            <div className="mx-auto md:mx-0 relative w-24 h-24 rounded-full flex items-center justify-center shadow-[0_8px_24px_rgba(224,168,0,0.4),inset_0_-4px_10px_rgba(0,0,0,0.12)]" style={{ background: 'radial-gradient(circle at 35% 30%, #FFE08A 0%, #FFC93C 45%, #E0A800 100%)' }}>
               <span className="absolute inset-2 rounded-full border-2 border-white/35" />
               <BrandLogo variant="mark" decorative className="w-12 h-12 object-contain drop-shadow" />
             </div>
@@ -222,7 +291,6 @@ export default function Home() {
           </div>
           <div className="relative">
             <div className="rounded-3xl overflow-hidden aspect-[4/3] relative">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={IMG.blackstar} alt="Black Star Gate, Accra" className="absolute inset-0 w-full h-full object-cover" />
             </div>
             <div className="absolute -bottom-6 left-4 right-4 sm:left-auto sm:-left-8 sm:right-auto sm:w-[360px] sm:top-1/2 sm:-translate-y-1/2 sm:bottom-auto bg-white rounded-2xl shadow-[0_8px_28px_rgba(0,0,0,0.18)] p-4">
@@ -234,7 +302,6 @@ export default function Home() {
                   ['Day 3', 'Labadi sunset session', '$35', IMG.labadi],
                 ].map(([d, t, p, img]) => (
                   <li key={d} className="flex items-center gap-3">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={img} alt="" className="w-11 h-11 rounded-lg object-cover" />
                     <div className="min-w-0 flex-1">
                       <p className="text-[11px] font-semibold text-ink-muted">{d}</p>
@@ -244,7 +311,7 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <div className="mt-3 pt-3 border-t border-[#EBEBEB] flex items-center justify-between text-sm">
+              <div className="mt-3 pt-3 border-t border-[#EDF2F2] flex items-center justify-between text-sm">
                 <span className="text-ink-muted">Total per guest</span>
                 <span className="font-bold">$85</span>
               </div>
@@ -254,7 +321,6 @@ export default function Home() {
 
         {/* ── Become a guide ───────────────────────────────────────────── */}
         <section className="mt-20 md:mt-16 relative overflow-hidden rounded-3xl min-h-[420px] flex items-end md:items-center">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={IMG.kente2} alt="Kente weaver at a loom" className="absolute inset-0 w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-black/75 via-black/40 to-transparent" />
           <div className="relative p-8 sm:p-12 md:p-16 max-w-xl text-white">
@@ -272,13 +338,13 @@ export default function Home() {
         {/* ── Inspiration ──────────────────────────────────────────────── */}
         <section className="mt-16">
           <h2 className="text-[22px] font-semibold text-ink">Inspiration for your next trip</h2>
-          <div className="mt-4 flex gap-6 overflow-x-auto scrollbar-hide border-b border-[#DDDDDD]">
+          <div className="mt-4 flex gap-6 overflow-x-auto scrollbar-hide border-b border-[#DCE4E5]">
             {(Object.keys(INSPIRATION) as (keyof typeof INSPIRATION)[]).map((t) => (
               <button
                 key={t}
                 onClick={() => setInspoTab(t)}
                 className={`pb-3 -mb-px text-sm whitespace-nowrap border-b-2 transition-colors ${
-                  inspoTab === t ? 'border-ink text-ink font-semibold' : 'border-transparent text-ink-muted hover:text-ink hover:border-[#DDDDDD]'
+                  inspoTab === t ? 'border-ink text-ink font-semibold' : 'border-transparent text-ink-muted hover:text-ink hover:border-[#DCE4E5]'
                 }`}
               >
                 {t}

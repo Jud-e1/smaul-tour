@@ -36,9 +36,9 @@ export default function SocialButtons({
 export function OrDivider() {
   return (
     <div className="my-6 flex items-center gap-4 text-xs text-ink-muted">
-      <span className="flex-1 h-px bg-[#DDDDDD]" />
+      <span className="flex-1 h-px bg-[#DCE4E5]" />
       or
-      <span className="flex-1 h-px bg-[#DDDDDD]" />
+      <span className="flex-1 h-px bg-[#DCE4E5]" />
     </div>
   );
 }

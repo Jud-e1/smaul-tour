@@ -150,18 +150,18 @@ function ExperiencesPage() {
     return () => { document.body.style.overflow = prev; window.removeEventListener('keydown', onKey); };
   }, [drawerOpen]);
 
-  const numberField = 'w-full rounded-xl border border-[#B0B0B0] px-4 pt-6 pb-2 text-[15px] text-ink outline-none focus:border-ink focus:ring-1 focus:ring-ink peer';
+  const numberField = 'w-full rounded-xl border border-[#A9B8BA] px-4 pt-6 pb-2 text-[15px] text-ink outline-none focus:border-ink focus:ring-1 focus:ring-ink peer';
 
   return (
     <div className="bg-white">
       {/* ── Category bar + Filters (Airbnb) ─────────────────────────────── */}
-      <div className="sticky top-[70px] md:top-20 z-30 bg-white border-b border-[#EBEBEB]">
+      <div className="sticky top-[70px] md:top-20 z-30 bg-white border-b border-[#EDF2F2]">
         <div className="max-w-page mx-auto px-5 sm:px-10 xl:px-20 flex items-center gap-6">
           <div className="flex-1 min-w-0 flex gap-8 overflow-x-auto scrollbar-hide">
             <button
               onClick={() => { setSelectedCategories([]); setPage(1); }}
               className={`group shrink-0 flex flex-col items-center gap-1.5 pt-4 pb-3 border-b-2 transition-colors ${
-                selectedCategories.length === 0 ? 'border-ink text-ink' : 'border-transparent text-ink-muted hover:text-ink hover:border-[#DDDDDD]'
+                selectedCategories.length === 0 ? 'border-ink text-ink' : 'border-transparent text-ink-muted hover:text-ink hover:border-[#DCE4E5]'
               }`}
             >
               <span className={`text-2xl leading-none ${selectedCategories.length === 0 ? '' : 'opacity-70 group-hover:opacity-100'}`} aria-hidden>✨</span>
@@ -175,7 +175,7 @@ function ExperiencesPage() {
                   onClick={() => toggleCategory(cat.label)}
                   aria-pressed={active}
                   className={`group shrink-0 flex flex-col items-center gap-1.5 pt-4 pb-3 border-b-2 transition-colors ${
-                    active ? 'border-ink text-ink' : 'border-transparent text-ink-muted hover:text-ink hover:border-[#DDDDDD]'
+                    active ? 'border-ink text-ink' : 'border-transparent text-ink-muted hover:text-ink hover:border-[#DCE4E5]'
                   }`}
                 >
                   <span className={`text-2xl leading-none ${active ? '' : 'opacity-70 group-hover:opacity-100'}`} aria-hidden>{cat.icon}</span>
@@ -187,7 +187,7 @@ function ExperiencesPage() {
           <button
             onClick={() => setDrawerOpen(true)}
             className={`shrink-0 hidden sm:flex items-center gap-2 h-12 px-4 rounded-xl border text-xs font-semibold transition-colors ${
-              hasActiveFilters ? 'border-ink border-2 bg-fog' : 'border-[#DDDDDD] hover:border-ink'
+              hasActiveFilters ? 'border-ink border-2 bg-fog' : 'border-[#DCE4E5] hover:border-ink'
             }`}
             aria-label="Open filters"
           >
@@ -215,13 +215,13 @@ function ExperiencesPage() {
                 {search && (
                   <button
                     onClick={() => { setSearch(''); setPage(1); router.replace('/experiences'); }}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-fog border border-[#DDDDDD] px-3 py-1 text-sm hover:border-ink"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-fog border border-[#DCE4E5] px-3 py-1 text-sm hover:border-ink"
                   >
                     “{search}” <span aria-hidden>×</span>
                   </button>
                 )}
                 {selectedCategories.map((c) => (
-                  <button key={c} onClick={() => toggleCategory(c)} className="inline-flex items-center gap-1.5 rounded-full bg-fog border border-[#DDDDDD] px-3 py-1 text-sm hover:border-ink">
+                  <button key={c} onClick={() => toggleCategory(c)} className="inline-flex items-center gap-1.5 rounded-full bg-fog border border-[#DCE4E5] px-3 py-1 text-sm hover:border-ink">
                     {c} <span aria-hidden>×</span>
                   </button>
                 ))}
@@ -231,11 +231,11 @@ function ExperiencesPage() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setDrawerOpen(true)}
-              className="sm:hidden flex items-center gap-2 h-10 px-4 rounded-full border border-[#DDDDDD] text-sm font-semibold"
+              className="sm:hidden flex items-center gap-2 h-10 px-4 rounded-full border border-[#DCE4E5] text-sm font-semibold"
             >
               Filters{activeFilterCount > 0 ? ` · ${activeFilterCount}` : ''}
             </button>
-            <label className="flex items-center gap-2 h-10 pl-4 pr-3 rounded-full border border-[#DDDDDD] hover:border-ink text-sm cursor-pointer">
+            <label className="flex items-center gap-2 h-10 pl-4 pr-3 rounded-full border border-[#DCE4E5] hover:border-ink text-sm cursor-pointer">
               <span className="text-ink-muted">Sort</span>
               <select
                 value={sortBy}
@@ -332,7 +332,7 @@ function ExperiencesPage() {
         {/* AI planner nudge */}
         <Link
           href="/trip-planner"
-          className="mt-16 flex flex-col sm:flex-row items-start sm:items-center gap-4 rounded-2xl bg-fog px-6 py-6 hover:bg-[#EFEFEF] transition-colors"
+          className="mt-16 flex flex-col sm:flex-row items-start sm:items-center gap-4 rounded-2xl bg-fog px-6 py-6 hover:bg-[#E9EFEF] transition-colors"
         >
           <span className="text-3xl" aria-hidden>✨</span>
           <div className="flex-1">
@@ -348,14 +348,14 @@ function ExperiencesPage() {
         <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center">
           <button className="absolute inset-0 bg-black/50 cursor-default" onClick={() => setDrawerOpen(false)} aria-label="Close filters" />
           <div role="dialog" aria-modal="true" aria-labelledby="filters-title" className="relative w-full sm:max-w-[680px] max-h-[92vh] sm:max-h-[86vh] bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col animate-sheet sm:animate-scale-in">
-            <div className="relative flex items-center justify-center h-16 border-b border-[#EBEBEB] shrink-0">
+            <div className="relative flex items-center justify-center h-16 border-b border-[#EDF2F2] shrink-0">
               <button onClick={() => setDrawerOpen(false)} className="absolute left-5 w-8 h-8 rounded-full hover:bg-fog flex items-center justify-center" aria-label="Close">
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" d="M6 6l12 12M18 6L6 18" /></svg>
               </button>
               <h2 id="filters-title" className="text-base font-semibold">Filters</h2>
             </div>
 
-            <div className="overflow-y-auto px-6 divide-y divide-[#EBEBEB]">
+            <div className="overflow-y-auto px-6 divide-y divide-[#EDF2F2]">
               <section className="py-8">
                 <h3 className="text-[22px] font-semibold">Type of experience</h3>
                 <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -366,7 +366,7 @@ function ExperiencesPage() {
                         key={cat.label}
                         onClick={() => toggleCategory(cat.label)}
                         aria-pressed={active}
-                        className={`text-left rounded-xl border p-4 transition-all ${active ? 'border-ink border-2 bg-fog p-[15px]' : 'border-[#DDDDDD] hover:border-ink'}`}
+                        className={`text-left rounded-xl border p-4 transition-all ${active ? 'border-ink border-2 bg-fog p-[15px]' : 'border-[#DCE4E5] hover:border-ink'}`}
                       >
                         <span className="text-2xl block" aria-hidden>{cat.icon}</span>
                         <span className="mt-3 block text-sm font-semibold">{cat.label}</span>
@@ -385,7 +385,7 @@ function ExperiencesPage() {
                     <input type="number" inputMode="numeric" min={0} value={priceMin} placeholder="$0"
                       onChange={(e) => { setPriceMin(e.target.value); setPage(1); }} className={numberField} />
                   </label>
-                  <span className="w-4 h-px bg-[#B0B0B0]" aria-hidden />
+                  <span className="w-4 h-px bg-[#A9B8BA]" aria-hidden />
                   <label className="relative flex-1">
                     <span className="absolute left-4 top-2 text-xs text-ink-muted">Maximum</span>
                     <input type="number" inputMode="numeric" min={0} value={priceMax} placeholder="Any"
@@ -403,7 +403,7 @@ function ExperiencesPage() {
                     <input type="number" min={0} value={durationMin} placeholder="Any"
                       onChange={(e) => { setDurationMin(e.target.value); setPage(1); }} className={numberField} />
                   </label>
-                  <span className="w-4 h-px bg-[#B0B0B0]" aria-hidden />
+                  <span className="w-4 h-px bg-[#A9B8BA]" aria-hidden />
                   <label className="relative flex-1">
                     <span className="absolute left-4 top-2 text-xs text-ink-muted">At most</span>
                     <input type="number" min={0} value={durationMax} placeholder="Any"
@@ -439,13 +439,13 @@ function ExperiencesPage() {
                   <label className="relative w-32">
                     <input type="number" min={1} value={locationRadius} placeholder="Custom km"
                       onChange={(e) => { setLocationRadius(e.target.value); setPage(1); }}
-                      className="w-full h-full rounded-full border border-[#DDDDDD] px-4 py-2 text-sm outline-none focus:border-ink" />
+                      className="w-full h-full rounded-full border border-[#DCE4E5] px-4 py-2 text-sm outline-none focus:border-ink" />
                   </label>
                 </div>
               </section>
             </div>
 
-            <div className="shrink-0 flex items-center justify-between px-6 py-4 border-t border-[#EBEBEB]">
+            <div className="shrink-0 flex items-center justify-between px-6 py-4 border-t border-[#EDF2F2]">
               <button onClick={() => { clearFilters(); }} className="text-[15px] font-semibold underline underline-offset-2 disabled:text-ink-soft" disabled={!hasActiveFilters}>
                 Clear all
               </button>

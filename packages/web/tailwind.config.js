@@ -1,28 +1,28 @@
 /** @type {import('tailwindcss').Config} */
 
 // ── Nsoroma design tokens ──────────────────────────────────────────────────
-// Modelled on Airbnb's marketplace UI: white canvas, near-black ink for text
-// and primary buttons, hairline greys, and ONE warm accent (the logo's sunset
-// pin) used only for search, Reserve/Book and the brand mark.
+// "Coastal Daylight": white canvas, deep teal ink for text and primary buttons,
+// ocean teal for actions (search, Book/Reserve, links, ratings) and sun yellow
+// for badges only. Colours come from the logo's sea and sun.
 //
 // Legacy colour names (forest / sea / accra / slate / gray) are remapped onto
 // this system so every existing page inherits it without markup changes.
 
 const neutral = {
-  DEFAULT: '#222222',
-  50: '#F7F7F7',
-  100: '#EBEBEB',
-  200: '#DDDDDD',
-  300: '#C1C1C1',
-  400: '#B0B0B0',
-  500: '#6A6A6A',
-  600: '#484848',
-  700: '#222222',
-  800: '#1A1A1A',
-  900: '#111111',
-  950: '#0A0A0A',
-  dark: '#000000',
-  light: '#484848',
+  DEFAULT: '#0B2E33',
+  50: '#F4F7F7',
+  100: '#EDF2F2',
+  200: '#DCE4E5',
+  300: '#C5D0D1',
+  400: '#A9B8BA',
+  500: '#5E7377',
+  600: '#2C4A4F',
+  700: '#0B2E33',
+  800: '#072226',
+  900: '#04181B',
+  950: '#020F11',
+  dark: '#04181B',
+  light: '#2C4A4F',
 };
 
 module.exports = {
@@ -38,67 +38,76 @@ module.exports = {
         display: ['var(--font-body)', 'system-ui', 'sans-serif'],
       },
       colors: {
-        // Interactive UI (was blue → now ink, like Airbnb's black buttons/tabs)
+        // Interactive UI greys → teal-tinted neutrals
         forest: neutral,
         sea: neutral,
         slate: neutral,
         gray: neutral,
         accra: {
-          green: '#222222',
-          dark: '#000000',
-          leaf: '#222222',
-          gold: '#F4B63F',
-          cream: '#F7F7F7',
+          green: '#0B2E33',
+          dark: '#04181B',
+          leaf: '#0A7E8C',
+          gold: '#FFC93C',
+          cream: '#F4F7F7',
         },
-        // Brand accent — the logo's sunset pin. Search, Reserve, brand moments only.
+        // Action colour — ocean teal from the logo's sea. Search, Book, Reserve, links, ratings.
         sun: {
-          DEFAULT: '#EB5A23',
-          50: '#FFF4EE',
-          100: '#FFE6D9',
-          200: '#FFC9AE',
-          300: '#FBA57D',
-          400: '#F57E47',
-          500: '#EB5A23',
-          600: '#D44513',
-          700: '#B0370E',
+          DEFAULT: '#0A7E8C',
+          50: '#E8F6F7',
+          100: '#CDEDEF',
+          200: '#9EDBDF',
+          300: '#62C2C9',
+          400: '#27A2AD',
+          500: '#0A7E8C',
+          600: '#086B77',
+          700: '#075965',
+        },
+        teal: {
+          DEFAULT: '#0A7E8C',
+          50: '#E8F6F7',
+          100: '#CDEDEF',
+          500: '#0A7E8C',
+          600: '#086B77',
+          700: '#075965',
         },
         // Brand green — the logo's leaves. Trust & success: verified, confirmed.
         leaf: {
-          DEFAULT: '#1F7A45',
-          50: '#ECF7F0',
-          100: '#D3EDDC',
-          500: '#2E8F57',
-          600: '#1F7A45',
-          700: '#17603A',
+          DEFAULT: '#0E8A5A',
+          50: '#E7F6EF',
+          100: '#C9EBDB',
+          500: '#16A06A',
+          600: '#0E8A5A',
+          700: '#0B6E48',
         },
+        // Sun yellow — badges and highlights only.
         gold: {
-          DEFAULT: '#F4B63F',
-          100: '#FDF1D6',
-          400: '#F4B63F',
-          600: '#C98A12',
+          DEFAULT: '#FFC93C',
+          100: '#FFF3D1',
+          400: '#FFC93C',
+          600: '#E0A800',
         },
         beige: {
-          DEFAULT: '#F7F7F7',
-          50: '#FAFAFA',
-          100: '#F7F7F7',
-          200: '#EBEBEB',
-          300: '#DDDDDD',
-          400: '#B0B0B0',
+          DEFAULT: '#F4F7F7',
+          50: '#FAFCFC',
+          100: '#F4F7F7',
+          200: '#EDF2F2',
+          300: '#DCE4E5',
+          400: '#A9B8BA',
         },
         canvas: '#FFFFFF',
-        fog: '#F7F7F7',
+        fog: '#F4F7F7',
         ink: {
-          DEFAULT: '#222222',
-          muted: '#6A6A6A',
-          soft: '#929292',
+          DEFAULT: '#0B2E33',
+          muted: '#5E7377',
+          soft: '#8FA0A3',
         },
-        slateink: { DEFAULT: '#222222' },
+        slateink: { DEFAULT: '#0B2E33' },
       },
       borderRadius: {
         card: '16px',
       },
       boxShadow: {
-        // Airbnb's layered elevation — only for search, popovers, sticky booking card.
+        // Layered elevation — only for search, popovers, sticky booking card.
         soft: '0 0 0 1px rgba(0,0,0,0.02), 0 2px 6px rgba(0,0,0,0.04), 0 4px 8px rgba(0,0,0,0.10)',
         card: '0 6px 16px rgba(0,0,0,0.12)',
         float: '0 0 0 1px rgba(0,0,0,0.02), 0 8px 24px rgba(0,0,0,0.14)',
