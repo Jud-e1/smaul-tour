@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 import { NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
 import { BookingsService, REDIS_CLIENT } from './bookings.service';
 import { Booking, BookingStatus } from '../database/entities/booking.entity';
@@ -158,7 +159,7 @@ describe('BookingsService', () => {
         { provide: getRepositoryToken(AvailabilitySlot), useValue: slotRepo },
         { provide: getRepositoryToken(Experience), useValue: experienceRepo },
         { provide: getRepositoryToken(Payment), useValue: paymentRepo },
-        { provide: 'DataSource', useValue: dataSource },
+        { provide: DataSource, useValue: dataSource },
         { provide: REDIS_CLIENT, useValue: redis },
       ],
     }).compile();

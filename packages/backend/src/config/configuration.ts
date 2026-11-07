@@ -2,6 +2,26 @@ import { ConfigurationSchema, Configuration } from './configuration.schema';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 
+/**
+ * Overrides accepted by `merge`: any section may be partially specified, and
+ * the nested `oauth` providers may be partial too (mirrors how `merge` spreads).
+ */
+export type ConfigurationOverrides = {
+  [K in keyof Configuration]?: K extends 'oauth'
+    ? { [P in keyof Configuration['oauth']]?: Partial<Configuration['oauth'][P]> }
+    : Partial<Configuration[K]>;
+};
+
+/** Recursively removes keys whose value is `undefined` from plain objects. */
+function stripUndefined(value: unknown): unknown {
+  if (value === null || typeof value !== 'object' || Array.isArray(value)) return value;
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>)
+      .filter(([, v]) => v !== undefined)
+      .map(([k, v]) => [k, stripUndefined(v)]),
+  );
+}
+
 export class ConfigurationParser {
   /**
    * Parse configuration from JSON or YAML string
@@ -18,7 +38,8 @@ export class ConfigurationParser {
 
       return this.validate(parsed);
     } catch (error) {
-      if (error instanceof SyntaxError) {
+      // JSON.parse throws SyntaxError; js-yaml throws its own YAMLException.
+      if (error instanceof SyntaxError || error instanceof yaml.YAMLException) {
         throw new Error(`Invalid ${format.toUpperCase()} syntax: ${error.message}`);
       }
       throw error;
@@ -57,7 +78,10 @@ export class ConfigurationParser {
     return {
       server: {
         port: process.env.PORT ? parseInt(process.env.PORT, 10) : undefined,
-        environment: process.env.NODE_ENV as 'development' | 'staging' | 'production',
+        // Only honour NODE_ENV values the schema accepts (e.g. Jest sets "test").
+        environment: (['development', 'staging', 'production'] as const).find(
+          (env) => env === process.env.NODE_ENV,
+        ),
       },
       database: {
         host: process.env.DB_HOST,
@@ -137,7 +161,10 @@ export class ConfigurationParser {
   /**
    * Merge base configuration with overrides (environment variables take precedence)
    */
-  merge(base: Configuration, overrides: Partial<Configuration>): Configuration {
+  merge(base: Configuration, rawOverrides: ConfigurationOverrides): Configuration {
+    // Unset environment variables arrive as `undefined`; drop them so they fall
+    // back to the base value instead of overwriting it.
+    const overrides = stripUndefined(rawOverrides) as ConfigurationOverrides;
     const merged = {
       server: { ...base.server, ...overrides.server },
       database: { ...base.database, ...overrides.database },

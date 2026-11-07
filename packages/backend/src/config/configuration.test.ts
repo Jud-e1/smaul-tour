@@ -585,18 +585,19 @@ database:
     });
 
     it('should handle configuration with unicode characters', () => {
+      // Unicode goes in free-text fields: `email.from` is deliberately validated as an
+      // ASCII email address, so an internationalized domain there is rejected.
       const configWithUnicode = {
         ...validConfig,
-        email: {
-          ...validConfig.email,
-          from: 'test@例え.com',
-        },
+        database: { ...validConfig.database, name: '旅行_データベース' },
+        llm: { ...validConfig.llm, model: 'modèle-ñ-例え' },
       };
 
-      const jsonString = parser.serialize(configWithUnicode, 'json');
-      const parsed = parser.parse(jsonString, 'json');
-
-      expect(parsed.email.from).toBe('test@例え.com');
+      for (const format of ['json', 'yaml'] as const) {
+        const parsed = parser.parse(parser.serialize(configWithUnicode, format), format);
+        expect(parsed.database.name).toBe('旅行_データベース');
+        expect(parsed.llm.model).toBe('modèle-ñ-例え');
+      }
     });
 
     it('should handle configuration with very large numbers', () => {

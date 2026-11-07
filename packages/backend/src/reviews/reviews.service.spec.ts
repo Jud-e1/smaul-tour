@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 import {
   NotFoundException,
   ConflictException,
@@ -31,7 +32,8 @@ function makeBooking(overrides: Partial<Booking> = {}): Booking {
     paymentId: null,
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
-    completedAt: new Date('2026-01-02'),
+    // Relative to now so the default booking always sits inside the 30-day review window.
+    completedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
     cancelledAt: null,
     cancellationReason: null,
     traveler: null,
@@ -140,7 +142,7 @@ describe('ReviewsService', () => {
         { provide: getRepositoryToken(Review), useValue: reviewRepo },
         { provide: getRepositoryToken(Booking), useValue: bookingRepo },
         { provide: getRepositoryToken(Experience), useValue: experienceRepo },
-        { provide: 'DataSource', useValue: dataSource },
+        { provide: DataSource, useValue: dataSource },
       ],
     }).compile();
 
