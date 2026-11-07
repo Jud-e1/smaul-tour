@@ -82,18 +82,18 @@ function AvailabilityCalendar({ slots }: { slots: AvailabilitySlot[] }) {
     <div>
       <div className="flex items-center justify-between mb-3">
         <button onClick={prevMonth} className="p-1.5 rounded-full hover:bg-gray-100" aria-label="Previous month">
-          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-ink-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <span className="font-medium text-gray-800 text-sm">{monthName}</span>
+        <span className="font-medium text-ink text-sm">{monthName}</span>
         <button onClick={nextMonth} className="p-1.5 rounded-full hover:bg-gray-100" aria-label="Next month">
-          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-ink-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </button>
       </div>
-      <div className="grid grid-cols-7 text-center text-xs text-gray-400 mb-1">
+      <div className="grid grid-cols-7 text-center text-xs text-ink-soft mb-1">
         {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(d => <div key={d} className="py-1">{d}</div>)}
       </div>
       <div className="grid grid-cols-7 gap-0.5 text-center text-xs">
@@ -106,9 +106,9 @@ function AvailabilityCalendar({ slots }: { slots: AvailabilitySlot[] }) {
           const isPast = new Date(dateStr) < new Date(today.toDateString());
           let cls = 'w-8 h-8 mx-auto flex items-center justify-center rounded-full ';
           if (isPast) cls += 'text-gray-300';
-          else if (hasAvailable) cls += 'bg-emerald-100 text-emerald-700 font-semibold';
+          else if (hasAvailable) cls += 'bg-forest-100 text-forest-700 font-semibold';
           else if (hasBooked) cls += 'text-gray-300 line-through';
-          else cls += 'text-gray-400';
+          else cls += 'text-ink-soft';
           return (
             <div key={dateStr} className="flex items-center justify-center py-0.5">
               <div className={cls}>{day}</div>
@@ -116,8 +116,8 @@ function AvailabilityCalendar({ slots }: { slots: AvailabilitySlot[] }) {
           );
         })}
       </div>
-      <div className="flex items-center gap-4 mt-3 text-xs text-gray-400">
-        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-100 inline-block" />Available</span>
+      <div className="flex items-center gap-4 mt-3 text-xs text-ink-soft">
+        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-forest-100 inline-block" />Available</span>
         <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-gray-100 inline-block" />Unavailable</span>
       </div>
     </div>
@@ -174,7 +174,7 @@ export default function ExperienceDetailPage() {
     return (
       <div className="min-h-screen bg-white">
         {/* Skeleton hero */}
-        <div className="h-[480px] bg-gray-200 animate-pulse" />
+        <div className="h-64 sm:h-80 lg:h-[480px] bg-gray-200 animate-pulse" />
         <div className="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-4">
             <div className="h-8 bg-gray-200 rounded animate-pulse w-2/3" />
@@ -191,8 +191,8 @@ export default function ExperienceDetailPage() {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-500 mb-3">Experience not found.</p>
-          <Link href="/experiences" className="text-[#FF385C] hover:underline text-sm font-medium">Browse experiences</Link>
+          <p className="text-ink-muted mb-3">Experience not found.</p>
+          <Link href="/experiences" className="btn-primary">Browse experiences</Link>
         </div>
       </div>
     );
@@ -204,17 +204,17 @@ export default function ExperienceDetailPage() {
   const heroImg = images[activeImage]?.url || images[0]?.url;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-canvas">
 
-      {/* Full-bleed photo hero with grid overlay */}
-      <div className="relative">
+      {/* Framed photo hero */}
+      <div className="relative max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 pt-2 sm:pt-6">
         {/* Main hero image */}
-        <div className="relative h-[480px] bg-gray-100 overflow-hidden">
+        <div className="relative h-72 sm:h-96 lg:h-[520px] bg-[#E4E5DF] overflow-hidden rounded-[24px]">
           {heroImg ? (
             <Image src={heroImg} alt={experience.title} fill className="object-cover" priority />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-              <svg className="w-20 h-20 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-full h-full bg-gradient-to-br from-forest-100 to-beige-200 flex items-center justify-center">
+              <svg className="w-20 h-20 text-forest-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
@@ -224,10 +224,10 @@ export default function ExperienceDetailPage() {
           {/* Back button */}
           <Link
             href="/experiences"
-            className="absolute top-4 left-4 bg-white rounded-full p-2 shadow-md hover:shadow-lg transition-shadow"
+            className="absolute top-4 left-4 bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-soft hover:scale-105 transition-transform"
             aria-label="Back"
           >
-            <svg className="w-4 h-4 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-ink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </Link>
@@ -236,10 +236,10 @@ export default function ExperienceDetailPage() {
           <div className="absolute top-4 right-4 flex gap-2">
             <button
               onClick={toggleWishlist}
-              className="bg-white rounded-full p-2 shadow-md hover:shadow-lg transition-shadow"
+              className="bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-soft hover:scale-105 transition-transform"
               aria-label={wishlisted ? 'Remove from wishlist' : 'Save'}
             >
-              <svg className={`w-4 h-4 ${wishlisted ? 'text-[#FF385C] fill-[#FF385C]' : 'text-gray-800'}`}
+              <svg className={`w-4 h-4 ${wishlisted ? 'text-[#F26B1D] fill-[#F26B1D]' : 'text-ink'}`}
                 fill={wishlisted ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
@@ -248,7 +248,7 @@ export default function ExperienceDetailPage() {
 
           {/* Thumbnail strip */}
           {images.length > 1 && (
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
+            <div className="absolute bottom-4 left-4 right-4 flex gap-1.5 justify-center overflow-x-auto">
               {images.slice(0, 6).map((img, i) => (
                 <button
                   key={i}
@@ -272,8 +272,8 @@ export default function ExperienceDetailPage() {
       </div>
 
       {/* Content */}
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-16">
 
           {/* Left: main info */}
           <div className="lg:col-span-2 space-y-8">
@@ -282,28 +282,28 @@ export default function ExperienceDetailPage() {
             <div>
               <div className="flex flex-wrap gap-2 mb-3">
                 {experience.category?.map((cat) => (
-                  <span key={cat} className="text-xs font-medium bg-gray-100 text-gray-600 px-3 py-1 rounded-full">{cat}</span>
+                  <span key={cat} className="text-[11px] font-semibold uppercase tracking-[0.12em] text-forest-700 bg-forest-50 px-3 py-1 rounded-full">{cat}</span>
                 ))}
               </div>
-              <h1 className="text-3xl font-bold text-gray-900 leading-tight mb-3">{experience.title}</h1>
-              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+              <h1 className="font-display text-3xl sm:text-[44px] font-bold text-ink leading-[1.05] mb-4 break-words">{experience.title}</h1>
+              <div className="flex flex-wrap items-center gap-4 text-sm text-ink-muted">
                 {experience.averageRating > 0 && (
-                  <span className="flex items-center gap-1 font-semibold text-gray-900">
-                    <svg className="w-4 h-4 text-[#FF385C]" fill="currentColor" viewBox="0 0 24 24">
+                  <span className="flex items-center gap-1 font-semibold text-ink">
+                    <svg className="w-4 h-4 text-gold" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                     </svg>
                     {experience.averageRating.toFixed(2)}
-                    <span className="font-normal text-gray-500">({reviewTotal} reviews)</span>
+                    <span className="font-normal text-ink-muted">({reviewTotal} reviews)</span>
                   </span>
                 )}
                 <span className="flex items-center gap-1">
-                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 text-ink-soft" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   {experience.duration} hours
                 </span>
                 <span className="flex items-center gap-1">
-                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 text-ink-soft" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
@@ -312,28 +312,28 @@ export default function ExperienceDetailPage() {
               </div>
             </div>
 
-            <hr className="border-gray-100" />
+            <hr className="border-black/[0.07]" />
 
             {/* Guide */}
             {experience.guide && (
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-full bg-gray-200 overflow-hidden shrink-0 ring-2 ring-gray-100">
+                <div className="w-16 h-16 rounded-full bg-forest-100 overflow-hidden shrink-0 ring-4 ring-white">
                   {experience.guide.profile?.profilePhotoUrl ? (
                     <Image src={experience.guide.profile.profilePhotoUrl} alt="Guide" width={56} height={56} className="object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-500 text-xl font-bold bg-gradient-to-br from-gray-200 to-gray-300">
+                    <div className="w-full h-full flex items-center justify-center text-forest-700 text-xl font-bold bg-forest-100">
                       {experience.guide.profile?.firstName?.[0]}
                     </div>
                   )}
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 mb-0.5">Hosted by</p>
+                  <p className="text-xs text-ink-muted mb-0.5">Hosted by</p>
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-gray-900">
+                    <span className="font-semibold text-ink">
                       {experience.guide.profile?.firstName} {experience.guide.profile?.lastName}
                     </span>
                     {experience.guide.verified && (
-                      <span className="flex items-center gap-1 text-xs text-[#FF385C] bg-rose-50 px-2 py-0.5 rounded-full font-medium">
+                      <span className="flex items-center gap-1 text-xs text-forest-700 bg-forest-50 px-2 py-0.5 rounded-full font-semibold">
                         <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
@@ -342,18 +342,18 @@ export default function ExperienceDetailPage() {
                     )}
                   </div>
                   {experience.guide.profile?.bio && (
-                    <p className="text-sm text-gray-500 mt-0.5 line-clamp-2">{experience.guide.profile.bio}</p>
+                    <p className="text-sm text-ink-muted mt-0.5 line-clamp-2">{experience.guide.profile.bio}</p>
                   )}
                 </div>
               </div>
             )}
 
-            <hr className="border-gray-100" />
+            <hr className="border-black/[0.07]" />
 
             {/* Description */}
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-3">About this experience</h2>
-              <p className="text-gray-600 leading-relaxed">{experience.description}</p>
+              <h2 className="font-display text-2xl font-bold text-ink mb-3">About this experience</h2>
+              <p className="text-ink/80 text-[17px] leading-relaxed whitespace-pre-line">{experience.description}</p>
             </div>
 
             {/* Highlights */}
@@ -363,45 +363,45 @@ export default function ExperienceDetailPage() {
                 { icon: '📍', label: 'Location', value: experience.location.address },
                 { icon: '🔄', label: 'Cancellation', value: experience.cancellationPolicy || 'Flexible' },
               ].map((h) => (
-                <div key={h.label} className="bg-gray-50 rounded-2xl p-4">
-                  <p className="text-xl mb-1">{h.icon}</p>
-                  <p className="text-xs text-gray-400 font-medium uppercase tracking-wide">{h.label}</p>
-                  <p className="text-sm font-semibold text-gray-800 mt-0.5 capitalize">{h.value}</p>
+                <div key={h.label} className="bg-white border border-black/[0.07] rounded-2xl p-4">
+                  <p className="w-10 h-10 rounded-xl bg-beige flex items-center justify-center text-lg mb-3">{h.icon}</p>
+                  <p className="text-xs text-ink-soft font-medium uppercase tracking-wide">{h.label}</p>
+                  <p className="text-sm font-semibold text-ink mt-0.5 capitalize">{h.value}</p>
                 </div>
               ))}
             </div>
 
-            <hr className="border-gray-100" />
+            <hr className="border-black/[0.07]" />
 
             {/* Reviews */}
             <div>
               <div className="flex items-center gap-3 mb-6">
-                <svg className="w-5 h-5 text-[#FF385C]" fill="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-gold" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                 </svg>
-                <h2 className="text-xl font-semibold text-gray-900">
+                <h2 className="font-display text-2xl font-bold text-ink">
                   {experience.averageRating > 0 ? `${experience.averageRating.toFixed(2)} · ` : ''}{reviewTotal} review{reviewTotal !== 1 ? 's' : ''}
                 </h2>
               </div>
               {reviews.length === 0 ? (
-                <p className="text-gray-400 text-sm">No reviews yet — be the first!</p>
+                <p className="text-ink-soft text-sm">No reviews yet — be the first!</p>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   {reviews.map((review) => (
-                    <div key={review.id}>
+                    <div key={review.id} className="bg-white border border-black/[0.07] rounded-2xl p-5">
                       <div className="flex items-center gap-3 mb-2">
-                        <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold text-gray-600 shrink-0">
+                        <div className="w-10 h-10 rounded-full bg-forest-100 flex items-center justify-center text-sm font-bold text-forest-700 shrink-0">
                           {review.traveler?.profile?.firstName?.[0] ?? '?'}
                         </div>
                         <div>
-                          <p className="text-sm font-semibold text-gray-900">
+                          <p className="text-sm font-semibold text-ink">
                             {review.traveler?.profile ? `${review.traveler.profile.firstName} ${review.traveler.profile.lastName}` : 'Traveler'}
                           </p>
-                          <p className="text-xs text-gray-400">{new Date(review.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
+                          <p className="text-xs text-ink-soft">{new Date(review.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
                         </div>
                       </div>
                       <StarRating value={review.rating} readonly size="sm" />
-                      {review.comment && <p className="text-sm text-gray-600 mt-1.5 leading-relaxed">{review.comment}</p>}
+                      {review.comment && <p className="text-sm text-ink-muted mt-1.5 leading-relaxed">{review.comment}</p>}
                     </div>
                   ))}
                 </div>
@@ -409,20 +409,20 @@ export default function ExperienceDetailPage() {
               {hasMoreReviews && (
                 <button
                   onClick={loadMoreReviews}
-                  className="mt-6 border border-gray-300 rounded-xl px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="mt-6 btn-ghost"
                 >
                   Show more reviews
                 </button>
               )}
             </div>
 
-            <hr className="border-gray-100" />
+            <hr className="border-black/[0.07]" />
 
             {/* Location */}
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Where you'll be</h2>
+              <h2 className="font-display text-2xl font-bold text-ink mb-4">Where you'll be</h2>
               {experience.location.latitude && experience.location.longitude ? (
-                <div className="rounded-2xl overflow-hidden h-64 border border-gray-100">
+                <div className="rounded-[20px] overflow-hidden h-72 border border-black/[0.07]">
                   <iframe
                     title="Location"
                     src={`https://www.openstreetmap.org/export/embed.html?bbox=${experience.location.longitude - 0.01},${experience.location.latitude - 0.01},${experience.location.longitude + 0.01},${experience.location.latitude + 0.01}&layer=mapnik&marker=${experience.location.latitude},${experience.location.longitude}`}
@@ -430,8 +430,8 @@ export default function ExperienceDetailPage() {
                   />
                 </div>
               ) : (
-                <div className="rounded-2xl bg-gray-50 h-48 flex items-center justify-center border border-gray-100">
-                  <div className="text-center text-gray-400">
+                <div className="rounded-2xl bg-canvas h-48 flex items-center justify-center border border-black/[0.07]">
+                  <div className="text-center text-ink-soft">
                     <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -440,14 +440,14 @@ export default function ExperienceDetailPage() {
                   </div>
                 </div>
               )}
-              <p className="text-sm text-gray-500 mt-3">{experience.location.address}</p>
+              <p className="text-sm text-ink-muted mt-3">{experience.location.address}</p>
             </div>
 
             {/* Similar experiences */}
             {recommendations.length > 0 && (
               <div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-5">You might also like</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <h2 className="font-display text-2xl font-bold text-ink mb-5">You might also like</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-8">
                   {recommendations.slice(0, 4).map((rec) => (
                     <ExperienceCard key={rec.id} experience={rec} />
                   ))}
@@ -458,40 +458,40 @@ export default function ExperienceDetailPage() {
 
           {/* Right: sticky booking card */}
           <div className="lg:col-span-1">
-            <div className="sticky top-24 bg-white rounded-2xl border border-gray-200 shadow-xl p-6 space-y-5">
+            <div className="sticky top-24 bg-white rounded-card border border-black/[0.07] shadow-card p-6 space-y-5">
               {/* Price */}
               <div>
-                <span className="text-2xl font-bold text-gray-900">
+                <span className="font-display text-3xl font-bold text-ink">
                   {experience.price.currency} {experience.price.amount.toFixed(0)}
                 </span>
-                <span className="text-gray-500 text-sm"> / person</span>
+                <span className="text-ink-muted text-sm"> / person</span>
               </div>
 
               {/* Rating summary */}
               {experience.averageRating > 0 && (
                 <div className="flex items-center gap-1.5 text-sm">
-                  <svg className="w-4 h-4 text-[#FF385C]" fill="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 text-gold" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                   </svg>
-                  <span className="font-semibold text-gray-900">{experience.averageRating.toFixed(2)}</span>
-                  <span className="text-gray-400">·</span>
-                  <span className="text-gray-500 underline cursor-pointer">{reviewTotal} reviews</span>
+                  <span className="font-semibold text-ink">{experience.averageRating.toFixed(2)}</span>
+                  <span className="text-ink-soft">·</span>
+                  <span className="text-ink-muted underline cursor-pointer">{reviewTotal} reviews</span>
                 </div>
               )}
 
-              <hr className="border-gray-100" />
+              <hr className="border-black/[0.07]" />
 
               <BookingForm experienceId={experience.id} price={experience.price} slots={slots} />
 
               {/* Availability calendar */}
               {slots.length > 0 && (
-                <div className="border-t border-gray-100 pt-4">
-                  <p className="text-sm font-semibold text-gray-700 mb-3">Availability</p>
+                <div className="border-t border-black/[0.07] pt-4">
+                  <p className="text-sm font-semibold text-ink/80 mb-3">Availability</p>
                   <AvailabilityCalendar slots={slots} />
                 </div>
               )}
 
-              <p className="text-xs text-center text-gray-400">You won't be charged yet</p>
+              <p className="text-xs text-center text-ink-soft flex items-center justify-center gap-1.5"><svg className="w-3.5 h-3.5 text-forest-600" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>Held in escrow — you won&apos;t be charged yet</p>
             </div>
           </div>
         </div>

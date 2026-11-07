@@ -118,15 +118,15 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
   // Confirmed state
   if (step === 'confirmed' && confirmed) {
     return (
-      <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
-        <svg className="w-12 h-12 text-green-500 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="bg-forest-50 border border-forest-200 rounded-lg p-6 text-center">
+        <svg className="w-12 h-12 text-forest-500 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        <h3 className="text-lg font-semibold text-green-800">Booking Confirmed!</h3>
-        <p className="text-green-700 mt-1">
+        <h3 className="text-lg font-semibold text-forest-800">Booking Confirmed!</h3>
+        <p className="text-forest-700 mt-1">
           Reference: <strong>{confirmed.referenceNumber}</strong>
         </p>
-        <p className="text-sm text-green-600 mt-2">
+        <p className="text-sm text-forest-600 mt-2">
           A confirmation has been sent. Check your dashboard for details.
         </p>
       </div>
@@ -138,10 +138,10 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
     return (
       <div className="space-y-4">
         {/* Booking summary */}
-        <div className="bg-blue-50 border border-blue-100 rounded-lg p-4">
-          <h3 className="text-sm font-semibold text-blue-800 mb-2">Booking Summary</h3>
+        <div className="bg-forest-50 border border-black/[0.07] rounded-lg p-4">
+          <h3 className="text-sm font-semibold text-forest-800 mb-2">Booking Summary</h3>
           {selectedSlot && (
-            <div className="text-sm text-blue-700 space-y-1">
+            <div className="text-sm text-forest-700 space-y-1">
               <div className="flex justify-between">
                 <span>Date</span>
                 <span>{new Date(selectedSlot.date).toLocaleDateString()}</span>
@@ -154,26 +154,26 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
                 <span>Participants</span>
                 <span>{participants}</span>
               </div>
-              <div className="flex justify-between font-semibold border-t border-blue-200 pt-1 mt-1">
+              <div className="flex justify-between font-semibold border-t border-forest-200 pt-1 mt-1">
                 <span>Total</span>
                 <span>{price.currency} {totalCost.toFixed(2)}</span>
               </div>
             </div>
           )}
-          <p className="text-xs text-blue-600 mt-2">Ref: {booking.referenceNumber}</p>
+          <p className="text-xs text-forest-600 mt-2">Ref: {booking.referenceNumber}</p>
         </div>
 
         {/* Payment form */}
         <form onSubmit={paymentForm.handleSubmit(handlePaymentSubmit)} className="space-y-3">
-          <h3 className="text-sm font-semibold text-gray-700">Payment Details</h3>
+          <h3 className="text-sm font-semibold text-ink/80">Payment Details</h3>
 
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Cardholder Name</label>
+            <label className="block text-xs font-medium text-ink-muted mb-1">Cardholder Name</label>
             <input
               type="text"
               placeholder="Name on card"
               {...paymentForm.register('cardholderName', { required: 'Cardholder name is required' })}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-black/[0.12] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-forest-700 focus:ring-4 focus:ring-forest-700/10"
             />
             {paymentForm.formState.errors.cardholderName && (
               <p className="text-red-500 text-xs mt-1">{paymentForm.formState.errors.cardholderName.message}</p>
@@ -181,7 +181,7 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Card Number</label>
+            <label className="block text-xs font-medium text-ink-muted mb-1">Card Number</label>
             <input
               type="text"
               placeholder="1234 5678 9012 3456"
@@ -191,7 +191,7 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
                 validate: (v: string) => v.replace(/\s/g, '').length === 16 || 'Enter a valid 16-digit card number',
                 onChange: (e: React.ChangeEvent<HTMLInputElement>) => { e.target.value = formatCardNumber(e.target.value); },
               })}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+              className="w-full border border-black/[0.12] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-forest-700 focus:ring-4 focus:ring-forest-700/10 font-mono"
             />
             {paymentForm.formState.errors.cardNumber && (
               <p className="text-red-500 text-xs mt-1">{paymentForm.formState.errors.cardNumber.message}</p>
@@ -200,7 +200,7 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Expiry (MM/YY)</label>
+              <label className="block text-xs font-medium text-ink-muted mb-1">Expiry (MM/YY)</label>
               <input
                 type="text"
                 placeholder="MM/YY"
@@ -210,14 +210,14 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
                   pattern: { value: /^\d{2}\/\d{2}$/, message: 'Use MM/YY format' },
                   onChange: (e: React.ChangeEvent<HTMLInputElement>) => { e.target.value = formatExpiry(e.target.value); },
                 })}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+                className="w-full border border-black/[0.12] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-forest-700 focus:ring-4 focus:ring-forest-700/10 font-mono"
               />
               {paymentForm.formState.errors.expiry && (
                 <p className="text-red-500 text-xs mt-1">{paymentForm.formState.errors.expiry.message}</p>
               )}
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">CVC</label>
+              <label className="block text-xs font-medium text-ink-muted mb-1">CVC</label>
               <input
                 type="text"
                 placeholder="123"
@@ -227,7 +227,7 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
                   required: 'CVC is required',
                   pattern: { value: /^\d{3,4}$/, message: 'Enter 3 or 4 digits' },
                 })}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+                className="w-full border border-black/[0.12] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-forest-700 focus:ring-4 focus:ring-forest-700/10 font-mono"
               />
               {paymentForm.formState.errors.cvc && (
                 <p className="text-red-500 text-xs mt-1">{paymentForm.formState.errors.cvc.message}</p>
@@ -235,7 +235,7 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
             </div>
           </div>
 
-          <div className="flex items-center gap-1 text-xs text-gray-400">
+          <div className="flex items-center gap-1 text-xs text-ink-soft">
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
@@ -253,14 +253,14 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
               type="button"
               onClick={() => { setStep('select'); setError(''); }}
               disabled={loading}
-              className="flex-1 border border-gray-300 text-gray-700 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 disabled:opacity-50 transition-colors"
+              className="flex-1 border border-black/[0.12] text-ink/80 py-2.5 rounded-lg text-sm font-medium hover:bg-canvas disabled:opacity-50 transition-colors"
             >
               Back
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-teal-600 text-white py-2.5 rounded-lg font-medium hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+              className="flex-1 bg-forest-700 text-white py-3 rounded-xl font-semibold hover:bg-forest-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
             >
               {loading ? 'Processing...' : `Pay ${price.currency} ${totalCost.toFixed(2)}`}
             </button>
@@ -274,10 +274,10 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
   return (
     <form onSubmit={bookingForm.handleSubmit(handleBookingSubmit)} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Select Date &amp; Time</label>
+        <label className="block text-sm font-medium text-ink/80 mb-2">Select Date &amp; Time</label>
         {availableSlots.length === 0 ? (
-          <div className="text-center py-6 bg-gray-50 rounded-xl border border-dashed border-gray-300">
-            <p className="text-sm text-gray-500">No available slots at this time</p>
+          <div className="text-center py-6 bg-canvas rounded-xl border border-dashed border-black/[0.12]">
+            <p className="text-sm text-ink-muted">No available slots at this time</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-2 max-h-56 overflow-y-auto pr-1">
@@ -289,8 +289,8 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
                   key={slot.id}
                   className={`flex items-center justify-between gap-3 border rounded-xl px-4 py-3 cursor-pointer transition-colors ${
                     isSelected
-                      ? 'border-teal-500 bg-teal-50 ring-1 ring-teal-500'
-                      : 'border-gray-200 hover:border-teal-300 hover:bg-gray-50'
+                      ? 'border-forest-600 bg-forest-50 ring-1 ring-forest-600'
+                      : 'border-black/[0.07] hover:border-forest-300 hover:bg-canvas'
                   }`}
                 >
                   <input
@@ -300,15 +300,15 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
                     className="sr-only"
                   />
                   <div>
-                    <p className={`text-sm font-medium ${isSelected ? 'text-teal-800' : 'text-gray-800'}`}>
+                    <p className={`text-sm font-medium ${isSelected ? 'text-forest-900' : 'text-ink'}`}>
                       {new Date(slot.date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
                     </p>
-                    <p className={`text-xs mt-0.5 ${isSelected ? 'text-teal-600' : 'text-gray-500'}`}>
+                    <p className={`text-xs mt-0.5 ${isSelected ? 'text-forest-700' : 'text-ink-muted'}`}>
                       {slot.startTime} – {slot.endTime}
                     </p>
                   </div>
                   <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                    spotsLeft <= 2 ? 'bg-amber-100 text-amber-700' : isSelected ? 'bg-teal-100 text-teal-700' : 'bg-gray-100 text-gray-600'
+                    spotsLeft <= 2 ? 'bg-amber-100 text-amber-700' : isSelected ? 'bg-forest-100 text-forest-800' : 'bg-gray-100 text-ink-muted'
                   }`}>
                     {spotsLeft} spot{spotsLeft !== 1 ? 's' : ''} left
                   </span>
@@ -323,27 +323,27 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Participants</label>
+        <label className="block text-sm font-medium text-ink/80 mb-1">Participants</label>
         <input
           type="number"
           min={1}
           max={selectedSlot ? selectedSlot.capacity - selectedSlot.booked : 10}
           {...bookingForm.register('participants', { required: true, min: 1, valueAsNumber: true })}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full border border-black/[0.12] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-forest-700 focus:ring-4 focus:ring-forest-700/10"
         />
       </div>
 
       {selectedSlot && (
-        <div className="bg-gray-50 rounded-lg p-3 text-sm">
-          <div className="flex justify-between text-gray-600">
+        <div className="bg-canvas rounded-lg p-3 text-sm">
+          <div className="flex justify-between text-ink-muted">
             <span>Price per person</span>
             <span>{price.currency} {price.amount.toFixed(2)}</span>
           </div>
-          <div className="flex justify-between text-gray-600 mt-1">
+          <div className="flex justify-between text-ink-muted mt-1">
             <span>Participants</span>
             <span>× {participants}</span>
           </div>
-          <div className="flex justify-between font-semibold mt-2 pt-2 border-t border-gray-200">
+          <div className="flex justify-between font-semibold mt-2 pt-2 border-t border-black/[0.07]">
             <span>Total</span>
             <span>{price.currency} {totalCost.toFixed(2)}</span>
           </div>
@@ -359,15 +359,15 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
       <button
         type="submit"
         disabled={loading || availableSlots.length === 0}
-        className="w-full bg-teal-600 text-white py-2.5 rounded-lg font-medium hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="w-full bg-sun text-white py-3.5 rounded-xl font-semibold hover:bg-sun-600 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-[0_8px_20px_-8px_rgba(242,107,29,0.6)]"
       >
         {loading ? 'Checking availability...' : 'Continue to Payment'}
       </button>
 
       {!user && (
-        <p className="text-xs text-center text-gray-500">
+        <p className="text-xs text-center text-ink-muted">
           You&apos;ll need to{' '}
-          <a href="/login" className="text-blue-600 hover:underline">log in</a>
+          <a href="/login" className="text-forest-600 hover:underline">log in</a>
           {' '}to complete your booking.
         </p>
       )}

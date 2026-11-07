@@ -33,18 +33,18 @@ export default function BookingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full" />
+      <div className="min-h-screen bg-canvas flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-forest-600 border-t-transparent rounded-full" />
       </div>
     );
   }
 
   if (!experience) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-canvas flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-500 mb-3">Experience not found.</p>
-          <Link href="/experiences" className="text-blue-600 hover:underline text-sm">
+          <p className="text-ink-muted mb-3">Experience not found.</p>
+          <Link href="/experiences" className="text-forest-600 hover:underline text-sm">
             Browse experiences
           </Link>
         </div>
@@ -55,22 +55,22 @@ export default function BookingPage() {
   const slots = experience.availability?.slots || [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-canvas">
       <div className="max-w-2xl mx-auto px-4 py-8">
         {!booked && (
           <Link
             href={`/experiences/${id}`}
-            className="text-blue-600 hover:underline text-sm mb-6 inline-block"
+            className="text-forest-600 hover:underline text-sm mb-6 inline-block"
           >
             ← Back to experience
           </Link>
         )}
 
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-2xl border border-black/[0.07] overflow-hidden">
           {/* Experience header */}
-          <div className="p-6 border-b border-gray-100">
-            <h1 className="text-xl font-bold text-gray-900">{experience.title}</h1>
-            <div className="flex items-center gap-3 mt-1 text-sm text-gray-500">
+          <div className="p-6 border-b border-black/[0.07]">
+            <h1 className="font-display text-xl font-bold text-ink">{experience.title}</h1>
+            <div className="flex items-center gap-3 mt-1 text-sm text-ink-muted">
               <span>{experience.duration}h</span>
               <span className="text-gray-300">·</span>
               <span className="capitalize">{experience.cancellationPolicy} cancellation</span>

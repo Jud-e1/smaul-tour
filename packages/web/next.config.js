@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  output: 'standalone',
+  output: process.env.VERCEL ? undefined : 'standalone',
   // Suppress SWC lockfile patch warning in monorepo workspaces
   experimental: {
     forceSwcTransforms: true,
@@ -14,7 +14,7 @@ const nextConfig = {
     ],
   },
   env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000',
   },
   headers: async () => [
     {

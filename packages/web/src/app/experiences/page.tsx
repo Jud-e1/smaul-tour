@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { Suspense, useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { experiencesApi } from '@/lib/api';
@@ -32,7 +32,7 @@ function getPaginationRange(current: number, total: number): (number | '...')[] 
   return pages;
 }
 
-export default function ExperiencesPage() {
+function ExperiencesPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuthStore();
@@ -126,56 +126,40 @@ export default function ExperiencesPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
 
         {/* Header — Findora-inspired */}
-        <div className="flex items-start justify-between gap-4 mb-6 animate-rise-in">
-          <div className="flex-1">
-            <div className="inline-flex items-center gap-2 chip chip-inactive mb-4 !py-2">
-              <svg className="w-4 h-4 text-accra-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              Accra, Ghana
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
-              Discover Your Next Experience
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 pt-4 sm:pt-8 mb-8 animate-rise-in">
+          <div className="flex-1 min-w-0">
+            <p className="eyebrow flex items-center gap-2">
+              <span className="h-px w-6 bg-sun" aria-hidden />
+              Accra, Ghana · Explore
+            </p>
+            <h1 className="mt-3 font-display text-4xl sm:text-5xl lg:text-[56px] leading-[1] font-bold text-ink">
+              Find your next experience
             </h1>
-            <p className="text-gray-500 text-sm mt-2 max-w-lg">
-              Curated local adventures, hidden gems, and authentic culture — all in one place.
+            <p className="text-ink-muted mt-3 max-w-lg">
+              Food crawls, heritage walks, beach days and more — hosted by verified locals.
             </p>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <Link
-              href="/settings/notifications"
-              className="w-11 h-11 rounded-full bg-white border border-sea-100 flex items-center justify-center text-gray-500 hover:text-accra-green hover:border-sea-200 transition-colors shadow-sm"
-              title="Notifications"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          <Link
+            href="/trip-planner"
+            className="group shrink-0 flex items-center gap-3 rounded-2xl bg-white border border-black/[0.07] hover:border-black/20 pl-3 pr-4 py-3 transition-colors"
+          >
+            <span className="w-10 h-10 rounded-xl bg-forest-700 text-white flex items-center justify-center">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
               </svg>
-            </Link>
-            {user ? (
-              <Link
-                href="/dashboard/traveler"
-                className="w-11 h-11 rounded-full bg-accra-green text-white flex items-center justify-center text-sm font-bold shadow-md hover:bg-accra-dark transition-colors"
-              >
-                {user.email?.[0]?.toUpperCase() ?? 'U'}
-              </Link>
-            ) : (
-              <Link
-                href="/login"
-                className="w-11 h-11 rounded-full bg-white border border-sea-100 flex items-center justify-center text-accra-green hover:bg-beige transition-colors shadow-sm"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              </Link>
-            )}
-          </div>
+            </span>
+            <span>
+              <span className="block text-sm font-semibold text-ink">Not sure where to start?</span>
+              <span className="block text-xs text-ink-muted">Let the AI planner build your days →</span>
+            </span>
+          </Link>
         </div>
 
         {/* Search + filter bar */}
-        <div className="flex items-center gap-3 mb-5 premium-card p-2 rounded-full relative z-10 animate-slide-up border border-white">
-          <div className="flex-1 flex items-center gap-2 px-3">
-            <svg className="w-5 h-5 text-sea-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="sticky top-[72px] z-20 -mx-4 px-4 sm:mx-0 sm:px-0 py-2 bg-canvas/90 backdrop-blur-md">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 search-pill p-2 rounded-3xl sm:rounded-full">
+          <div className="flex-1 flex items-center gap-2 px-1 sm:px-3 min-w-0">
+            <svg className="w-5 h-5 text-ink-muted shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
             <input
@@ -183,33 +167,34 @@ export default function ExperiencesPage() {
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
               placeholder="Search experiences..."
-              className="flex-1 py-2 text-sm text-gray-800 placeholder-gray-400 outline-none bg-transparent"
+              className="flex-1 min-w-0 py-2 text-sm text-ink placeholder:text-ink-soft outline-none bg-transparent"
             />
           </div>
-          <div className="flex items-center gap-2 shrink-0 border-l border-gray-100 pl-3">
+          <div className="flex items-center gap-2 shrink-0 sm:border-l sm:border-black/[0.07] sm:pl-3">
             <select
               value={sortBy}
               onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
-              className="text-xs text-gray-700 outline-none bg-transparent font-medium cursor-pointer"
+              className="min-w-0 flex-1 sm:flex-none text-xs text-ink/80 outline-none bg-transparent font-medium cursor-pointer"
             >
               {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
             <button
               onClick={() => setDrawerOpen(true)}
-              className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
-                hasActiveFilters ? 'bg-sea-500 text-white' : 'bg-sea-50 text-sea-600 hover:bg-sea-100'
+              className={`h-10 px-4 rounded-full flex items-center justify-center gap-2 text-sm font-semibold transition-all ${
+                hasActiveFilters ? 'bg-ink text-white' : 'bg-sun text-white hover:bg-sun-600'
               }`}
               aria-label="Open filters"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M7 12h10M10 18h4" />
               </svg>
+              Filters{activeFilterCount > 0 ? ` · ${activeFilterCount}` : ''}
             </button>
           </div>
         </div>
 
         {/* Category pills */}
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2 mb-8">
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide pt-3 pb-1">
           {CATEGORIES.map((cat) => (
             <button
               key={cat}
@@ -220,31 +205,43 @@ export default function ExperiencesPage() {
             </button>
           ))}
         </div>
+        </div>
+
+        <div className="mt-6" />
 
         {/* Results */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="rounded-3xl shimmer h-80" />
+              <div key={i}>
+                <div className="rounded-card shimmer aspect-square" />
+                <div className="mt-3 h-4 w-3/4 rounded-full shimmer" />
+                <div className="mt-2 h-3 w-1/2 rounded-full shimmer" />
+              </div>
             ))}
           </div>
         ) : experiences.length === 0 ? (
-          <div className="text-center py-20 premium-card">
-            <svg className="w-14 h-14 mx-auto mb-4 text-sea-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <p className="text-lg font-semibold text-gray-800">No experiences found</p>
-            <p className="text-sm text-gray-500 mt-1">Try adjusting your filters or search terms</p>
-            {hasActiveFilters && (
-              <button onClick={clearFilters} className="mt-4 text-sm text-accra-green font-semibold hover:underline">Clear all filters</button>
-            )}
+          <div className="text-center py-20 px-6 rounded-card bg-white border border-black/[0.07]">
+            <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-forest-50 flex items-center justify-center">
+              <svg className="w-8 h-8 text-forest-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.6} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+              </svg>
+            </div>
+            <p className="font-display text-2xl font-bold text-ink">No experiences match yet</p>
+            <p className="text-sm text-ink-muted mt-2 max-w-sm mx-auto">Try a different search or fewer filters — or let the AI planner suggest something.</p>
+            <div className="mt-6 flex justify-center gap-3 flex-wrap">
+              {hasActiveFilters && (
+                <button onClick={clearFilters} className="btn-ghost">Clear all filters</button>
+              )}
+              <Link href="/trip-planner" className="btn-primary">Ask the AI planner</Link>
+            </div>
           </div>
         ) : (
           <>
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-bold text-gray-900">
+              <h2 className="text-lg font-bold text-ink">
                 Nearby Experiences
-                <span className="ml-2 text-sm font-normal text-gray-400">({total} found)</span>
+                <span className="ml-2 text-sm font-normal text-ink-soft">({total} found)</span>
               </h2>
               {activeFilterCount > 0 && (
                 <button onClick={clearFilters} className="text-xs text-accra-green font-semibold hover:underline">
@@ -252,7 +249,7 @@ export default function ExperiencesPage() {
                 </button>
               )}
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
               {experiences.map((exp) => (
                 <ExperienceCard
                   key={exp.id}
@@ -264,18 +261,18 @@ export default function ExperiencesPage() {
             </div>
 
             {totalPages > 1 && (
-              <div className="flex justify-center items-center gap-1 mt-12">
+              <div className="flex justify-center items-center gap-1 mt-12 overflow-x-auto pb-1">
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="px-4 py-2.5 border border-sea-100 rounded-full text-sm disabled:opacity-40 hover:bg-white disabled:cursor-not-allowed bg-white/80"
+                  className="px-4 py-2.5 border border-black/[0.07] rounded-full text-sm disabled:opacity-40 hover:bg-white disabled:cursor-not-allowed bg-white/80"
                   aria-label="Previous page"
                 >
                   ‹
                 </button>
                 {paginationRange.map((item, idx) =>
                   item === '...' ? (
-                    <span key={`ellipsis-${idx}`} className="px-2 py-2 text-sm text-gray-400">…</span>
+                    <span key={`ellipsis-${idx}`} className="px-2 py-2 text-sm text-ink-soft">…</span>
                   ) : (
                     <button
                       key={item}
@@ -283,7 +280,7 @@ export default function ExperiencesPage() {
                       className={`px-4 py-2.5 border rounded-full text-sm min-w-[40px] transition-colors ${
                         page === item
                           ? 'bg-accra-green border-accra-green text-white font-semibold shadow-md'
-                          : 'border-sea-100 hover:bg-white text-gray-700 bg-white/80'
+                          : 'border-black/[0.07] hover:bg-white text-ink/80 bg-white/80'
                       }`}
                       aria-label={`Page ${item}`}
                       aria-current={page === item ? 'page' : undefined}
@@ -295,7 +292,7 @@ export default function ExperiencesPage() {
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
-                  className="px-4 py-2.5 border border-sea-100 rounded-full text-sm disabled:opacity-40 hover:bg-white disabled:cursor-not-allowed bg-white/80"
+                  className="px-4 py-2.5 border border-black/[0.07] rounded-full text-sm disabled:opacity-40 hover:bg-white disabled:cursor-not-allowed bg-white/80"
                   aria-label="Next page"
                 >
                   ›
@@ -311,10 +308,10 @@ export default function ExperiencesPage() {
         <>
           <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" onClick={() => setDrawerOpen(false)} />
           <div className="fixed right-0 top-0 h-full w-80 bg-white z-50 shadow-2xl overflow-y-auto animate-slide-in-right rounded-l-3xl">
-            <div className="flex items-center justify-between px-6 py-5 border-b border-sea-50">
-              <h2 className="font-bold text-gray-900">Filters</h2>
+            <div className="flex items-center justify-between px-6 py-5 border-b border-black/[0.07]">
+              <h2 className="font-bold text-ink">Filters</h2>
               <button onClick={() => setDrawerOpen(false)} className="p-2 rounded-full hover:bg-beige transition-colors">
-                <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-ink-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
@@ -322,7 +319,7 @@ export default function ExperiencesPage() {
 
             <div className="px-6 py-5 space-y-6">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-3 text-sm">Category</h3>
+                <h3 className="font-semibold text-ink mb-3 text-sm">Category</h3>
                 <div className="space-y-2">
                   {CATEGORIES.map((cat) => (
                     <label key={cat} className="flex items-center gap-3 cursor-pointer">
@@ -332,51 +329,51 @@ export default function ExperiencesPage() {
                         onChange={() => toggleCategory(cat)}
                         className="accent-accra-green w-4 h-4 rounded"
                       />
-                      <span className="text-sm text-gray-700">{cat}</span>
+                      <span className="text-sm text-ink/80">{cat}</span>
                     </label>
                   ))}
                 </div>
               </div>
 
-              <hr className="border-sea-50" />
+              <hr className="border-black/[0.07]" />
 
               <div>
-                <h3 className="font-semibold text-gray-900 mb-3 text-sm">Price Range</h3>
+                <h3 className="font-semibold text-ink mb-3 text-sm">Price Range</h3>
                 <div className="flex gap-2">
                   <input type="number" placeholder="Min $" value={priceMin} min={0}
                     onChange={(e) => { setPriceMin(e.target.value); setPage(1); }}
-                    className="w-full border border-sea-100 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sea-200"
+                    className="w-full border border-black/[0.07] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-forest-700 focus:ring-4 focus:ring-forest-700/10"
                   />
                   <input type="number" placeholder="Max $" value={priceMax} min={0}
                     onChange={(e) => { setPriceMax(e.target.value); setPage(1); }}
-                    className="w-full border border-sea-100 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sea-200"
+                    className="w-full border border-black/[0.07] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-forest-700 focus:ring-4 focus:ring-forest-700/10"
                   />
                 </div>
               </div>
 
-              <hr className="border-sea-50" />
+              <hr className="border-black/[0.07]" />
 
               <div>
-                <h3 className="font-semibold text-gray-900 mb-3 text-sm">Duration (hours)</h3>
+                <h3 className="font-semibold text-ink mb-3 text-sm">Duration (hours)</h3>
                 <div className="flex gap-2">
                   <input type="number" placeholder="Min" value={durationMin} min={0}
                     onChange={(e) => { setDurationMin(e.target.value); setPage(1); }}
-                    className="w-full border border-sea-100 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sea-200"
+                    className="w-full border border-black/[0.07] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-forest-700 focus:ring-4 focus:ring-forest-700/10"
                   />
                   <input type="number" placeholder="Max" value={durationMax} min={0}
                     onChange={(e) => { setDurationMax(e.target.value); setPage(1); }}
-                    className="w-full border border-sea-100 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sea-200"
+                    className="w-full border border-black/[0.07] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-forest-700 focus:ring-4 focus:ring-forest-700/10"
                   />
                 </div>
               </div>
 
-              <hr className="border-sea-50" />
+              <hr className="border-black/[0.07]" />
 
               <div>
-                <h3 className="font-semibold text-gray-900 mb-3 text-sm">Minimum Rating</h3>
+                <h3 className="font-semibold text-ink mb-3 text-sm">Minimum Rating</h3>
                 <select value={minRating}
                   onChange={(e) => { setMinRating(e.target.value); setPage(1); }}
-                  className="w-full border border-sea-100 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sea-200 bg-white"
+                  className="w-full border border-black/[0.07] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-forest-700 focus:ring-4 focus:ring-forest-700/10 bg-white"
                 >
                   <option value="">Any rating</option>
                   <option value="4.5">4.5+ stars</option>
@@ -386,21 +383,21 @@ export default function ExperiencesPage() {
                 </select>
               </div>
 
-              <hr className="border-sea-50" />
+              <hr className="border-black/[0.07]" />
 
               <div>
-                <h3 className="font-semibold text-gray-900 mb-3 text-sm">Location Radius (km)</h3>
+                <h3 className="font-semibold text-ink mb-3 text-sm">Location Radius (km)</h3>
                 <input type="number" placeholder="e.g. 10" value={locationRadius} min={1}
                   onChange={(e) => { setLocationRadius(e.target.value); setPage(1); }}
-                  className="w-full border border-sea-100 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sea-200"
+                  className="w-full border border-black/[0.07] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-forest-700 focus:ring-4 focus:ring-forest-700/10"
                 />
               </div>
             </div>
 
-            <div className="sticky bottom-0 bg-white border-t border-sea-50 px-6 py-4 flex gap-3">
+            <div className="sticky bottom-0 bg-white border-t border-black/[0.07] px-6 py-4 flex gap-3">
               <button
                 onClick={() => { clearFilters(); setDrawerOpen(false); }}
-                className="flex-1 border border-sea-100 rounded-xl py-3 text-sm font-semibold text-gray-700 hover:bg-beige transition-colors"
+                className="flex-1 border border-black/[0.07] rounded-xl py-3 text-sm font-semibold text-ink/80 hover:bg-beige transition-colors"
               >
                 Clear all
               </button>
@@ -415,5 +412,19 @@ export default function ExperiencesPage() {
         </>
       )}
     </div>
+  );
+}
+
+export default function ExperiencesRoute() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-beige">
+          <p className="text-sm text-ink-muted">Loading experiences…</p>
+        </div>
+      }
+    >
+      <ExperiencesPage />
+    </Suspense>
   );
 }

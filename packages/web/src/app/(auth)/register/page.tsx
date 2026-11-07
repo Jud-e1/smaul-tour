@@ -59,7 +59,7 @@ export default function RegisterPage() {
       imageAlt="Illustrated explorer standing on a green hillside"
       topLink={{ prompt: 'Already a member?', label: 'Sign in', href: '/login' }}
     >
-      <h1 className="text-3xl font-extrabold text-accra-green animate-rise-in" style={{ animationDelay: '60ms' }}>
+      <h1 className="font-display text-4xl font-bold text-ink animate-rise-in" style={{ animationDelay: '60ms' }}>
         Create Account
       </h1>
 
@@ -80,7 +80,7 @@ export default function RegisterPage() {
         <button
           type="button"
           onClick={() => { void loginOAuth('facebook', 'facebook-oauth-token').catch(() => {}); }}
-          className="flex items-center justify-center gap-2 rounded-xl bg-white border border-gray-200 text-accra-green text-xs font-semibold py-3 hover:border-accra-leaf hover:-translate-y-0.5 transition-all"
+          className="flex items-center justify-center gap-2 rounded-xl bg-white border border-black/[0.07] text-accra-green text-xs font-semibold py-3 hover:border-accra-leaf hover:-translate-y-0.5 transition-all"
         >
           <svg className="w-4 h-4 text-[#1877F2]" fill="currentColor" viewBox="0 0 24 24">
             <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
@@ -89,8 +89,8 @@ export default function RegisterPage() {
         </button>
       </div>
 
-      <p className="mt-5 text-[11px] text-gray-400 animate-rise-in" style={{ animationDelay: '180ms' }}>
-        <span className="inline-block w-6 border-t border-gray-200 align-middle mr-2" />
+      <p className="mt-5 text-[11px] text-ink-soft animate-rise-in" style={{ animationDelay: '180ms' }}>
+        <span className="inline-block w-6 border-t border-black/[0.07] align-middle mr-2" />
         Or sign up using your email address
       </p>
 
@@ -130,7 +130,7 @@ export default function RegisterPage() {
               type="button"
               onClick={() => setShowPassword((v) => !v)}
               aria-label={showPassword ? 'Hide password' : 'Show password'}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-accra-green transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-soft hover:text-accra-green transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                 {showPassword ? (
@@ -169,7 +169,7 @@ export default function RegisterPage() {
                 className={`flex items-center gap-2 rounded-xl border px-4 py-3 cursor-pointer transition-all ${
                   selectedRole === role
                     ? 'border-accra-leaf bg-accra-leaf/10 text-accra-green'
-                    : 'border-gray-200 text-gray-600 hover:border-accra-leaf/50'
+                    : 'border-black/[0.07] text-ink-muted hover:border-accra-leaf/50'
                 }`}
               >
                 <input type="radio" value={role} {...register('role')} className="accent-accra-leaf" />
@@ -180,7 +180,7 @@ export default function RegisterPage() {
         </div>
 
         <div className="animate-rise-in" style={{ animationDelay: '420ms' }}>
-          <label className="flex items-start gap-2 text-xs text-gray-500 cursor-pointer">
+          <label className="flex items-start gap-2 text-xs text-ink-muted cursor-pointer">
             <input
               type="checkbox"
               {...register('agreeToTerms', { required: 'Please accept the terms to continue' })}
@@ -203,7 +203,7 @@ export default function RegisterPage() {
         </button>
       </form>
 
-      <p className="mt-5 text-xs text-gray-500 animate-rise-in" style={{ animationDelay: '500ms' }}>
+      <p className="mt-5 text-xs text-ink-muted animate-rise-in" style={{ animationDelay: '500ms' }}>
         Already have an account?{' '}
         <Link href="/login" className="font-semibold text-accra-leaf hover:underline">Log in</Link>
       </p>

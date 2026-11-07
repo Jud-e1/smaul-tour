@@ -2,10 +2,10 @@
 
 import { create } from 'zustand';
 import { isAxiosError } from 'axios';
-import { authApi } from '@/lib/api';
+import { API_URL, authApi } from '@/lib/api';
 
 const NETWORK_HINT =
-  "Can't connect to the API. Start the backend (e.g. npm run dev:backend on port 3000) or set NEXT_PUBLIC_API_URL.";
+  `Can't connect to the API at ${API_URL}. Start the backend (npm run dev:backend) or set NEXT_PUBLIC_API_URL.`;
 
 function normalizeApiErrorMessage(err: unknown, fallback: string): string {
   if (isAxiosError(err) && !err.response) {
@@ -14,7 +14,7 @@ function normalizeApiErrorMessage(err: unknown, fallback: string): string {
   const raw = (err as { response?: { data?: { message?: unknown } } })?.response?.data?.message;
   if (typeof raw === 'string' && raw.trim()) return raw.trim();
   if (Array.isArray(raw)) {
-    const parts = raw.filter((m): m is string => typeof m === 'string' && m.trim());
+    const parts = raw.filter((m): m is string => typeof m === 'string' && m.trim().length > 0);
     if (parts.length) return parts.join(' ');
   }
   return fallback;

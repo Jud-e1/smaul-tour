@@ -109,40 +109,40 @@ export default function NotificationPreferencesPage() {
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500">Please log in to manage notification preferences.</p>
+        <p className="text-ink-muted">Please log in to manage notification preferences.</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-canvas py-8">
       <div className="max-w-2xl mx-auto px-4">
         <div className="mb-6">
-          <a href="/" className="text-sm text-blue-600 hover:text-blue-800">
+          <a href="/" className="text-sm text-forest-600 hover:text-forest-800">
             &larr; Back
           </a>
-          <h1 className="text-2xl font-bold text-gray-900 mt-2">Notification Preferences</h1>
-          <p className="text-gray-500 text-sm mt-1">
+          <h1 className="font-display text-3xl sm:text-4xl font-bold text-ink mt-2">Notification Preferences</h1>
+          <p className="text-ink-muted text-sm mt-1">
             Choose how you want to be notified for each event type.
           </p>
         </div>
 
         {loading ? (
-          <div className="bg-white rounded-lg shadow p-6 text-center text-gray-500">
+          <div className="bg-white rounded-lg shadow p-6 text-center text-ink-muted">
             Loading preferences...
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <table className="w-full">
+          <div className="bg-white rounded-lg shadow overflow-x-auto">
+            <table className="w-full min-w-[36rem]">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-200">
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 w-1/2">
+                <tr className="bg-canvas border-b border-black/[0.07]">
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-ink/80 w-1/2">
                     Notification Type
                   </th>
                   {CHANNELS.map((ch) => (
                     <th
                       key={ch.key}
-                      className="text-center py-3 px-4 text-sm font-semibold text-gray-700"
+                      className="text-center py-3 px-4 text-sm font-semibold text-ink/80"
                     >
                       {ch.label}
                     </th>
@@ -153,11 +153,11 @@ export default function NotificationPreferencesPage() {
                 {NOTIFICATION_TYPES.map(({ key, label, description }, idx) => (
                   <tr
                     key={key}
-                    className={`border-b border-gray-100 ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
+                    className={`border-b border-black/[0.07] ${idx % 2 === 0 ? 'bg-white' : 'bg-canvas'}`}
                   >
                     <td className="py-4 px-4">
-                      <div className="font-medium text-gray-800 text-sm">{label}</div>
-                      <div className="text-xs text-gray-500 mt-0.5">{description}</div>
+                      <div className="font-medium text-ink text-sm">{label}</div>
+                      <div className="text-xs text-ink-muted mt-0.5">{description}</div>
                     </td>
                     {CHANNELS.map((ch) => (
                       <td key={ch.key} className="py-4 px-4 text-center">
@@ -166,8 +166,8 @@ export default function NotificationPreferencesPage() {
                           aria-checked={preferences[key]?.[ch.key] ?? false}
                           aria-label={`${label} ${ch.label}`}
                           onClick={() => toggle(key, ch.key)}
-                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 ${
-                            preferences[key]?.[ch.key] ? 'bg-blue-600' : 'bg-gray-300'
+                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:border-forest-700 focus:ring-4 focus:ring-forest-700/10 focus:ring-offset-1 ${
+                            preferences[key]?.[ch.key] ? 'bg-forest-600' : 'bg-gray-300'
                           }`}
                         >
                           <span
@@ -183,16 +183,16 @@ export default function NotificationPreferencesPage() {
               </tbody>
             </table>
 
-            <div className="p-4 flex items-center justify-between border-t border-gray-100">
+            <div className="p-4 flex items-center justify-between border-t border-black/[0.07]">
               {error && <p className="text-sm text-red-600">{error}</p>}
               {saved && !error && (
-                <p className="text-sm text-green-600">Preferences saved.</p>
+                <p className="text-sm text-forest-600">Preferences saved.</p>
               )}
               {!error && !saved && <span />}
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="px-5 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                className="px-5 py-2 bg-forest-600 text-white text-sm font-medium rounded-lg hover:bg-forest-700 disabled:opacity-50 transition-colors"
               >
                 {saving ? 'Saving...' : 'Save preferences'}
               </button>

@@ -43,7 +43,7 @@ export default function LoginPage() {
       imageAlt="Illustrated traveler with a map and compass"
       topLink={{ prompt: 'New here?', label: 'Create account', href: '/register' }}
     >
-      <h1 className="text-3xl font-extrabold text-accra-green animate-rise-in" style={{ animationDelay: '60ms' }}>
+      <h1 className="font-display text-4xl font-bold text-ink animate-rise-in" style={{ animationDelay: '60ms' }}>
         Welcome Back
       </h1>
 
@@ -64,7 +64,7 @@ export default function LoginPage() {
         <button
           type="button"
           onClick={() => { void loginOAuth('facebook', 'facebook-oauth-token').catch(() => {}); }}
-          className="flex items-center justify-center gap-2 rounded-xl bg-white border border-gray-200 text-accra-green text-xs font-semibold py-3 hover:border-accra-leaf hover:-translate-y-0.5 transition-all"
+          className="flex items-center justify-center gap-2 rounded-xl bg-white border border-black/[0.07] text-accra-green text-xs font-semibold py-3 hover:border-accra-leaf hover:-translate-y-0.5 transition-all"
         >
           <svg className="w-4 h-4 text-[#1877F2]" fill="currentColor" viewBox="0 0 24 24">
             <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
@@ -73,8 +73,8 @@ export default function LoginPage() {
         </button>
       </div>
 
-      <p className="mt-5 text-[11px] text-gray-400 animate-rise-in" style={{ animationDelay: '180ms' }}>
-        <span className="inline-block w-6 border-t border-gray-200 align-middle mr-2" />
+      <p className="mt-5 text-[11px] text-ink-soft animate-rise-in" style={{ animationDelay: '180ms' }}>
+        <span className="inline-block w-6 border-t border-black/[0.07] align-middle mr-2" />
         Or sign in using your email address
       </p>
 
@@ -103,7 +103,7 @@ export default function LoginPage() {
               type="button"
               onClick={() => setShowPassword((v) => !v)}
               aria-label={showPassword ? 'Hide password' : 'Show password'}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-accra-green transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-soft hover:text-accra-green transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                 {showPassword ? (
@@ -138,7 +138,7 @@ export default function LoginPage() {
         </button>
       </form>
 
-      <p className="mt-5 text-xs text-gray-500 animate-rise-in" style={{ animationDelay: '440ms' }}>
+      <p className="mt-5 text-xs text-ink-muted animate-rise-in" style={{ animationDelay: '440ms' }}>
         Don&apos;t have an account?{' '}
         <Link href="/register" className="font-semibold text-accra-leaf hover:underline">Sign up</Link>
       </p>

@@ -14,8 +14,8 @@ function ReviewPageContent() {
   if (!bookingId || !experienceId) {
     return (
       <div className="text-center py-16">
-        <p className="text-gray-500 mb-4">Missing booking or experience information.</p>
-        <Link href="/dashboard/traveler" className="text-blue-600 hover:underline text-sm">
+        <p className="text-ink-muted mb-4">Missing booking or experience information.</p>
+        <Link href="/dashboard/traveler" className="text-forest-600 hover:underline text-sm">
           Go to dashboard
         </Link>
       </div>
@@ -33,17 +33,17 @@ function ReviewPageContent() {
 
 export default function NewReviewPage() {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm w-full max-w-md p-8">
+    <div className="min-h-screen bg-canvas flex items-center justify-center px-4 py-12">
+      <div className="bg-white rounded-2xl border border-black/[0.07] shadow-sm w-full max-w-md p-8">
         <div className="mb-6">
-          <Link href="/dashboard/traveler" className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1">
+          <Link href="/dashboard/traveler" className="text-sm text-ink-muted hover:text-ink/80 flex items-center gap-1">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
             Back to dashboard
           </Link>
-          <h1 className="text-xl font-bold text-gray-900 mt-4">Leave a Review</h1>
-          <p className="text-sm text-gray-500 mt-1">Share your experience to help other travelers.</p>
+          <h1 className="font-display text-xl font-bold text-ink mt-4">Leave a Review</h1>
+          <p className="text-sm text-ink-muted mt-1">Share your experience to help other travelers.</p>
         </div>
         <Suspense fallback={<div className="h-48 animate-pulse bg-gray-100 rounded-lg" />}>
           <ReviewPageContent />

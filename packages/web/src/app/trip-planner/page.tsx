@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';import Link from 'next/link';
+import { Suspense, useState, useEffect } from 'react';
+import Link from 'next/link';
 import { tripPlannerApi } from '@/lib/api';
 import { useAuthStore } from '@/store/auth';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -33,12 +34,12 @@ interface Itinerary {
 function ItinerarySkeleton() {
   return (
     <div className="space-y-4 animate-pulse">
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
+      <div className="bg-white rounded-2xl border border-black/[0.07] p-6">
         <div className="h-6 bg-gray-200 rounded w-40 mb-4" />
-        <div className="h-12 bg-blue-50 rounded-lg mb-4" />
+        <div className="h-12 bg-forest-50 rounded-lg mb-4" />
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="flex gap-4 p-4 border border-gray-100 rounded-lg">
+            <div key={i} className="flex gap-4 p-4 border border-black/[0.07] rounded-lg">
               <div className="w-8 h-8 bg-gray-200 rounded-full shrink-0" />
               <div className="flex-1 space-y-2">
                 <div className="h-4 bg-gray-200 rounded w-48" />
@@ -53,7 +54,7 @@ function ItinerarySkeleton() {
   );
 }
 
-export default function TripPlannerPage() {
+function TripPlannerPage() {
   const { user, isLoading: authLoading } = useAuthStore();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -139,8 +140,8 @@ export default function TripPlannerPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-canvas flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-forest-600 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -148,30 +149,31 @@ export default function TripPlannerPage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">AI Trip Planner</h1>
-        <p className="text-gray-500 mb-8">Describe your ideal trip and get a personalized itinerary</p>
+    <div className="min-h-screen bg-canvas">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        <p className="eyebrow flex items-center gap-2"><span className="h-px w-6 bg-sun" aria-hidden />AI trip planner</p>
+        <h1 className="mt-3 font-display text-4xl sm:text-[56px] leading-[1] font-bold text-ink mb-4">Say it like you&apos;d tell a friend.</h1>
+        <p className="text-ink-muted text-lg mb-8 max-w-xl">Describe your ideal days in Accra and get a personalized, bookable itinerary in seconds.</p>
 
         {/* Natural language input */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-          <label htmlFor="trip-input" className="block text-sm font-medium text-gray-700 mb-2">
+        <div className="bg-white rounded-card border border-black/[0.07] shadow-soft p-5 sm:p-7 mb-6">
+          <label htmlFor="trip-input" className="block text-sm font-semibold text-ink mb-2">
             Tell us about your trip
           </label>
           <textarea
             id="trip-input"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="e.g. I want a 3-day cultural trip in Tokyo with a budget of $500, focusing on food and traditional arts..."
+            placeholder="e.g. 3 days in Accra, love street food and history, one relaxed beach evening, budget around $300…"
             rows={4}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            className="field resize-none text-[15px] leading-relaxed bg-canvas"
             aria-label="Trip description"
           />
           {error && <p className="text-red-500 text-sm mt-2" role="alert">{error}</p>}
           <button
             onClick={() => generate(input)}
             disabled={loading || !input.trim()}
-            className="mt-3 bg-blue-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+            className="mt-4 btn-accent px-7 py-3.5 disabled:opacity-50 disabled:shadow-none"
             aria-busy={loading}
           >
             {loading && !itinerary ? (
@@ -192,19 +194,19 @@ export default function TripPlannerPage() {
         {/* Itinerary result */}
         {itinerary && (
           <div className="space-y-4">
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-gray-900">Your Itinerary</h2>
-                <div className="flex gap-2">
+            <div className="bg-white rounded-2xl border border-black/[0.07] p-6">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+                <h2 className="text-xl font-semibold text-ink">Your Itinerary</h2>
+                <div className="flex flex-wrap gap-2">
                   <button
                     onClick={exportPdf}
-                    className="text-sm border border-gray-300 px-3 py-1.5 rounded-lg hover:bg-gray-50"
+                    className="text-sm border border-black/[0.12] px-3 py-1.5 rounded-lg hover:bg-canvas"
                   >
                     Export PDF
                   </button>
                   <button
                     onClick={shareLink}
-                    className="text-sm border border-gray-300 px-3 py-1.5 rounded-lg hover:bg-gray-50"
+                    className="text-sm border border-black/[0.12] px-3 py-1.5 rounded-lg hover:bg-canvas"
                   >
                     Share Link
                   </button>
@@ -212,9 +214,9 @@ export default function TripPlannerPage() {
               </div>
 
               {/* Total estimated cost */}
-              <div className="bg-blue-50 rounded-lg p-3 mb-4 flex items-center justify-between">
-                <span className="text-sm text-blue-700">Total estimated cost</span>
-                <span className="font-bold text-blue-900">
+              <div className="bg-forest-50 rounded-lg p-3 mb-4 flex items-center justify-between">
+                <span className="text-sm text-forest-700">Total estimated cost</span>
+                <span className="font-bold text-forest-900">
                   {itinerary.totalCost.currency} {itinerary.totalCost.amount.toFixed(2)}
                 </span>
               </div>
@@ -222,8 +224,8 @@ export default function TripPlannerPage() {
               {/* Experience list */}
               <div className="space-y-3">
                 {itinerary.experiences.map((rec, i) => (
-                  <div key={rec.experienceId} className="flex gap-4 p-4 border border-gray-100 rounded-lg">
-                    <div className="w-8 h-8 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-sm font-bold shrink-0">
+                  <div key={rec.experienceId} className="flex gap-4 p-4 border border-black/[0.07] rounded-lg">
+                    <div className="w-8 h-8 bg-forest-100 text-forest-700 rounded-full flex items-center justify-center text-sm font-bold shrink-0">
                       {i + 1}
                     </div>
                     <div className="flex-1">
@@ -231,34 +233,34 @@ export default function TripPlannerPage() {
                         <div className="flex-1">
                           <Link
                             href={`/experiences/${rec.experienceId}`}
-                            className="font-medium text-gray-900 hover:text-blue-600"
+                            className="font-medium text-ink hover:text-forest-600"
                           >
                             {rec.experience?.title || `Experience ${i + 1}`}
                           </Link>
                           <div className="flex items-center gap-3 mt-0.5">
                             {rec.suggestedDate && (
-                              <p className="text-xs text-gray-500">
+                              <p className="text-xs text-ink-muted">
                                 {new Date(rec.suggestedDate).toLocaleDateString()}
                               </p>
                             )}
                             {rec.experience?.duration && (
-                              <p className="text-xs text-gray-500">{rec.experience.duration}h</p>
+                              <p className="text-xs text-ink-muted">{rec.experience.duration}h</p>
                             )}
                             {/* Relevance score badge */}
                             <span
-                              className="text-xs px-1.5 py-0.5 bg-green-50 text-green-700 rounded font-medium"
+                              className="text-xs px-1.5 py-0.5 bg-forest-50 text-forest-700 rounded font-medium"
                               title="AI relevance score"
                             >
                               {Math.round(rec.relevanceScore * 100)}% match
                             </span>
                           </div>
                           {rec.experience?.location?.address && (
-                            <p className="text-xs text-gray-400 mt-0.5">{rec.experience.location.address}</p>
+                            <p className="text-xs text-ink-soft mt-0.5">{rec.experience.location.address}</p>
                           )}
-                          <p className="text-sm text-gray-600 mt-1">{rec.reasoning}</p>
+                          <p className="text-sm text-ink-muted mt-1">{rec.reasoning}</p>
                         </div>
                         {rec.experience?.price && (
-                          <span className="text-sm font-medium text-gray-900 shrink-0">
+                          <span className="text-sm font-medium text-ink shrink-0">
                             {rec.experience.price.currency} {rec.experience.price.amount.toFixed(2)}
                           </span>
                         )}
@@ -270,25 +272,25 @@ export default function TripPlannerPage() {
             </div>
 
             {/* Follow-up modification input */}
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
-              <h3 className="font-medium text-gray-900 mb-1">Modify your itinerary</h3>
-              <p className="text-sm text-gray-500 mb-3">
+            <div className="bg-white rounded-2xl border border-black/[0.07] p-6">
+              <h3 className="font-medium text-ink mb-1">Modify your itinerary</h3>
+              <p className="text-sm text-ink-muted mb-3">
                 Describe changes in natural language and we&apos;ll update your plan.
               </p>
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <input
                   type="text"
                   value={modification}
                   onChange={(e) => setModification(e.target.value)}
                   placeholder="e.g. Replace the food tour with a hiking experience..."
-                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="flex-1 border border-black/[0.12] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-forest-700 focus:ring-4 focus:ring-forest-700/10"
                   onKeyDown={(e) => e.key === 'Enter' && modify()}
                   aria-label="Itinerary modification request"
                 />
                 <button
                   onClick={modify}
                   disabled={loading || !modification.trim()}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
+                  className="bg-forest-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-forest-700 disabled:opacity-50"
                   aria-busy={loading}
                 >
                   {loading ? (
@@ -307,5 +309,13 @@ export default function TripPlannerPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function TripPlannerRoute() {
+  return (
+    <Suspense fallback={<ItinerarySkeleton />}>
+      <TripPlannerPage />
+    </Suspense>
   );
 }

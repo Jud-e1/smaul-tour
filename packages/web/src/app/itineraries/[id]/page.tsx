@@ -109,8 +109,8 @@ export default function ItineraryPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-gray-500">Loading itinerary...</div>
+      <div className="min-h-screen bg-canvas flex items-center justify-center">
+        <div className="text-ink-muted">Loading itinerary...</div>
       </div>
     );
   }
@@ -118,13 +118,13 @@ export default function ItineraryPage() {
   if (!itinerary) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-canvas">
       <div className="max-w-3xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Your Itinerary</h1>
-            <p className="text-sm text-gray-500 mt-1">
+            <h1 className="font-display text-3xl sm:text-4xl font-bold text-ink">Your Itinerary</h1>
+            <p className="text-sm text-ink-muted mt-1">
               Generated {new Date(itinerary.generatedAt).toLocaleDateString()}
               {itinerary.parameters.duration && ` · ${itinerary.parameters.duration} days`}
             </p>
@@ -132,22 +132,22 @@ export default function ItineraryPage() {
           <button
             onClick={handleExportPdf}
             disabled={exporting}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 text-sm font-medium"
+            className="flex items-center gap-2 px-4 py-2 bg-forest-600 text-white rounded-lg hover:bg-forest-700 disabled:opacity-50 text-sm font-medium"
           >
             {exporting ? 'Exporting...' : 'Export PDF'}
           </button>
         </div>
 
         {/* Total Cost */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-          <div className="text-sm text-blue-700 font-medium">Total Estimated Cost</div>
-          <div className="text-2xl font-bold text-blue-900">
+        <div className="bg-forest-50 border border-forest-200 rounded-lg p-4 mb-6">
+          <div className="text-sm text-forest-700 font-medium">Total Estimated Cost</div>
+          <div className="text-2xl font-bold text-forest-900">
             {itinerary.totalCost.currency} {itinerary.totalCost.amount?.toLocaleString()}
           </div>
           {itinerary.parameters.preferences?.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-2">
               {itinerary.parameters.preferences.map((p) => (
-                <span key={p} className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">
+                <span key={p} className="px-2 py-0.5 bg-forest-100 text-forest-700 text-xs rounded-full">
                   {p}
                 </span>
               ))}
@@ -158,24 +158,24 @@ export default function ItineraryPage() {
         {/* Experiences */}
         <div className="space-y-3 mb-6">
           {itinerary.experiences.map((exp, idx) => (
-            <div key={exp.experienceId} className="bg-white rounded-lg border border-gray-200 p-4">
+            <div key={exp.experienceId} className="bg-white rounded-lg border border-black/[0.07] p-4">
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold shrink-0">
+                <div className="w-8 h-8 bg-forest-600 text-white rounded-full flex items-center justify-center text-sm font-bold shrink-0">
                   {idx + 1}
                 </div>
                 <div className="flex-1">
-                  <div className="font-semibold text-gray-900">
+                  <div className="font-semibold text-ink">
                     {exp.experience?.title || `Experience ${idx + 1}`}
                   </div>
                   {exp.suggestedDate && (
-                    <div className="text-sm text-gray-500 mt-0.5">
+                    <div className="text-sm text-ink-muted mt-0.5">
                       {new Date(exp.suggestedDate).toLocaleDateString('en-US', {
                         weekday: 'short', month: 'short', day: 'numeric',
                       })}
                     </div>
                   )}
                   {exp.experience && (
-                    <div className="flex items-center gap-3 text-sm text-gray-600 mt-1">
+                    <div className="flex items-center gap-3 text-sm text-ink-muted mt-1">
                       <span>{exp.experience.duration}h</span>
                       <span>·</span>
                       <span>
@@ -189,7 +189,7 @@ export default function ItineraryPage() {
                       )}
                     </div>
                   )}
-                  <p className="text-sm text-gray-500 mt-1 italic">{exp.reasoning}</p>
+                  <p className="text-sm text-ink-muted mt-1 italic">{exp.reasoning}</p>
                 </div>
               </div>
             </div>
@@ -198,17 +198,17 @@ export default function ItineraryPage() {
 
         {/* Notes */}
         {user && (
-          <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
-            <h3 className="font-semibold text-gray-800 mb-2">Personal Notes</h3>
+          <div className="bg-white rounded-lg border border-black/[0.07] p-4 mb-6">
+            <h3 className="font-semibold text-ink mb-2">Personal Notes</h3>
             {itinerary.notes && (
-              <p className="text-sm text-gray-600 mb-2 p-2 bg-gray-50 rounded">{itinerary.notes}</p>
+              <p className="text-sm text-ink-muted mb-2 p-2 bg-canvas rounded">{itinerary.notes}</p>
             )}
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="Add a note to this itinerary..."
               rows={3}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-full border border-black/[0.12] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-forest-700 focus:ring-4 focus:ring-forest-700/10 resize-none"
             />
             <div className="flex items-center justify-between mt-2">
               <button
@@ -217,21 +217,21 @@ export default function ItineraryPage() {
               >
                 Save Note
               </button>
-              {noteSaved && <span className="text-sm text-green-600">Saved!</span>}
+              {noteSaved && <span className="text-sm text-forest-600">Saved!</span>}
             </div>
           </div>
         )}
 
         {/* Share Section */}
         {user && (
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <h3 className="font-semibold text-gray-800 mb-3">Share Itinerary</h3>
+          <div className="bg-white rounded-lg border border-black/[0.07] p-4">
+            <h3 className="font-semibold text-ink mb-3">Share Itinerary</h3>
 
             {/* Generate Link */}
             <div className="mb-4">
               <button
                 onClick={handleGenerateShareLink}
-                className="px-4 py-2 bg-gray-100 text-gray-700 text-sm rounded-lg hover:bg-gray-200 font-medium"
+                className="px-4 py-2 bg-gray-100 text-ink/80 text-sm rounded-lg hover:bg-gray-200 font-medium"
               >
                 Generate Share Link
               </button>
@@ -240,11 +240,11 @@ export default function ItineraryPage() {
                   <input
                     readOnly
                     value={shareLink}
-                    className="flex-1 border border-gray-300 rounded px-3 py-1.5 text-sm bg-gray-50"
+                    className="flex-1 border border-black/[0.12] rounded px-3 py-1.5 text-sm bg-canvas"
                   />
                   <button
                     onClick={handleCopyLink}
-                    className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+                    className="px-3 py-1.5 bg-forest-600 text-white text-sm rounded-lg hover:bg-forest-700"
                   >
                     {copied ? 'Copied!' : 'Copy'}
                   </button>
@@ -254,23 +254,23 @@ export default function ItineraryPage() {
 
             {/* Email Share */}
             <div>
-              <div className="text-sm text-gray-600 mb-1">Share via email</div>
+              <div className="text-sm text-ink-muted mb-1">Share via email</div>
               <div className="flex items-center gap-2">
                 <input
                   type="email"
                   value={shareEmail}
                   onChange={(e) => setShareEmail(e.target.value)}
                   placeholder="Enter email address"
-                  className="flex-1 border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="flex-1 border border-black/[0.12] rounded px-3 py-1.5 text-sm focus:outline-none focus:border-forest-700 focus:ring-4 focus:ring-forest-700/10"
                 />
                 <button
                   onClick={handleSendEmail}
-                  className="px-4 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+                  className="px-4 py-1.5 bg-forest-600 text-white text-sm rounded-lg hover:bg-forest-700"
                 >
                   Send
                 </button>
               </div>
-              {emailSent && <p className="text-sm text-green-600 mt-1">Email sent!</p>}
+              {emailSent && <p className="text-sm text-forest-600 mt-1">Email sent!</p>}
             </div>
           </div>
         )}

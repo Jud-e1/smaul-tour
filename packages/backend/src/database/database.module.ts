@@ -26,8 +26,9 @@ import * as entities from './entities';
         
         // Auto load entities
         autoLoadEntities: true,
-        
-        ssl: false,
+
+        // Hosted Postgres (Railway and similar) requires TLS. Local Docker does not.
+        ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
       }),
     }),
   ],

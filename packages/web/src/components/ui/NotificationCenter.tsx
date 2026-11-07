@@ -59,7 +59,7 @@ export default function NotificationCenter() {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className="relative p-2 text-gray-600 hover:text-gray-900 focus:outline-none"
+        className="relative p-2 text-ink-muted hover:text-ink focus:outline-none"
         aria-label="Notifications"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -78,13 +78,13 @@ export default function NotificationCenter() {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
-          <div className="flex items-center justify-between p-3 border-b border-gray-200">
-            <span className="font-semibold text-gray-800">Notifications</span>
+        <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-black/[0.07] z-50">
+          <div className="flex items-center justify-between p-3 border-b border-black/[0.07]">
+            <span className="font-semibold text-ink">Notifications</span>
             {unreadCount > 0 && (
               <button
                 onClick={markAllRead}
-                className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                className="text-xs text-forest-600 hover:text-forest-800 font-medium"
               >
                 Mark all as read
               </button>
@@ -93,30 +93,30 @@ export default function NotificationCenter() {
 
           <div className="max-h-96 overflow-y-auto">
             {loading ? (
-              <div className="p-4 text-center text-gray-500 text-sm">Loading...</div>
+              <div className="p-4 text-center text-ink-muted text-sm">Loading...</div>
             ) : notifications.length === 0 ? (
-              <div className="p-4 text-center text-gray-500 text-sm">No notifications</div>
+              <div className="p-4 text-center text-ink-muted text-sm">No notifications</div>
             ) : (
               notifications.map((n: Notification) => (
                 <div
                   key={n.id}
-                  className={`p-3 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
-                    n.status !== 'read' ? 'bg-blue-50' : 'bg-white'
+                  className={`p-3 border-b border-black/[0.07] cursor-pointer hover:bg-canvas transition-colors ${
+                    n.status !== 'read' ? 'bg-forest-50' : 'bg-white'
                   }`}
                   onClick={() => n.status !== 'read' && markRead(n.id)}
                 >
                   <div
-                    className={`text-sm text-gray-800 ${n.status !== 'read' ? 'font-semibold' : 'font-normal'}`}
+                    className={`text-sm text-ink ${n.status !== 'read' ? 'font-semibold' : 'font-normal'}`}
                   >
                     {n.subject}
                   </div>
-                  <div className="text-xs text-gray-500 mt-0.5">{n.body}</div>
+                  <div className="text-xs text-ink-muted mt-0.5">{n.body}</div>
                   <div className="flex items-center justify-between mt-1">
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-ink-soft">
                       {new Date(n.createdAt).toLocaleDateString()}
                     </span>
                     {n.status !== 'read' && (
-                      <span className="w-2 h-2 bg-blue-500 rounded-full inline-block" />
+                      <span className="w-2 h-2 bg-forest-500 rounded-full inline-block" />
                     )}
                   </div>
                 </div>
@@ -124,10 +124,10 @@ export default function NotificationCenter() {
             )}
           </div>
 
-          <div className="p-2 border-t border-gray-100 text-center">
+          <div className="p-2 border-t border-black/[0.07] text-center">
             <a
               href="/settings/notifications"
-              className="text-xs text-gray-500 hover:text-gray-700"
+              className="text-xs text-ink-muted hover:text-ink/80"
             >
               Notification preferences
             </a>

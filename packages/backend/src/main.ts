@@ -1,3 +1,4 @@
+import { config as loadDotenv } from 'dotenv';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
@@ -5,15 +6,32 @@ import { AppModule } from './app.module';
 import { configurationParser } from './config/configuration';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
+loadDotenv();
+
 async function bootstrap() {
   // Load configuration
   const config = configurationParser.loadFromEnv();
 
   const app = await NestFactory.create(AppModule);
 
-  // Enable CORS
+  // Allow the local web app and the deployed site to call this API.
+  const configuredWebUrl = config.frontend?.webUrl || 'http://localhost:3001';
+  const extraOrigins = (process.env.CORS_ORIGINS || '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter((origin) => origin.length > 0);
+  const allowedOrigins = [
+    ...new Set([
+      configuredWebUrl,
+      'http://localhost:3001',
+      'https://smaul-tour.vercel.app',
+      'https://smaul-tour-jude-azanes-projects.vercel.app',
+      ...extraOrigins,
+    ]),
+  ];
+
   app.enableCors({
-    origin: config.frontend?.webUrl || 'http://localhost:3001',
+    origin: allowedOrigins,
     credentials: true,
   });
 

@@ -1,4 +1,27 @@
 /** @type {import('tailwindcss').Config} */
+
+// ── Nsoroma palette — taken from the logo ──────────────────────────────────
+// forest  → brand + primary actions (the logo's leaves)
+// sun     → ceremonial accent: hero CTA, search trigger, active indicators (the pin)
+// gold    → decorative only: stars, small badges (the sunset)
+// ink/canvas/linen → neutrals
+const forest = {
+  DEFAULT: '#185634',
+  50: '#EEF6F0',
+  100: '#D5EADB',
+  200: '#ABD4B8',
+  300: '#79B78F',
+  400: '#4A9867',
+  500: '#2E7D4F',
+  600: '#1F6A40',
+  700: '#185634',
+  800: '#12432A',
+  900: '#0C2F1E',
+  950: '#081F14',
+  dark: '#12432A',
+  light: '#2E7D4F',
+};
+
 module.exports = {
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -7,42 +30,66 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['var(--font-body)', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['var(--font-display)', 'var(--font-body)', 'system-ui', 'sans-serif'],
+      },
       colors: {
-        // ── Nsoroma 3-colour palette ─────────────────────────────────────
-        // Sea Blue  (#2E8B9E)  → primary actions, buttons, links, headers
-        // Beige     (#F5F0E6)  → backgrounds, cards, secondary sections
-        // White     (#FFFFFF)  → primary bg, text on dark, contrast areas
+        forest,
+        sea: forest,
         accra: {
-          green:  '#2E8B9E',   // was dark forest green → now Sea Blue
-          dark:   '#246F7E',   // darker Sea Blue for hover states
-          leaf:   '#3AA3B8',   // lighter Sea Blue for links & accents
-          gold:   '#F5F0E6',   // was yellow gold → now Beige (badge/chip bg)
-          cream:  '#F5F0E6',   // Beige – cards, secondary sections
+          green: '#185634',
+          dark: '#12432A',
+          leaf: '#2E7D4F',
+          gold: '#F4B63F',
+          cream: '#F4F1EA',
         },
-        // Convenience aliases used directly in some components
-        sea: {
-          DEFAULT: '#2E8B9E',
-          dark:    '#246F7E',
-          light:   '#3AA3B8',
-          50:      '#EBF6F9',
-          100:     '#C9E9EF',
-          200:     '#A0D5DF',
-          300:     '#6FBFCD',
-          400:     '#3AA3B8',
-          500:     '#2E8B9E',
-          600:     '#246F7E',
-          700:     '#1B545F',
-          800:     '#123940',
-          900:     '#091D20',
+        sun: {
+          DEFAULT: '#F26B1D',
+          50: '#FFF4EC',
+          100: '#FFE3CC',
+          200: '#FFC79C',
+          300: '#FDA86A',
+          400: '#FB8C3F',
+          500: '#F26B1D',
+          600: '#D9550E',
+          700: '#B3430C',
+        },
+        gold: {
+          DEFAULT: '#F4B63F',
+          100: '#FDF1D6',
+          400: '#F4B63F',
+          600: '#C98A12',
         },
         beige: {
-          DEFAULT: '#F5F0E6',
-          50:      '#FDFCF9',
-          100:     '#F5F0E6',
-          200:     '#EDE4D2',
-          300:     '#DDD3BB',
-          400:     '#C9BC9E',
+          DEFAULT: '#F4F1EA',
+          50: '#FBFAF7',
+          100: '#F4F1EA',
+          200: '#E9E4D8',
+          300: '#DAD3C2',
+          400: '#BFB59E',
         },
+        canvas: '#F7F7F4',
+        ink: {
+          DEFAULT: '#16201A',
+          muted: '#5E6862',
+          soft: '#8A928D',
+        },
+        slateink: {
+          DEFAULT: '#16201A',
+        },
+      },
+      borderRadius: {
+        card: '20px',
+      },
+      boxShadow: {
+        // Flat by default; layered shadow only for elevated controls (search, popovers, sticky booking).
+        soft: '0 0 0 1px rgba(22,32,26,0.04), 0 2px 6px rgba(22,32,26,0.04), 0 4px 12px rgba(22,32,26,0.06)',
+        card: '0 0 0 1px rgba(22,32,26,0.04), 0 2px 6px rgba(22,32,26,0.05), 0 8px 24px rgba(22,32,26,0.08)',
+        float: '0 0 0 1px rgba(22,32,26,0.03), 0 8px 20px rgba(22,32,26,0.08), 0 24px 48px -12px rgba(22,32,26,0.18)',
+      },
+      letterSpacing: {
+        display: '-0.03em',
       },
     },
   },

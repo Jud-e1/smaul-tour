@@ -2,12 +2,13 @@
 
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import BrandLogo from '@/components/brand/BrandLogo';
 
 /** Filled, borderless input styling shared by the auth forms. */
 export const authInputClass =
-  'w-full rounded-xl bg-[#F1F6F1] border border-transparent px-4 py-3 text-sm text-gray-800 placeholder-gray-400 outline-none transition-all focus:bg-white focus:border-accra-leaf focus:ring-4 focus:ring-accra-leaf/15';
+  'w-full rounded-xl bg-white border border-black/10 px-4 py-3.5 text-[15px] text-ink placeholder:text-ink-soft outline-none transition-all hover:border-black/25 focus:border-forest-700 focus:ring-4 focus:ring-forest-700/10';
 
-export const authLabelClass = 'block text-xs font-bold text-accra-green mb-1.5';
+export const authLabelClass = 'block text-[13px] font-semibold text-ink mb-1.5';
 
 interface AuthShellProps {
   /** Headline shown over the illustration. */
@@ -56,58 +57,49 @@ export default function AuthShell({ headline, caption, image, imageAlt, topLink,
   const { x, y } = useParallax(panelRef);
 
   return (
-    <div className="relative min-h-[calc(100vh-5rem)] overflow-hidden bg-gradient-to-br from-[#EAF7EC] via-white to-[#F4FBF1] px-4 py-10 flex items-center justify-center">
-      {/* Drifting background blobs */}
-      <div className="pointer-events-none absolute -top-24 -left-24 w-96 h-96 rounded-full bg-accra-leaf/15 blur-3xl animate-drift" />
-      <div
-        className="pointer-events-none absolute -bottom-32 -right-20 w-[28rem] h-[28rem] rounded-full bg-accra-green/10 blur-3xl animate-drift"
-        style={{ animationDelay: '-6s' }}
-      />
-      <div
-        className="pointer-events-none absolute top-1/3 right-1/4 w-72 h-72 rounded-full bg-accra-gold/10 blur-3xl animate-drift"
-        style={{ animationDelay: '-12s' }}
-      />
-
-      <div className="relative w-full max-w-5xl bg-white rounded-[2rem] shadow-2xl shadow-accra-green/10 overflow-hidden grid lg:grid-cols-2">
-        {/* Illustration panel */}
+    <div className="relative lg:min-h-[calc(100vh-72px)] bg-canvas px-3 sm:px-6 pt-4 pb-8 sm:py-10 flex items-start lg:items-center justify-center">
+      <div className="relative w-full max-w-6xl bg-white rounded-[28px] border border-black/[0.06] shadow-card overflow-hidden grid lg:grid-cols-[1.05fr_1fr]">
+        {/* Photo panel — deep forest surface */}
         <div
           ref={panelRef}
-          className="relative min-h-[240px] lg:min-h-[660px] overflow-hidden bg-gradient-to-br from-accra-green via-accra-leaf to-[#8CC63F] animate-pan-gradient"
+          className="grain relative min-h-[180px] sm:min-h-[260px] lg:min-h-[680px] overflow-hidden bg-forest-900 m-2 rounded-[22px]"
         >
           <div
-            className="absolute inset-0 bg-cover bg-center animate-float-y transition-transform duration-300 ease-out"
+            className="absolute inset-0 bg-cover bg-center transition-transform duration-500 ease-out"
             style={{
               backgroundImage: `url('${image}')`,
-              transform: `translate3d(${x * -12}px, ${y * -12}px, 0) scale(1.06)`,
+              transform: `translate3d(${x * -10}px, ${y * -10}px, 0) scale(1.08)`,
             }}
             role="img"
             aria-label={imageAlt}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-accra-dark/80 via-accra-dark/10 to-accra-dark/30" />
+          <div className="absolute inset-0 bg-gradient-to-t from-forest-950/95 via-forest-950/30 to-forest-950/10" />
 
-          <div className="relative h-full flex flex-col justify-between p-7 lg:p-9 text-white">
-            <Link href="/" className="text-lg font-extrabold tracking-tight drop-shadow-sm w-fit">
-              Nsoroma
+          <div className="relative h-full flex flex-col justify-between p-6 sm:p-8 lg:p-10 text-white">
+            <Link href="/" className="inline-flex items-center gap-2 w-fit rounded-full bg-white/95 backdrop-blur pl-1.5 pr-4 py-1.5 shadow-lg" aria-label="Nsoroma home">
+              <BrandLogo variant="mark" decorative className="h-8 w-8 object-contain" />
+              <span className="font-display text-lg font-extrabold tracking-[-0.04em] text-ink">Nsoroma</span>
             </Link>
             <div
-              className="transition-transform duration-300 ease-out"
-              style={{ transform: `translate3d(${x * 6}px, ${y * 6}px, 0)` }}
+              className="transition-transform duration-300 ease-out max-w-md"
+              style={{ transform: `translate3d(${x * 5}px, ${y * 5}px, 0)` }}
             >
-              <h2 className="text-2xl lg:text-3xl font-bold leading-snug drop-shadow-sm">{headline}</h2>
-              <p className="mt-3 text-xs font-medium text-white/80">{caption}</p>
+              <span className="inline-block h-1 w-10 rounded-full bg-sun mb-5" aria-hidden />
+              <h2 className="font-display text-[28px] lg:text-[40px] font-bold leading-[1.05] tracking-[-0.03em]">{headline}</h2>
+              <p className="mt-4 text-sm text-white/75 leading-relaxed">{caption}</p>
             </div>
           </div>
         </div>
 
         {/* Form panel */}
-        <div className="p-7 sm:p-10 lg:p-12 flex flex-col">
-          <p className="text-xs text-gray-500 text-right animate-rise-in">
+        <div className="px-5 py-6 sm:px-10 sm:py-10 lg:px-14 lg:py-12 flex flex-col">
+          <p className="text-sm text-ink-muted text-right animate-rise-in">
             {topLink.prompt}{' '}
-            <Link href={topLink.href} className="font-semibold text-accra-leaf hover:underline">
-              {topLink.label} ↗
+            <Link href={topLink.href} className="font-semibold text-ink underline underline-offset-4 decoration-black/20 hover:decoration-ink">
+              {topLink.label}
             </Link>
           </p>
-          <div className="mt-6 flex-1 flex flex-col justify-center">{children}</div>
+          <div className="mt-6 flex-1 flex flex-col justify-center w-full max-w-md mx-auto">{children}</div>
         </div>
       </div>
     </div>
