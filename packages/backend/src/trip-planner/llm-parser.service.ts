@@ -136,7 +136,8 @@ export class LlmParserService {
     const lower = input.toLowerCase();
     const params: TripParameters = { preferences: [], activityTypes: [] };
 
-    const daysMatch = lower.match(/(\d+)\s*(?:day|night)/);
+    // Matches "3 days", "3days" and the hyphenated "3-day".
+    const daysMatch = lower.match(/(\d+)\s*-?\s*(?:day|night)/);
     if (daysMatch) params.duration = parseInt(daysMatch[1], 10);
 
     const budgetMatch = lower.match(/\$\s*(\d+(?:,\d{3})*(?:\.\d{2})?)/);

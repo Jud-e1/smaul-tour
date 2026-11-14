@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { bookingsApi, paymentsApi } from '@/lib/api';
 import { useAuthStore } from '@/store/auth';
+import { AlertCircle } from 'lucide-react';
 
 export interface AvailabilitySlot {
   id: string;
@@ -109,6 +110,11 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
   const formatCardNumber = (value: string) =>
     value.replace(/\D/g, '').slice(0, 16).replace(/(.{4})/g, '$1 ').trim();
 
+  const money = (n: number) => `${price.currency === 'USD' ? '$' : `${price.currency} `}${n.toFixed(n % 1 ? 2 : 0)}`;
+  const maxGuests = selectedSlot ? selectedSlot.capacity - selectedSlot.booked : 10;
+  const setGuests = (n: number) =>
+    bookingForm.setValue('participants', Math.max(1, Math.min(maxGuests, n)), { shouldValidate: true });
+
   const formatExpiry = (value: string) => {
     const digits = value.replace(/\D/g, '').slice(0, 4);
     if (digits.length >= 3) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
@@ -118,179 +124,178 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
   // Confirmed state
   if (step === 'confirmed' && confirmed) {
     return (
-      <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
-        <svg className="w-12 h-12 text-green-500 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <h3 className="text-lg font-semibold text-green-800">Booking Confirmed!</h3>
-        <p className="text-green-700 mt-1">
-          Reference: <strong>{confirmed.referenceNumber}</strong>
+      <div className="text-center py-4 animate-scale-in">
+        <div className="mx-auto w-14 h-14 rounded-full bg-leaf flex items-center justify-center">
+          <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24" aria-hidden>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h3 className="mt-4 text-[22px] font-semibold text-ink">You’re booked!</h3>
+        <p className="mt-1 text-sm text-ink-muted">
+          Confirmation code <span className="font-semibold text-ink">{confirmed.referenceNumber}</span>
         </p>
-        <p className="text-sm text-green-600 mt-2">
-          A confirmation has been sent. Check your dashboard for details.
-        </p>
+        <p className="mt-3 text-sm text-ink-muted">We’ve sent the details to your email. You’ll find this trip in your dashboard.</p>
+        <a href="/dashboard/traveler?tab=bookings" className="btn-primary w-full mt-5">View my trips</a>
       </div>
     );
   }
 
   // Payment step
   if (step === 'payment' && booking) {
+    const inputBase = 'w-full bg-transparent px-3 pt-6 pb-2 text-[15px] text-ink outline-none font-medium placeholder:text-ink-soft';
+    const err = paymentForm.formState.errors;
+    const errs = [err.cardholderName, err.cardNumber, err.expiry, err.cvc].filter(Boolean);
     return (
-      <div className="space-y-4">
-        {/* Booking summary */}
-        <div className="bg-blue-50 border border-blue-100 rounded-lg p-4">
-          <h3 className="text-sm font-semibold text-blue-800 mb-2">Booking Summary</h3>
-          {selectedSlot && (
-            <div className="text-sm text-blue-700 space-y-1">
-              <div className="flex justify-between">
-                <span>Date</span>
-                <span>{new Date(selectedSlot.date).toLocaleDateString()}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Time</span>
-                <span>{selectedSlot.startTime} – {selectedSlot.endTime}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Participants</span>
-                <span>{participants}</span>
-              </div>
-              <div className="flex justify-between font-semibold border-t border-blue-200 pt-1 mt-1">
-                <span>Total</span>
-                <span>{price.currency} {totalCost.toFixed(2)}</span>
-              </div>
+      <div className="space-y-5 animate-fade-in">
+        <button
+          type="button"
+          onClick={() => { setStep('select'); setError(''); }}
+          disabled={loading}
+          className="inline-flex items-center gap-1.5 text-sm font-semibold underline underline-offset-2 disabled:opacity-50"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+          Change date or guests
+        </button>
+
+        {selectedSlot && (
+          <div className="rounded-xl border border-[#E0E0E5] divide-y divide-[#E0E0E5] text-sm">
+            <div className="px-4 py-3">
+              <p className="font-semibold">Date</p>
+              <p className="text-ink-muted">
+                {new Date(selectedSlot.date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
+                {' · '}{selectedSlot.startTime} – {selectedSlot.endTime}
+              </p>
             </div>
+            <div className="px-4 py-3">
+              <p className="font-semibold">Guests</p>
+              <p className="text-ink-muted">{participants} guest{participants === 1 ? '' : 's'}</p>
+            </div>
+            <div className="px-4 py-3 flex justify-between font-semibold">
+              <span>Total ({price.currency})</span>
+              <span>{money(totalCost)}</span>
+            </div>
+          </div>
+        )}
+
+        <form onSubmit={paymentForm.handleSubmit(handlePaymentSubmit)} className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-base font-semibold text-ink">Pay with card</h3>
+            <span className="flex gap-1" aria-hidden>
+              {['VISA', 'MC', 'MoMo'].map((b) => (
+                <span key={b} className="px-1.5 py-0.5 rounded border border-[#E0E0E5] text-[9px] font-bold text-ink-muted">{b}</span>
+              ))}
+            </span>
+          </div>
+
+          {/* Airbnb-style grouped card inputs */}
+          <div className="rounded-xl border border-[#D2D2D7] overflow-hidden focus-within:border-ink">
+            <label className="relative block border-b border-[#D2D2D7]">
+              <span className="absolute left-3 top-2 text-xs text-ink-muted">Cardholder name</span>
+              <input
+                type="text"
+                placeholder="Name on card"
+                autoComplete="cc-name"
+                {...paymentForm.register('cardholderName', { required: 'Cardholder name is required' })}
+                className={inputBase}
+              />
+            </label>
+            <label className="relative block border-b border-[#D2D2D7]">
+              <span className="absolute left-3 top-2 text-xs text-ink-muted">Card number</span>
+              <input
+                type="text"
+                placeholder="1234 5678 9012 3456"
+                inputMode="numeric"
+                autoComplete="cc-number"
+                {...paymentForm.register('cardNumber', {
+                  required: 'Card number is required',
+                  validate: (v: string) => v.replace(/\s/g, '').length === 16 || 'Enter a valid 16-digit card number',
+                  onChange: (e: React.ChangeEvent<HTMLInputElement>) => { e.target.value = formatCardNumber(e.target.value); },
+                })}
+                className={`${inputBase} tracking-wider`}
+              />
+            </label>
+            <div className="grid grid-cols-2 divide-x divide-[#D2D2D7]">
+              <label className="relative block">
+                <span className="absolute left-3 top-2 text-xs text-ink-muted">Expiration</span>
+                <input
+                  type="text"
+                  placeholder="MM/YY"
+                  inputMode="numeric"
+                  autoComplete="cc-exp"
+                  {...paymentForm.register('expiry', {
+                    required: 'Expiry is required',
+                    pattern: { value: /^\d{2}\/\d{2}$/, message: 'Use MM/YY format' },
+                    onChange: (e: React.ChangeEvent<HTMLInputElement>) => { e.target.value = formatExpiry(e.target.value); },
+                  })}
+                  className={inputBase}
+                />
+              </label>
+              <label className="relative block">
+                <span className="absolute left-3 top-2 text-xs text-ink-muted">CVC</span>
+                <input
+                  type="text"
+                  placeholder="123"
+                  inputMode="numeric"
+                  maxLength={4}
+                  autoComplete="cc-csc"
+                  {...paymentForm.register('cvc', {
+                    required: 'CVC is required',
+                    pattern: { value: /^\d{3,4}$/, message: 'Enter 3 or 4 digits' },
+                  })}
+                  className={inputBase}
+                />
+              </label>
+            </div>
+          </div>
+          {errs.length > 0 && (
+            <ul className="space-y-1">
+              {errs.map((e) => (
+                <li key={e?.message} className="flex items-center gap-1.5 text-xs text-[#D70015]">
+                  <AlertCircle className="w-3.5 h-3.5 shrink-0" aria-hidden />{e?.message}
+                </li>
+              ))}
+            </ul>
           )}
-          <p className="text-xs text-blue-600 mt-2">Ref: {booking.referenceNumber}</p>
-        </div>
 
-        {/* Payment form */}
-        <form onSubmit={paymentForm.handleSubmit(handlePaymentSubmit)} className="space-y-3">
-          <h3 className="text-sm font-semibold text-gray-700">Payment Details</h3>
-
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Cardholder Name</label>
-            <input
-              type="text"
-              placeholder="Name on card"
-              {...paymentForm.register('cardholderName', { required: 'Cardholder name is required' })}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {paymentForm.formState.errors.cardholderName && (
-              <p className="text-red-500 text-xs mt-1">{paymentForm.formState.errors.cardholderName.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Card Number</label>
-            <input
-              type="text"
-              placeholder="1234 5678 9012 3456"
-              inputMode="numeric"
-              {...paymentForm.register('cardNumber', {
-                required: 'Card number is required',
-                validate: (v: string) => v.replace(/\s/g, '').length === 16 || 'Enter a valid 16-digit card number',
-                onChange: (e: React.ChangeEvent<HTMLInputElement>) => { e.target.value = formatCardNumber(e.target.value); },
-              })}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
-            />
-            {paymentForm.formState.errors.cardNumber && (
-              <p className="text-red-500 text-xs mt-1">{paymentForm.formState.errors.cardNumber.message}</p>
-            )}
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Expiry (MM/YY)</label>
-              <input
-                type="text"
-                placeholder="MM/YY"
-                inputMode="numeric"
-                {...paymentForm.register('expiry', {
-                  required: 'Expiry is required',
-                  pattern: { value: /^\d{2}\/\d{2}$/, message: 'Use MM/YY format' },
-                  onChange: (e: React.ChangeEvent<HTMLInputElement>) => { e.target.value = formatExpiry(e.target.value); },
-                })}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
-              />
-              {paymentForm.formState.errors.expiry && (
-                <p className="text-red-500 text-xs mt-1">{paymentForm.formState.errors.expiry.message}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">CVC</label>
-              <input
-                type="text"
-                placeholder="123"
-                inputMode="numeric"
-                maxLength={4}
-                {...paymentForm.register('cvc', {
-                  required: 'CVC is required',
-                  pattern: { value: /^\d{3,4}$/, message: 'Enter 3 or 4 digits' },
-                })}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
-              />
-              {paymentForm.formState.errors.cvc && (
-                <p className="text-red-500 text-xs mt-1">{paymentForm.formState.errors.cvc.message}</p>
-              )}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-1 text-xs text-gray-400">
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          <p className="flex items-center gap-1.5 text-xs text-ink-muted">
+            <svg className="w-3.5 h-3.5 text-leaf" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
-            Payments are processed securely
-          </div>
+            Held in escrow until your experience happens · Ref {booking.referenceNumber}
+          </p>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-              <p className="text-red-600 text-sm">{error}</p>
+            <div className="flex gap-2 rounded-xl border border-[#D70015]/30 bg-[#FFF0F1] p-3 text-sm text-[#D70015]" role="alert">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" aria-hidden />{error}
             </div>
           )}
 
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => { setStep('select'); setError(''); }}
-              disabled={loading}
-              className="flex-1 border border-gray-300 text-gray-700 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 disabled:opacity-50 transition-colors"
-            >
-              Back
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex-1 bg-teal-600 text-white py-2.5 rounded-lg font-medium hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
-            >
-              {loading ? 'Processing...' : `Pay ${price.currency} ${totalCost.toFixed(2)}`}
-            </button>
-          </div>
+          <button type="submit" disabled={loading} className="btn-accent w-full !py-3.5 text-base">
+            {loading ? 'Processing…' : `Confirm and pay ${money(totalCost)}`}
+          </button>
         </form>
       </div>
     );
   }
 
   // Step 1: Slot selection
+  const guests = participants || 1;
   return (
     <form onSubmit={bookingForm.handleSubmit(handleBookingSubmit)} className="space-y-4">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Select Date &amp; Time</label>
+      <div className="rounded-xl border border-[#D2D2D7] overflow-hidden">
+        <p className="px-3 pt-2.5 pb-2 text-[10px] font-bold uppercase tracking-[0.04em] text-ink">Date &amp; time</p>
         {availableSlots.length === 0 ? (
-          <div className="text-center py-6 bg-gray-50 rounded-xl border border-dashed border-gray-300">
-            <p className="text-sm text-gray-500">No available slots at this time</p>
-          </div>
+          <p className="px-3 pb-4 text-sm text-ink-muted">No open dates right now — check back soon.</p>
         ) : (
-          <div className="grid grid-cols-1 gap-2 max-h-56 overflow-y-auto pr-1">
+          <div className="max-h-64 overflow-y-auto px-2 pb-2 space-y-1">
             {availableSlots.map((slot) => {
               const isSelected = selectedSlotId === slot.id;
               const spotsLeft = slot.capacity - slot.booked;
               return (
                 <label
                   key={slot.id}
-                  className={`flex items-center justify-between gap-3 border rounded-xl px-4 py-3 cursor-pointer transition-colors ${
-                    isSelected
-                      ? 'border-teal-500 bg-teal-50 ring-1 ring-teal-500'
-                      : 'border-gray-200 hover:border-teal-300 hover:bg-gray-50'
+                  className={`flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 cursor-pointer transition-all ${
+                    isSelected ? 'ring-2 ring-ink bg-fog' : 'hover:bg-fog'
                   }`}
                 >
                   <input
@@ -299,75 +304,83 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
                     {...bookingForm.register('slotId', { required: 'Please select a date and time' })}
                     className="sr-only"
                   />
-                  <div>
-                    <p className={`text-sm font-medium ${isSelected ? 'text-teal-800' : 'text-gray-800'}`}>
+                  <span>
+                    <span className="block text-sm font-semibold text-ink">
                       {new Date(slot.date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
-                    </p>
-                    <p className={`text-xs mt-0.5 ${isSelected ? 'text-teal-600' : 'text-gray-500'}`}>
-                      {slot.startTime} – {slot.endTime}
-                    </p>
-                  </div>
-                  <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                    spotsLeft <= 2 ? 'bg-amber-100 text-amber-700' : isSelected ? 'bg-teal-100 text-teal-700' : 'bg-gray-100 text-gray-600'
-                  }`}>
-                    {spotsLeft} spot{spotsLeft !== 1 ? 's' : ''} left
+                    </span>
+                    <span className="block text-xs text-ink-muted">{slot.startTime} – {slot.endTime}</span>
+                  </span>
+                  <span className={`text-xs font-medium ${spotsLeft <= 2 ? 'text-[#D70015]' : 'text-ink-muted'}`}>
+                    {spotsLeft <= 2 ? `Only ${spotsLeft} left` : `${spotsLeft} spots`}
                   </span>
                 </label>
               );
             })}
           </div>
         )}
-        {bookingForm.formState.errors.slotId && (
-          <p className="text-red-500 text-xs mt-1">{bookingForm.formState.errors.slotId.message}</p>
-        )}
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Participants</label>
-        <input
-          type="number"
-          min={1}
-          max={selectedSlot ? selectedSlot.capacity - selectedSlot.booked : 10}
-          {...bookingForm.register('participants', { required: true, min: 1, valueAsNumber: true })}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-
-      {selectedSlot && (
-        <div className="bg-gray-50 rounded-lg p-3 text-sm">
-          <div className="flex justify-between text-gray-600">
-            <span>Price per person</span>
-            <span>{price.currency} {price.amount.toFixed(2)}</span>
+        <div className="border-t border-[#D2D2D7] px-3 py-2.5 flex items-center justify-between">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.04em] text-ink">Guests</p>
+            <p className="text-sm text-ink">{guests} guest{guests === 1 ? '' : 's'}</p>
           </div>
-          <div className="flex justify-between text-gray-600 mt-1">
-            <span>Participants</span>
-            <span>× {participants}</span>
-          </div>
-          <div className="flex justify-between font-semibold mt-2 pt-2 border-t border-gray-200">
-            <span>Total</span>
-            <span>{price.currency} {totalCost.toFixed(2)}</span>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setGuests(guests - 1)}
+              disabled={guests <= 1}
+              aria-label="Fewer guests"
+              className="w-8 h-8 rounded-full border border-[#D2D2D7] text-ink-muted hover:border-ink hover:text-ink disabled:opacity-30 disabled:hover:border-[#D2D2D7] flex items-center justify-center"
+            >−</button>
+            <input
+              type="number"
+              min={1}
+              max={maxGuests}
+              aria-label="Participants"
+              {...bookingForm.register('participants', { required: true, min: 1, valueAsNumber: true })}
+              className="w-8 text-center text-sm font-medium bg-transparent outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
+            />
+            <button
+              type="button"
+              onClick={() => setGuests(guests + 1)}
+              disabled={guests >= maxGuests}
+              aria-label="More guests"
+              className="w-8 h-8 rounded-full border border-[#D2D2D7] text-ink-muted hover:border-ink hover:text-ink disabled:opacity-30 disabled:hover:border-[#D2D2D7] flex items-center justify-center"
+            >+</button>
           </div>
         </div>
+      </div>
+      {bookingForm.formState.errors.slotId && (
+        <p className="flex items-center gap-1.5 text-xs text-[#D70015]"><AlertCircle className="w-3.5 h-3.5" aria-hidden />{bookingForm.formState.errors.slotId.message}</p>
       )}
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-          <p className="text-red-600 text-sm">{error}</p>
+        <div className="flex gap-2 rounded-xl border border-[#D70015]/30 bg-[#FFF0F1] p-3 text-sm text-[#D70015]" role="alert">
+          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" aria-hidden />{error}
         </div>
       )}
 
-      <button
-        type="submit"
-        disabled={loading || availableSlots.length === 0}
-        className="w-full bg-teal-600 text-white py-2.5 rounded-lg font-medium hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-      >
-        {loading ? 'Checking availability...' : 'Continue to Payment'}
+      <button type="submit" disabled={loading || availableSlots.length === 0} className="btn-accent w-full !py-3.5 text-base">
+        {loading ? 'Checking availability…' : 'Reserve'}
       </button>
+      <p className="text-center text-sm text-ink-muted">You won’t be charged yet</p>
+
+      {selectedSlot && (
+        <div className="space-y-3 text-[15px] animate-fade-in">
+          <div className="flex justify-between text-ink">
+            <span className="underline underline-offset-2">{money(price.amount)} × {guests} guest{guests === 1 ? '' : 's'}</span>
+            <span>{money(totalCost)}</span>
+          </div>
+          <div className="flex justify-between font-semibold pt-4 border-t border-[#E0E0E5]">
+            <span>Total</span>
+            <span>{money(totalCost)}</span>
+          </div>
+        </div>
+      )}
 
       {!user && (
-        <p className="text-xs text-center text-gray-500">
-          You&apos;ll need to{' '}
-          <a href="/login" className="text-blue-600 hover:underline">log in</a>
+        <p className="text-sm text-center text-ink-muted">
+          You’ll need to{' '}
+          <a href="/login" className="font-semibold text-ink underline underline-offset-2">log in</a>
           {' '}to complete your booking.
         </p>
       )}

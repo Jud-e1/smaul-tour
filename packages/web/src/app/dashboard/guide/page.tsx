@@ -2,11 +2,12 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import DashboardShell from '@/components/dashboard/DashboardShell';
 import { experiencesApi, bookingsApi, paymentsApi, userApi, reviewsApi } from '@/lib/api';
-import { useAuthStore } from '@/store/auth';
+import { useAuthStore, hasStoredSession } from '@/store/auth';
 import { useToast } from '@/components/ui/Toast';
 import StarRating from '@/components/ui/StarRating';
+import { Bell, Plus, Settings, CalendarDays, CheckCircle2, Compass, Hourglass, ImageIcon, ReceiptText, Star, UserRound, Wallet, type LucideIcon } from 'lucide-react';
 
 type Tab = 'experiences' | 'bookings' | 'payments' | 'reviews' | 'profile';
 type BookingFilter = 'upcoming' | 'past' | 'cancelled';
@@ -78,19 +79,19 @@ const EMPTY_FORM: ExperienceForm = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  active: 'bg-emerald-100 text-emerald-700',
-  inactive: 'bg-gray-100 text-gray-500',
-  pending_approval: 'bg-amber-100 text-amber-700',
-  confirmed: 'bg-emerald-100 text-emerald-700',
-  completed: 'bg-blue-100 text-blue-700',
+  active: 'bg-forest-100 text-forest-700',
+  inactive: 'bg-gray-100 text-ink-muted',
+  pending_approval: 'bg-sand text-ink',
+  confirmed: 'bg-forest-100 text-forest-700',
+  completed: 'bg-forest-100 text-forest-700',
   cancelled: 'bg-red-100 text-red-600',
-  pending: 'bg-amber-100 text-amber-700',
-  escrowed: 'bg-purple-100 text-purple-700',
-  released: 'bg-blue-100 text-blue-700',
+  pending: 'bg-sand text-ink',
+  escrowed: 'bg-sand text-ink',
+  released: 'bg-forest-100 text-forest-700',
 };
 
 export default function GuideDashboard() {
-  const { user, logout } = useAuthStore();
+  const { user, logout, isLoading: authLoading } = useAuthStore();
   const router = useRouter();
   const { toast } = useToast();
   const [tab, setTab] = useState<Tab>('experiences');
@@ -119,7 +120,7 @@ export default function GuideDashboard() {
   const [profileSaving, setProfileSaving] = useState(false);
 
   useEffect(() => {
-    if (!user) { router.push('/login'); return; }
+    if (!user) { if (!authLoading && !hasStoredSession()) void router.push('/login'); return; }
     if (user.role !== 'guide') { router.push('/dashboard/traveler'); return; }
     setProfileForm({
       firstName: user.profile?.firstName || '',
@@ -128,7 +129,7 @@ export default function GuideDashboard() {
       profilePhotoUrl: user.profile?.profilePhotoUrl || '',
       phone: '',
     });
-  }, [user, router]);
+  }, [user, router, authLoading]);
 
   const loadExperiences = useCallback(async () => {
     if (!user) return;
@@ -277,124 +278,89 @@ export default function GuideDashboard() {
   const firstName = user.profile?.firstName || user.email?.split('@')[0] || 'Guide';
   const avatarInitial = firstName.charAt(0).toUpperCase();
 
-  const tabs: { key: Tab; label: string; icon: string }[] = [
-    { key: 'experiences', label: 'Experiences', icon: '🌟' },
-    { key: 'bookings', label: 'Bookings', icon: '🗓' },
-    { key: 'payments', label: 'Payments', icon: '💰' },
-    { key: 'reviews', label: 'Reviews', icon: '⭐' },
-    { key: 'profile', label: 'Profile', icon: '👤' },
+  const tabs: { key: Tab; label: string; icon: LucideIcon }[] = [
+    { key: 'experiences', label: 'Experiences', icon: Compass },
+    { key: 'bookings', label: 'Bookings', icon: CalendarDays },
+    { key: 'payments', label: 'Payments', icon: Wallet },
+    { key: 'reviews', label: 'Reviews', icon: Star },
+    { key: 'profile', label: 'Profile', icon: UserRound },
   ];
 
+  const nav = tabs.map((t) => ({ key: t.key, label: t.label, Icon: t.icon, active: tab === t.key, onClick: () => setTab(t.key) }));
+  const TITLES: Record<Tab, string> = { experiences: 'Experiences', bookings: 'Bookings', payments: 'Payments', reviews: 'Reviews', profile: 'Profile' };
+  const displayName = [user.profile?.firstName, user.profile?.lastName].filter(Boolean).join(' ') || firstName;
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero Header */}
-      <div className="bg-white border-b border-gray-100 shadow-sm">
-        <div className="max-w-5xl mx-auto px-4 py-5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-400 to-emerald-600 flex items-center justify-center text-white font-bold text-lg shadow-md overflow-hidden">
-                {user.profile?.profilePhotoUrl
-                  ? <img src={user.profile.profilePhotoUrl} alt={firstName} className="w-12 h-12 object-cover" />
-                  : avatarInitial}
+    <>
+      <DashboardShell
+        nav={nav}
+        navLabel="Hosting"
+        links={[
+          { key: 'explore', label: 'View marketplace', Icon: Compass, href: '/experiences' },
+          { key: 'notifications', label: 'Notifications', Icon: Bell, href: '/settings/notifications' },
+          { key: 'settings', label: 'Settings', Icon: Settings, href: '/settings/notifications' },
+        ]}
+        user={{ name: displayName, email: user.email, initial: avatarInitial, photo: user.profile?.profilePhotoUrl, role: 'Guide' }}
+        onLogout={() => { logout(); router.push('/'); }}
+        title={TITLES[tab]}
+        subtitle={tab === 'experiences'
+          ? `Welcome back, ${firstName}.${avgRating > 0 ? ` Guests rate you ${avgRating.toFixed(1)} on average.` : ''}`
+          : undefined}
+        actions={tab === 'experiences' ? (
+          <button type="button" onClick={openCreateForm} className="btn-primary !py-2 !px-4 text-[14px]"><Plus className="w-4 h-4" />New experience</button>
+        ) : undefined}
+      >
+        {/* KPIs */}
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+          {[
+            { label: 'Total earnings', value: `$${totalEarnings.toFixed(0)}`, icon: Wallet },
+            { label: 'Pending payout', value: `$${pendingEarnings.toFixed(0)}`, icon: Hourglass },
+            { label: 'Total bookings', value: allBookings.length, icon: CalendarDays },
+            { label: 'Active listings', value: activeExperiences, icon: Compass },
+            { label: 'Avg rating', value: avgRating > 0 ? avgRating.toFixed(1) : '—', icon: Star },
+          ].map((stat) => (
+            <div key={stat.label} className="rounded-[18px] bg-white ring-1 ring-hairline p-4 sm:p-5 min-w-0">
+              <div className="flex items-center justify-between">
+                <p className="text-[13px] font-medium text-stone-600 truncate">{stat.label}</p>
+                <span className="w-8 h-8 rounded-full bg-espresso-50 text-espresso flex items-center justify-center shrink-0"><stat.icon className="w-4 h-4" /></span>
               </div>
-              <div>
-                <p className="text-xs text-gray-400 font-medium uppercase tracking-wide">Guide Dashboard</p>
-                <h1 className="text-xl font-bold text-gray-900">{firstName}</h1>
-                {avgRating > 0 && (
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <StarRating value={Math.round(avgRating)} readonly size="sm" />
-                    <span className="text-xs text-gray-500">{avgRating.toFixed(1)} avg rating</span>
-                  </div>
-                )}
-              </div>
+              <p className="mt-3 text-[28px] font-bold tracking-[-0.035em] leading-none text-ink">{stat.value}</p>
             </div>
-            <div className="flex items-center gap-3">
-              <Link href="/" className="p-2 rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors" title="Home">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                </svg>
-              </Link>
-              <Link href="/notifications" className="p-2 rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors" title="Notifications">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                </svg>
-              </Link>
-              <button onClick={() => { logout(); router.push('/'); }} className="text-sm text-gray-500 hover:text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors">
-                Sign out
-              </button>
-            </div>
-          </div>
-
-          {/* KPI Stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-5">
-            {[
-              { label: 'Total Earnings', value: `$${totalEarnings.toFixed(0)}`, icon: '💰', color: 'from-emerald-50 to-emerald-100', text: 'text-emerald-700' },
-              { label: 'Pending Payout', value: `$${pendingEarnings.toFixed(0)}`, icon: '⏳', color: 'from-purple-50 to-purple-100', text: 'text-purple-700' },
-              { label: 'Total Bookings', value: allBookings.length, icon: '🗓', color: 'from-blue-50 to-blue-100', text: 'text-blue-700' },
-              { label: 'Active Listings', value: activeExperiences, icon: '🌟', color: 'from-teal-50 to-teal-100', text: 'text-teal-700' },
-              { label: 'Avg Rating', value: avgRating > 0 ? avgRating.toFixed(1) : '—', icon: '⭐', color: 'from-amber-50 to-amber-100', text: 'text-amber-700' },
-            ].map((stat) => (
-              <div key={stat.label} className={`bg-gradient-to-br ${stat.color} rounded-2xl p-4`}>
-                <div className="text-2xl mb-1">{stat.icon}</div>
-                <div className={`text-2xl font-bold ${stat.text}`}>{stat.value}</div>
-                <div className="text-xs text-gray-500 mt-0.5">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-5xl mx-auto px-4 py-6">
-        {/* Tabs */}
-        <div className="flex gap-1 bg-white border border-gray-200 rounded-2xl p-1 mb-6 w-fit shadow-sm flex-wrap">
-          {tabs.map((t) => (
-            <button key={t.key} onClick={() => setTab(t.key)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                tab === t.key ? 'bg-gradient-to-r from-teal-500 to-emerald-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
-              }`}>
-              <span>{t.icon}</span><span>{t.label}</span>
-            </button>
           ))}
         </div>
 
         {/* ── Experiences Tab ── */}
         {tab === 'experiences' && (
           <div>
-            <div className="flex justify-between items-center mb-5">
-              <h2 className="font-semibold text-gray-900">My Experiences</h2>
-              <button onClick={openCreateForm} className="bg-gradient-to-r from-teal-500 to-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:from-teal-600 hover:to-emerald-700 shadow-sm transition-all">
-                + New Experience
-              </button>
-            </div>
             {expLoading ? (
-              <div className="space-y-3">{[1,2,3].map((i) => <div key={i} className="h-28 bg-white rounded-2xl border border-gray-100 animate-pulse" />)}</div>
+              <div className="space-y-3">{[1,2,3].map((i) => <div key={i} className="h-28 bg-paper rounded-2xl border border-[#E0E0E5] animate-pulse" />)}</div>
             ) : experiences.length === 0 ? (
-              <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
-                <div className="text-5xl mb-3">🌟</div>
-                <p className="text-gray-500 font-medium">No experiences yet</p>
-                <button onClick={openCreateForm} className="inline-block mt-3 text-sm text-teal-500 hover:text-teal-600 font-medium">Create your first experience →</button>
+              <div className="text-center py-16 bg-paper rounded-2xl border border-[#E0E0E5]">
+                <div className="icon-tile w-14 h-14 mx-auto mb-4" aria-hidden><Compass className="w-6 h-6" strokeWidth={1.6} /></div>
+                <p className="text-ink-muted font-medium">No experiences yet</p>
+                <button onClick={openCreateForm} className="inline-block mt-3 text-sm text-forest-600 hover:text-forest-700 font-medium">Create your first experience →</button>
               </div>
             ) : (
               <div className="space-y-3">
                 {experiences.map((exp) => (
-                  <div key={exp.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                  <div key={exp.id} className="bg-paper rounded-2xl border border-[#E0E0E5] overflow-hidden hover:shadow-md transition-shadow">
                     <div className="flex gap-4 p-4">
                       {exp.images?.[0]?.url ? (
                         <img src={exp.images[0].url} alt={exp.title} className="w-20 h-20 rounded-xl object-cover shrink-0" />
                       ) : (
-                        <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-teal-100 to-emerald-100 flex items-center justify-center text-3xl shrink-0">🌍</div>
+                        <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-forest-100 to-forest-100 flex items-center justify-center shrink-0"><ImageIcon className="w-7 h-7 text-stone-400" strokeWidth={1.4} /></div>
                       )}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <span className="font-semibold text-gray-900 truncate">{exp.title}</span>
-                              <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${STATUS_COLORS[exp.status] || 'bg-gray-100 text-gray-600'}`}>
+                              <span className="font-semibold text-ink truncate">{exp.title}</span>
+                              <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${STATUS_COLORS[exp.status] || 'bg-gray-100 text-ink-muted'}`}>
                                 {exp.status.replace('_', ' ')}
                               </span>
                             </div>
-                            <p className="text-sm text-gray-500 mt-0.5 truncate">{exp.location?.address}</p>
-                            <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+                            <p className="text-sm text-ink-muted mt-0.5 truncate">{exp.location?.address}</p>
+                            <div className="flex items-center gap-3 mt-1 text-xs text-ink-muted">
                               <span className="font-medium">{exp.price?.currency} {exp.price?.amount?.toFixed(2)}</span>
                               <span>{exp.duration}h</span>
                               {exp.averageRating > 0 && <span>★ {exp.averageRating.toFixed(1)} ({exp.reviewCount})</span>}
@@ -407,12 +373,12 @@ export default function GuideDashboard() {
                               disabled={togglingId === exp.id || exp.status === 'pending_approval'}
                               title={exp.status === 'active' ? 'Deactivate' : 'Activate'}
                               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 ${
-                                exp.status === 'active' ? 'bg-teal-500' : 'bg-gray-300'
+                                exp.status === 'active' ? 'bg-forest-600' : 'bg-gray-300'
                               }`}
                             >
-                              <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${exp.status === 'active' ? 'translate-x-6' : 'translate-x-1'}`} />
+                              <span className={`inline-block h-4 w-4 transform rounded-full bg-paper shadow transition-transform ${exp.status === 'active' ? 'translate-x-6' : 'translate-x-1'}`} />
                             </button>
-                            <button onClick={() => openEditForm(exp)} className="text-xs text-teal-600 border border-teal-200 px-3 py-1.5 rounded-lg hover:bg-teal-50 font-medium transition-colors">Edit</button>
+                            <button onClick={() => openEditForm(exp)} className="text-xs text-forest-700 border border-forest-200 px-3 py-1.5 rounded-lg hover:bg-forest-50 font-medium transition-colors">Edit</button>
                             <button onClick={() => setDeleteConfirm(exp)} className="text-xs text-red-500 border border-red-200 px-3 py-1.5 rounded-lg hover:bg-red-50 font-medium transition-colors">Delete</button>
                           </div>
                         </div>
@@ -432,18 +398,18 @@ export default function GuideDashboard() {
               {(['upcoming', 'past', 'cancelled'] as BookingFilter[]).map((s) => (
                 <button key={s} onClick={() => setBookingFilter(s)}
                   className={`px-4 py-2 rounded-xl text-sm font-medium capitalize transition-all ${
-                    bookingFilter === s ? 'bg-gray-900 text-white shadow-sm' : 'bg-white text-gray-600 border border-gray-200 hover:border-gray-300'
+                    bookingFilter === s ? 'bg-gray-900 text-white shadow-sm' : 'bg-paper text-ink-muted border border-[#E0E0E5] hover:border-[#E0E0E5]'
                   }`}>
                   {s}
                 </button>
               ))}
             </div>
             {bookingsLoading ? (
-              <div className="space-y-3">{[1,2,3].map((i) => <div key={i} className="h-20 bg-white rounded-2xl border border-gray-100 animate-pulse" />)}</div>
+              <div className="space-y-3">{[1,2,3].map((i) => <div key={i} className="h-20 bg-paper rounded-2xl border border-[#E0E0E5] animate-pulse" />)}</div>
             ) : bookings.length === 0 ? (
-              <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
-                <div className="text-5xl mb-3">🗓</div>
-                <p className="text-gray-500 font-medium">No {bookingFilter} bookings</p>
+              <div className="text-center py-16 bg-paper rounded-2xl border border-[#E0E0E5]">
+                <div className="icon-tile w-14 h-14 mx-auto mb-4" aria-hidden><CalendarDays className="w-6 h-6" strokeWidth={1.6} /></div>
+                <p className="text-ink-muted font-medium">No {bookingFilter} bookings</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -452,20 +418,20 @@ export default function GuideDashboard() {
                     ? `${booking.traveler.profile.firstName || ''} ${booking.traveler.profile.lastName || ''}`.trim()
                     : booking.traveler?.email || 'Traveler';
                   return (
-                    <div key={booking.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 hover:shadow-md transition-shadow">
+                    <div key={booking.id} className="bg-paper rounded-2xl border border-[#E0E0E5] p-4 hover:shadow-md transition-shadow">
                       <div className="flex items-start justify-between gap-4">
                         <div>
-                          <p className="font-semibold text-gray-900">{booking.experience?.title || 'Experience'}</p>
-                          <p className="text-sm text-gray-500 mt-0.5">
+                          <p className="font-semibold text-ink">{booking.experience?.title || 'Experience'}</p>
+                          <p className="text-sm text-ink-muted mt-0.5">
                             {travelerName} · {new Date(booking.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} at {booking.startTime}
                           </p>
-                          <p className="text-xs text-gray-400 mt-0.5">#{booking.referenceNumber}</p>
+                          <p className="text-xs text-ink-soft mt-0.5">#{booking.referenceNumber}</p>
                         </div>
                         <div className="text-right shrink-0">
-                          <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${STATUS_COLORS[booking.status] || 'bg-gray-100 text-gray-600'}`}>
+                          <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${STATUS_COLORS[booking.status] || 'bg-gray-100 text-ink-muted'}`}>
                             {booking.status}
                           </span>
-                          <p className="text-base font-bold text-gray-900 mt-1">{booking.totalCurrency} {booking.totalAmount?.toFixed(2)}</p>
+                          <p className="text-base font-bold text-ink mt-1">{booking.totalCurrency} {booking.totalAmount?.toFixed(2)}</p>
                         </div>
                       </div>
                     </div>
@@ -479,42 +445,42 @@ export default function GuideDashboard() {
         {/* ── Payments Tab ── */}
         {tab === 'payments' && (
           <div>
-            <h2 className="font-semibold text-gray-900 mb-5">Payments</h2>
+            <h2 className="font-semibold text-ink mb-5">Payments</h2>
             {paymentsLoading ? (
-              <div className="space-y-3">{[1,2].map((i) => <div key={i} className="h-20 bg-white rounded-2xl border border-gray-100 animate-pulse" />)}</div>
+              <div className="space-y-3">{[1,2].map((i) => <div key={i} className="h-20 bg-paper rounded-2xl border border-[#E0E0E5] animate-pulse" />)}</div>
             ) : payments.length === 0 ? (
-              <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
-                <div className="text-5xl mb-3">💰</div>
-                <p className="text-gray-500 font-medium">No payments yet</p>
+              <div className="text-center py-16 bg-paper rounded-2xl border border-[#E0E0E5]">
+                <div className="icon-tile w-14 h-14 mx-auto mb-4" aria-hidden><Wallet className="w-6 h-6" strokeWidth={1.6} /></div>
+                <p className="text-ink-muted font-medium">No payments yet</p>
               </div>
             ) : (
               <div className="space-y-6">
                 {[
-                  { label: 'Pending (Escrowed)', filter: (p: Payment) => p.status === 'escrowed' || p.status === 'captured', icon: '⏳', color: 'text-purple-700' },
-                  { label: 'Released', filter: (p: Payment) => p.status === 'released', icon: '✅', color: 'text-emerald-700' },
-                  { label: 'Other', filter: (p: Payment) => !['escrowed', 'captured', 'released'].includes(p.status), icon: '📋', color: 'text-gray-700' },
+                  { label: 'Pending (Escrowed)', filter: (p: Payment) => p.status === 'escrowed' || p.status === 'captured', icon: Hourglass, color: 'text-ink' },
+                  { label: 'Released', filter: (p: Payment) => p.status === 'released', icon: CheckCircle2, color: 'text-ink' },
+                  { label: 'Other', filter: (p: Payment) => !['escrowed', 'captured', 'released'].includes(p.status), icon: ReceiptText, color: 'text-stone-600' },
                 ].map(({ label, filter, icon, color }) => {
                   const group = payments.filter(filter);
                   if (group.length === 0) return null;
                   return (
                     <div key={label}>
-                      <h3 className={`text-sm font-semibold mb-3 flex items-center gap-1.5 ${color}`}>{icon} {label}</h3>
+                      <h3 className={`text-sm font-semibold mb-3 flex items-center gap-1.5 ${color}`}>{(() => { const I = icon; return <I className="w-4 h-4" />; })()} {label}</h3>
                       <div className="space-y-3">
                         {group.map((payment) => (
-                          <div key={payment.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+                          <div key={payment.id} className="bg-paper rounded-2xl border border-[#E0E0E5] p-4">
                             <div className="flex items-center justify-between">
                               <div>
-                                <p className="font-semibold text-gray-900">{payment.booking?.experience?.title || 'Experience'}</p>
-                                <p className="text-xs text-gray-400 mt-0.5">
+                                <p className="font-semibold text-ink">{payment.booking?.experience?.title || 'Experience'}</p>
+                                <p className="text-xs text-ink-soft mt-0.5">
                                   {new Date(payment.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                   {payment.booking?.referenceNumber && ` · #${payment.booking.referenceNumber}`}
                                 </p>
                               </div>
                               <div className="text-right">
-                                <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${STATUS_COLORS[payment.status] || 'bg-gray-100 text-gray-600'}`}>
+                                <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${STATUS_COLORS[payment.status] || 'bg-gray-100 text-ink-muted'}`}>
                                   {payment.status}
                                 </span>
-                                <p className="text-base font-bold text-gray-900 mt-1">{payment.currency} {payment.amount?.toFixed(2)}</p>
+                                <p className="text-base font-bold text-ink mt-1">{payment.currency} {payment.amount?.toFixed(2)}</p>
                               </div>
                             </div>
                           </div>
@@ -531,13 +497,13 @@ export default function GuideDashboard() {
         {/* ── Reviews Tab ── */}
         {tab === 'reviews' && (
           <div>
-            <h2 className="font-semibold text-gray-900 mb-5">Reviews</h2>
+            <h2 className="font-semibold text-ink mb-5">Reviews</h2>
             {reviewsLoading ? (
-              <div className="space-y-3">{[1,2,3].map((i) => <div key={i} className="h-20 bg-white rounded-2xl border border-gray-100 animate-pulse" />)}</div>
+              <div className="space-y-3">{[1,2,3].map((i) => <div key={i} className="h-20 bg-paper rounded-2xl border border-[#E0E0E5] animate-pulse" />)}</div>
             ) : reviews.length === 0 ? (
-              <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
-                <div className="text-5xl mb-3">⭐</div>
-                <p className="text-gray-500 font-medium">No reviews yet</p>
+              <div className="text-center py-16 bg-paper rounded-2xl border border-[#E0E0E5]">
+                <div className="icon-tile w-14 h-14 mx-auto mb-4" aria-hidden><Star className="w-6 h-6" strokeWidth={1.6} /></div>
+                <p className="text-ink-muted font-medium">No reviews yet</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -546,17 +512,17 @@ export default function GuideDashboard() {
                     ? `${review.traveler.profile.firstName || ''} ${review.traveler.profile.lastName || ''}`.trim() || 'Traveler'
                     : 'Traveler';
                   return (
-                    <div key={review.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 hover:shadow-md transition-shadow">
+                    <div key={review.id} className="bg-paper rounded-2xl border border-[#E0E0E5] p-4 hover:shadow-md transition-shadow">
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
                             <StarRating value={review.rating} readonly size="sm" />
-                            <span className="text-sm font-semibold text-gray-700">{reviewerName}</span>
+                            <span className="text-sm font-semibold text-ink/80">{reviewerName}</span>
                           </div>
-                          {review.experience?.title && <p className="text-xs text-teal-600 mb-1 font-medium">{review.experience.title}</p>}
-                          {review.comment && <p className="text-sm text-gray-600">{review.comment}</p>}
+                          {review.experience?.title && <p className="text-xs text-forest-700 mb-1 font-medium">{review.experience.title}</p>}
+                          {review.comment && <p className="text-sm text-ink-muted">{review.comment}</p>}
                         </div>
-                        <p className="text-xs text-gray-400 shrink-0">{new Date(review.createdAt).toLocaleDateString()}</p>
+                        <p className="text-xs text-ink-soft shrink-0">{new Date(review.createdAt).toLocaleDateString()}</p>
                       </div>
                     </div>
                   );
@@ -568,88 +534,88 @@ export default function GuideDashboard() {
 
         {/* ── Profile Tab ── */}
         {tab === 'profile' && (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 max-w-lg">
-            <h2 className="font-semibold text-gray-900 mb-5">Edit Profile</h2>
+          <div className="bg-paper rounded-2xl border border-[#E0E0E5] p-6 max-w-lg">
+            <h2 className="font-semibold text-ink mb-5">Edit Profile</h2>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">First name</label>
-                  <input value={profileForm.firstName} onChange={(e) => setProfileForm((p) => ({ ...p, firstName: e.target.value }))} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent" />
+                  <label className="block text-sm font-semibold text-ink mb-1.5">First name</label>
+                  <input value={profileForm.firstName} onChange={(e) => setProfileForm((p) => ({ ...p, firstName: e.target.value }))} className="w-full border border-[#E0E0E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Last name</label>
-                  <input value={profileForm.lastName} onChange={(e) => setProfileForm((p) => ({ ...p, lastName: e.target.value }))} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent" />
+                  <label className="block text-sm font-semibold text-ink mb-1.5">Last name</label>
+                  <input value={profileForm.lastName} onChange={(e) => setProfileForm((p) => ({ ...p, lastName: e.target.value }))} className="w-full border border-[#E0E0E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" />
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Profile photo URL</label>
-                <input type="url" value={profileForm.profilePhotoUrl} onChange={(e) => setProfileForm((p) => ({ ...p, profilePhotoUrl: e.target.value }))} placeholder="https://example.com/photo.jpg" className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent" />
+                <label className="block text-sm font-semibold text-ink mb-1.5">Profile photo URL</label>
+                <input type="url" value={profileForm.profilePhotoUrl} onChange={(e) => setProfileForm((p) => ({ ...p, profilePhotoUrl: e.target.value }))} placeholder="https://example.com/photo.jpg" className="w-full border border-[#E0E0E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" />
                 {profileForm.profilePhotoUrl && (
-                  <img src={profileForm.profilePhotoUrl} alt="Preview" className="mt-2 w-16 h-16 rounded-full object-cover border-2 border-gray-100" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                  <img src={profileForm.profilePhotoUrl} alt="Preview" className="mt-2 w-16 h-16 rounded-full object-cover border-2 border-[#E0E0E5]" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                 )}
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Bio</label>
-                <textarea value={profileForm.bio} onChange={(e) => setProfileForm((p) => ({ ...p, bio: e.target.value }))} rows={3} placeholder="Tell travelers about yourself..." className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent resize-none" />
+                <label className="block text-sm font-semibold text-ink mb-1.5">Bio</label>
+                <textarea value={profileForm.bio} onChange={(e) => setProfileForm((p) => ({ ...p, bio: e.target.value }))} rows={3} placeholder="Tell travelers about yourself..." className="w-full border border-[#E0E0E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink resize-none" />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Phone / Contact</label>
-                <input type="tel" value={profileForm.phone} onChange={(e) => setProfileForm((p) => ({ ...p, phone: e.target.value }))} placeholder="+1 555 000 0000" className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent" />
+                <label className="block text-sm font-semibold text-ink mb-1.5">Phone / Contact</label>
+                <input type="tel" value={profileForm.phone} onChange={(e) => setProfileForm((p) => ({ ...p, phone: e.target.value }))} placeholder="+1 555 000 0000" className="w-full border border-[#E0E0E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" />
               </div>
-              <button onClick={saveProfile} disabled={profileSaving} className="w-full bg-gradient-to-r from-teal-500 to-emerald-600 text-white py-2.5 rounded-xl text-sm font-semibold hover:from-teal-600 hover:to-emerald-700 disabled:opacity-50 transition-all shadow-sm">
+              <button onClick={saveProfile} disabled={profileSaving} className="w-full bg-ink text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-[#000000] disabled:opacity-50 transition-all shadow-sm">
                 {profileSaving ? 'Saving…' : 'Save Changes'}
               </button>
             </div>
           </div>
         )}
-      </div>
+      </DashboardShell>
 
       {/* ── Experience Form Modal ── */}
       {showExpForm && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-lg my-4 shadow-2xl">
-            <h3 className="font-bold text-gray-900 text-lg mb-4">{editingExp ? 'Edit Experience' : 'New Experience'}</h3>
+          <div className="bg-paper rounded-2xl p-6 w-full max-w-lg my-4 shadow-2xl">
+            <h3 className="font-bold text-ink text-lg mb-4">{editingExp ? 'Edit Experience' : 'New Experience'}</h3>
             <div className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Title</label>
-                <input value={expForm.title} onChange={(e) => setExpForm((f) => ({ ...f, title: e.target.value }))} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent" placeholder="e.g. Sunset Kayaking Tour" />
+                <label className="block text-sm font-semibold text-ink mb-1.5">Title</label>
+                <input value={expForm.title} onChange={(e) => setExpForm((f) => ({ ...f, title: e.target.value }))} className="w-full border border-[#E0E0E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="e.g. Sunset Kayaking Tour" />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Description</label>
-                <textarea value={expForm.description} onChange={(e) => setExpForm((f) => ({ ...f, description: e.target.value }))} rows={3} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent resize-none" placeholder="Describe your experience..." />
+                <label className="block text-sm font-semibold text-ink mb-1.5">Description</label>
+                <textarea value={expForm.description} onChange={(e) => setExpForm((f) => ({ ...f, description: e.target.value }))} rows={3} className="w-full border border-[#E0E0E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink resize-none" placeholder="Describe your experience..." />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Address</label>
-                <input value={expForm.address} onChange={(e) => setExpForm((f) => ({ ...f, address: e.target.value }))} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent" placeholder="123 Main St, City, Country" />
+                <label className="block text-sm font-semibold text-ink mb-1.5">Address</label>
+                <input value={expForm.address} onChange={(e) => setExpForm((f) => ({ ...f, address: e.target.value }))} className="w-full border border-[#E0E0E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="123 Main St, City, Country" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Latitude</label>
-                  <input type="number" step="any" value={expForm.latitude} onChange={(e) => setExpForm((f) => ({ ...f, latitude: e.target.value }))} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent" placeholder="40.7128" />
+                  <label className="block text-sm font-semibold text-ink mb-1.5">Latitude</label>
+                  <input type="number" step="any" value={expForm.latitude} onChange={(e) => setExpForm((f) => ({ ...f, latitude: e.target.value }))} className="w-full border border-[#E0E0E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="40.7128" />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Longitude</label>
-                  <input type="number" step="any" value={expForm.longitude} onChange={(e) => setExpForm((f) => ({ ...f, longitude: e.target.value }))} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent" placeholder="-74.0060" />
+                  <label className="block text-sm font-semibold text-ink mb-1.5">Longitude</label>
+                  <input type="number" step="any" value={expForm.longitude} onChange={(e) => setExpForm((f) => ({ ...f, longitude: e.target.value }))} className="w-full border border-[#E0E0E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="-74.0060" />
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <div className="col-span-2">
-                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Price</label>
-                  <input type="number" min="0" step="0.01" value={expForm.price} onChange={(e) => setExpForm((f) => ({ ...f, price: e.target.value }))} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent" placeholder="49.99" />
+                  <label className="block text-sm font-semibold text-ink mb-1.5">Price</label>
+                  <input type="number" min="0" step="0.01" value={expForm.price} onChange={(e) => setExpForm((f) => ({ ...f, price: e.target.value }))} className="w-full border border-[#E0E0E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="49.99" />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Currency</label>
-                  <input value={expForm.currency} onChange={(e) => setExpForm((f) => ({ ...f, currency: e.target.value.toUpperCase() }))} maxLength={3} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent" placeholder="USD" />
+                  <label className="block text-sm font-semibold text-ink mb-1.5">Currency</label>
+                  <input value={expForm.currency} onChange={(e) => setExpForm((f) => ({ ...f, currency: e.target.value.toUpperCase() }))} maxLength={3} className="w-full border border-[#E0E0E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="USD" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Duration (hours)</label>
-                  <input type="number" min="0.5" step="0.5" value={expForm.duration} onChange={(e) => setExpForm((f) => ({ ...f, duration: e.target.value }))} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent" placeholder="2" />
+                  <label className="block text-sm font-semibold text-ink mb-1.5">Duration (hours)</label>
+                  <input type="number" min="0.5" step="0.5" value={expForm.duration} onChange={(e) => setExpForm((f) => ({ ...f, duration: e.target.value }))} className="w-full border border-[#E0E0E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="2" />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Cancellation Policy</label>
-                  <select value={expForm.cancellationPolicy} onChange={(e) => setExpForm((f) => ({ ...f, cancellationPolicy: e.target.value as ExperienceForm['cancellationPolicy'] }))} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent">
+                  <label className="block text-sm font-semibold text-ink mb-1.5">Cancellation Policy</label>
+                  <select value={expForm.cancellationPolicy} onChange={(e) => setExpForm((f) => ({ ...f, cancellationPolicy: e.target.value as ExperienceForm['cancellationPolicy'] }))} className="w-full border border-[#E0E0E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink">
                     <option value="flexible">Flexible</option>
                     <option value="moderate">Moderate</option>
                     <option value="strict">Strict</option>
@@ -657,19 +623,19 @@ export default function GuideDashboard() {
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Categories <span className="text-gray-400 font-normal normal-case">(comma-separated)</span></label>
-                <input value={expForm.category} onChange={(e) => setExpForm((f) => ({ ...f, category: e.target.value }))} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent" placeholder="food, culture, adventure" />
+                <label className="block text-sm font-semibold text-ink mb-1.5">Categories <span className="text-ink-soft font-normal normal-case">(comma-separated)</span></label>
+                <input value={expForm.category} onChange={(e) => setExpForm((f) => ({ ...f, category: e.target.value }))} className="w-full border border-[#E0E0E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="food, culture, adventure" />
               </div>
               {!editingExp && (
                 <div>
-                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Image URL <span className="text-gray-400 font-normal normal-case">(optional)</span></label>
-                  <input type="url" value={expForm.imageUrl} onChange={(e) => setExpForm((f) => ({ ...f, imageUrl: e.target.value }))} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent" placeholder="https://example.com/image.jpg" />
+                  <label className="block text-sm font-semibold text-ink mb-1.5">Image URL <span className="text-ink-soft font-normal normal-case">(optional)</span></label>
+                  <input type="url" value={expForm.imageUrl} onChange={(e) => setExpForm((f) => ({ ...f, imageUrl: e.target.value }))} className="w-full border border-[#E0E0E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="https://example.com/image.jpg" />
                 </div>
               )}
             </div>
             <div className="flex gap-3 mt-5">
-              <button onClick={() => setShowExpForm(false)} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50">Cancel</button>
-              <button onClick={saveExperience} disabled={expSaving} className="flex-1 bg-gradient-to-r from-teal-500 to-emerald-600 text-white py-2.5 rounded-xl text-sm font-semibold hover:from-teal-600 hover:to-emerald-700 disabled:opacity-50">
+              <button onClick={() => setShowExpForm(false)} className="flex-1 border border-[#E0E0E5] text-ink/80 py-2.5 rounded-xl text-sm font-medium hover:bg-canvas">Cancel</button>
+              <button onClick={saveExperience} disabled={expSaving} className="flex-1 bg-ink text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-[#000000] disabled:opacity-50">
                 {expSaving ? 'Saving…' : editingExp ? 'Save Changes' : 'Create Experience'}
               </button>
             </div>
@@ -680,18 +646,18 @@ export default function GuideDashboard() {
       {/* ── Delete Confirm Modal ── */}
       {deleteConfirm && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
-            <h3 className="font-bold text-gray-900 text-lg mb-2">Delete Experience</h3>
-            <p className="text-sm text-gray-600 mb-4">
+          <div className="bg-paper rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+            <h3 className="font-bold text-ink text-lg mb-2">Delete Experience</h3>
+            <p className="text-sm text-ink-muted mb-4">
               Are you sure you want to delete <span className="font-semibold">{deleteConfirm.title}</span>? This cannot be undone.
             </p>
             <div className="flex gap-3">
-              <button onClick={() => setDeleteConfirm(null)} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50">Cancel</button>
+              <button onClick={() => setDeleteConfirm(null)} className="flex-1 border border-[#E0E0E5] text-ink/80 py-2.5 rounded-xl text-sm font-medium hover:bg-canvas">Cancel</button>
               <button onClick={deleteExperience} className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-red-600">Delete</button>
             </div>
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

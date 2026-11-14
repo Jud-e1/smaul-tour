@@ -3,24 +3,83 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { Search, Menu, UserRound, Compass, Heart, Sparkles, Luggage, X, ArrowRight } from 'lucide-react';
 import { useAuthStore } from '@/store/auth';
 import NotificationCenter from '@/components/ui/NotificationCenter';
+import BrandLogo from '@/components/brand/BrandLogo';
 
 const NAV_LINKS = [
-  { label: 'Explore', href: '/experiences' },
-  { label: 'Itinerary', href: '/trip-planner' },
-  { label: 'Local Guides', href: '/experiences?q=guide' },
-  { label: 'Eco-Stays', href: '/experiences?categories=Nature' },
+  { label: 'Experiences', href: '/experiences' },
+  { label: 'Trip planner', href: '/trip-planner' },
+  { label: 'Local guides', href: '/experiences?q=guide' },
+  { label: 'Eco-stays', href: '/experiences?categories=Nature' },
 ];
 
+const SEARCH_CATEGORIES = ['Food & Drink', 'Culture', 'Adventure', 'Nature', 'Art', 'Wellness', 'Beaches'];
+
+/** Segmented search: Where · Category · (search). Used on /experiences. */
+function BigSearch({ onSubmit }: { onSubmit: (q: string, cat: string) => void }) {
+  const [q, setQ] = useState('');
+  const [cat, setCat] = useState('');
+  const [focus, setFocus] = useState<'q' | 'cat' | null>(null);
+  return (
+    <form
+      onSubmit={(e) => { e.preventDefault(); onSubmit(q, cat); }}
+      role="search"
+      className={`relative mx-auto flex items-center w-full max-w-[820px] h-16 rounded-full border border-hairline shadow-soft transition-colors ${focus ? 'bg-sand' : 'bg-paper'}`}
+    >
+      <label className={`flex-[1.4] h-full flex flex-col justify-center pl-8 pr-4 rounded-full cursor-text transition-colors ${focus === 'q' ? 'bg-paper shadow-md' : 'hover:bg-sand'}`}>
+        <span className="text-xs font-semibold text-ink">Where</span>
+        <input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          onFocus={() => setFocus('q')}
+          onBlur={() => setFocus(null)}
+          placeholder="Search experiences in Accra"
+          className="w-full bg-transparent text-sm text-ink placeholder:text-ink-muted outline-none"
+        />
+      </label>
+      <span className={`w-px h-8 bg-hairline ${focus ? 'opacity-0' : ''}`} aria-hidden />
+      <label className={`flex-1 h-full flex flex-col justify-center pl-6 pr-24 rounded-full cursor-pointer transition-colors ${focus === 'cat' ? 'bg-paper shadow-md' : 'hover:bg-sand'}`}>
+        <span className="text-xs font-semibold text-ink">Category</span>
+        <select
+          value={cat}
+          onChange={(e) => setCat(e.target.value)}
+          onFocus={() => setFocus('cat')}
+          onBlur={() => setFocus(null)}
+          className={`w-full bg-transparent text-sm outline-none cursor-pointer appearance-none ${cat ? 'text-ink' : 'text-ink-muted'}`}
+        >
+          <option value="">Any type of experience</option>
+          {SEARCH_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+        </select>
+      </label>
+      <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 h-12 min-w-[48px] px-4 rounded-full bg-ink text-paper hover:bg-black flex items-center justify-center gap-2 text-[15px] font-semibold transition-colors" aria-label="Search">
+        <Search className="w-4 h-4" strokeWidth={2.5} />
+        {focus && <span>Search</span>}
+      </button>
+    </form>
+  );
+}
+
+function Wordmark({ size = 'text-[26px]' }: { size?: string }) {
+  return (
+    <>
+      <BrandLogo variant="mark" decorative className="h-8 w-8 object-contain" />
+      <span className={`font-display ${size} leading-none tracking-[-0.02em] text-ink`}>Nsoroma</span>
+    </>
+  );
+}
+
 export default function Navbar() {
-  const { user, logout } = useAuthStore();
+  const { user, logout, fetchMe } = useAuthStore();
   const router = useRouter();
-  const pathname = usePathname();
-  const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname() || '/';
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [search, setSearch] = useState('');
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [sheetQ, setSheetQ] = useState('');
+  const [sheetCat, setSheetCat] = useState('');
+  const [compactQ, setCompactQ] = useState('');
+  const [scrolled, setScrolled] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   const dashboardHref =
@@ -28,253 +87,252 @@ export default function Navbar() {
     user?.role === 'admin' ? '/admin' :
     '/dashboard/traveler';
 
-  // Close user menu on outside click
+  const isHome = pathname === '/';
+  const isBrowse = pathname === '/experiences';
+  const isAuth = ['/login', '/register', '/reset-password', '/verify-email'].includes(pathname);
+  const showBigSearch = isBrowse && !scrolled;
+  const showTabs = isHome || showBigSearch;
+  // Signed-in app areas bring their own chrome (DashboardShell); keep only the mobile tab bar.
+  const isApp = pathname.startsWith('/dashboard') || pathname.startsWith('/admin');
+
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
-        setUserMenuOpen(false);
-      }
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) setUserMenuOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    router.push(search.trim() ? `/experiences?q=${encodeURIComponent(search.trim())}` : '/experiences');
-    setSearch('');
-    setSearchOpen(false);
-    setMenuOpen(false);
+  useEffect(() => {
+    // Hysteresis: collapse past 120px, expand only back at the very top (avoids jitter as the header shrinks).
+    const onScroll = () => setScrolled((was) => (was ? window.scrollY > 4 : window.scrollY > 120));
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => { setUserMenuOpen(false); setSheetOpen(false); }, [pathname]);
+
+  // Restore the signed-in user after a full page load (the token lives in localStorage).
+  useEffect(() => {
+    if (!useAuthStore.getState().user) void fetchMe();
+  }, [fetchMe]);
+
+  const go = (q: string, cat: string) => {
+    const params = new URLSearchParams();
+    if (q.trim()) params.set('q', q.trim());
+    if (cat) params.set('categories', cat);
+    const qs = params.toString();
+    router.push(qs ? `/experiences?${qs}` : '/experiences');
+    setSheetOpen(false);
   };
 
-  const isDashboard = pathname?.startsWith('/dashboard');
+  const isActive = (href: string) => !href.includes('?') && pathname === href;
+  const initial = (user?.profile?.firstName?.[0] ?? user?.email?.[0] ?? 'U').toUpperCase();
+  const menuItem = 'flex w-full items-center gap-3 text-left px-4 py-2.5 text-sm text-ink rounded-xl hover:bg-sand transition-colors';
+
+  const tabs = [
+    { label: 'Explore', href: '/experiences', Icon: Compass, active: pathname === '/' || pathname.startsWith('/experiences') },
+    { label: 'Wishlists', href: user ? `${dashboardHref}?tab=wishlist` : '/login', Icon: Heart, active: false },
+    { label: 'Plan', href: '/trip-planner', Icon: Sparkles, active: pathname.startsWith('/trip-planner') || pathname.startsWith('/itineraries') },
+    { label: 'Trips', href: user ? dashboardHref : '/login', Icon: Luggage, active: pathname.startsWith('/dashboard') || pathname.startsWith('/admin') },
+    { label: user ? 'Profile' : 'Log in', href: user ? '/settings/notifications' : '/login', Icon: UserRound, active: pathname.startsWith('/settings') || pathname === '/login' },
+  ];
 
   return (
     <>
-      {!isDashboard && (
-        <nav className="bg-white/80 backdrop-blur-md border-b border-black/5 sticky top-0 z-40">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-20 gap-4">
+      {/* ── Desktop / tablet header ───────────────────────────────────── */}
+      {!isApp && (<>
+      <header className={`hidden md:block sticky top-0 z-40 bg-canvas/90 backdrop-blur-xl border-b transition-colors ${scrolled ? 'border-hairline' : 'border-transparent'}`}>
+        <div className="max-w-page mx-auto px-6 lg:px-10 xl:px-16">
+          <div className="h-20 flex items-center justify-between gap-4">
+            <Link href="/" className="flex items-center gap-2 shrink-0" aria-label="Nsoroma home">
+              <Wordmark />
+            </Link>
 
-          {/* Logo */}
-          <Link href="/" className="shrink-0 text-2xl font-extrabold tracking-tight text-accra-green">
-            Nsoroma
-          </Link>
-
-          {/* Center nav */}
-          <div className="hidden lg:flex items-center gap-1">
-            {NAV_LINKS.map((link) => {
-              const active = pathname === link.href.split('?')[0];
-              return (
-                <Link
-                  key={link.label}
-                  href={link.href}
-                  className={`relative px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                    active ? 'text-accra-green' : 'text-gray-600 hover:text-accra-green hover:bg-black/5'
-                  }`}
-                >
-                  {link.label}
-                  {active && (
-                    <span className="absolute left-4 right-4 -bottom-0.5 h-0.5 rounded-full bg-accra-gold" />
-                  )}
-                </Link>
-              );
-            })}
-          </div>
-
-          {/* Right side */}
-          <div className="flex items-center gap-2 shrink-0">
-            {searchOpen ? (
-              <form onSubmit={handleSearch} className="hidden md:flex items-center gap-2 border border-gray-200 bg-white rounded-full pl-4 pr-1 py-1">
+            {showTabs ? (
+              <nav className="flex items-center gap-1 lg:gap-2" aria-label="Main">
+                {NAV_LINKS.map((link) => {
+                  const active = isActive(link.href);
+                  return (
+                    <Link
+                      key={link.label}
+                      href={link.href}
+                      className={`px-4 py-2 rounded-full text-[15px] transition-colors ${active ? 'bg-ink text-paper' : 'text-stone-600 hover:text-ink hover:bg-sand'}`}
+                    >
+                      {link.label}
+                    </Link>
+                  );
+                })}
+              </nav>
+            ) : !isAuth ? (
+              <form
+                onSubmit={(e) => { e.preventDefault(); go(compactQ, ''); }}
+                className="flex items-center h-12 rounded-full border border-hairline bg-paper shadow-sm hover:shadow-md transition-shadow pl-5 pr-1.5 gap-3 w-full max-w-md"
+                role="search"
+              >
+                <Search className="w-4 h-4 text-stone-600" />
                 <input
-                  autoFocus
-                  type="text"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  onBlur={() => !search && setSearchOpen(false)}
-                  placeholder="Search experiences..."
-                  className="w-44 text-sm text-gray-800 placeholder-gray-400 outline-none bg-transparent"
+                  value={compactQ}
+                  onChange={(e) => setCompactQ(e.target.value)}
+                  placeholder="Search experiences in Accra"
+                  className="flex-1 min-w-0 bg-transparent text-sm text-ink placeholder:text-ink-muted outline-none"
                 />
-                <button type="submit" className="w-8 h-8 bg-accra-green rounded-full flex items-center justify-center hover:bg-accra-dark transition-colors">
-                  <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
+                <button type="submit" aria-label="Search" className="w-9 h-9 rounded-full bg-ink text-paper hover:bg-black flex items-center justify-center">
+                  <ArrowRight className="w-4 h-4" />
                 </button>
               </form>
-            ) : (
-              <button
-                onClick={() => setSearchOpen(true)}
-                aria-label="Search experiences"
-                className="hidden md:flex w-10 h-10 items-center justify-center rounded-full text-gray-600 hover:text-accra-green hover:bg-black/5 transition-colors"
+            ) : <span />}
+
+            <div className="flex items-center gap-1 shrink-0">
+              <Link
+                href={user?.role === 'guide' ? '/dashboard/guide' : '/register'}
+                className="hidden lg:block text-sm font-semibold text-ink px-4 py-2.5 rounded-full hover:bg-sand transition-colors"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </button>
-            )}
+                {user?.role === 'guide' ? 'Switch to hosting' : 'Become a guide'}
+              </Link>
 
-            <Link
-              href="/trip-planner"
-              className="hidden sm:block text-sm font-semibold text-white bg-accra-green hover:bg-accra-dark px-5 py-2.5 rounded-full transition-colors"
-            >
-              Plan Trip
-            </Link>
+              {user && <NotificationCenter />}
 
-            {user ? (
-              <>
-                <NotificationCenter />
-                <div ref={userMenuRef} className="relative">
-                  <button
-                    onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    className="flex items-center justify-center w-10 h-10 rounded-full bg-accra-green text-white text-sm font-semibold hover:bg-accra-dark transition-colors"
-                  >
-                    {user.email?.[0]?.toUpperCase() ?? 'U'}
-                  </button>
-
-                  {userMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-52 bg-white rounded-2xl shadow-xl border border-gray-100 py-1 animate-fade-in">
-                      <div className="px-4 py-2 border-b border-gray-100">
-                        <p className="text-xs text-gray-500">Signed in as</p>
-                        <p className="text-sm font-medium text-gray-900 truncate">{user.email}</p>
-                      </div>
-                      <Link
-                        href={dashboardHref}
-                        onClick={() => setUserMenuOpen(false)}
-                        className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
-                      >
-                        Dashboard
-                      </Link>
-                      <Link
-                        href="/settings/notifications"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
-                      >
-                        Settings
-                      </Link>
-                      <div className="border-t border-gray-100 mt-1">
-                        <button
-                          onClick={() => { logout(); setUserMenuOpen(false); }}
-                          className="block w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
-                        >
-                          Sign out
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </>
-            ) : (
-              <div className="flex items-center gap-1">
-                <Link
-                  href="/login"
-                  className="text-sm font-medium text-accra-green hover:bg-black/5 px-3 py-2 rounded-full transition-colors"
+              <div ref={userMenuRef} className="relative ml-1">
+                <button
+                  onClick={() => setUserMenuOpen((o) => !o)}
+                  aria-label="Open account menu"
+                  aria-expanded={userMenuOpen}
+                  className="flex items-center gap-2.5 pl-3.5 pr-1.5 py-1.5 rounded-full border border-hairline bg-paper hover:shadow-md transition-shadow"
                 >
-                  Sign in
-                </Link>
-                <Link
-                  href="/register"
-                  className="text-sm font-semibold text-accra-green bg-accra-gold hover:brightness-105 px-4 py-2 rounded-full transition-all"
-                >
-                  Sign up
-                </Link>
+                  <Menu className="w-4 h-4 text-ink" />
+                  <span className="w-8 h-8 rounded-full bg-ink text-paper text-sm font-semibold flex items-center justify-center overflow-hidden">
+                    {user ? (
+                      user.profile?.profilePhotoUrl
+                        ? <img src={user.profile.profilePhotoUrl} alt="" className="w-full h-full object-cover" />
+                        : initial
+                    ) : <UserRound className="w-4 h-4" />}
+                  </span>
+                </button>
+
+                {userMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-64 bg-paper rounded-2xl shadow-float border border-hairline p-2 animate-fade-in z-50">
+                    {user ? (
+                      <>
+                        <div className="px-4 py-2.5">
+                          <p className="text-xs text-ink-muted">Signed in as</p>
+                          <p className="text-sm font-semibold text-ink truncate">{user.email}</p>
+                        </div>
+                        <div className="my-1 border-t border-hairline" />
+                        <Link href={dashboardHref} className={`${menuItem} font-semibold`}>Dashboard</Link>
+                        {user.role !== 'guide' && user.role !== 'admin' && (
+                          <>
+                            <Link href="/dashboard/traveler?tab=bookings" className={`${menuItem} font-semibold`}>Trips</Link>
+                            <Link href="/dashboard/traveler?tab=wishlist" className={`${menuItem} font-semibold`}>Wishlists</Link>
+                          </>
+                        )}
+                        <Link href="/trip-planner" className={menuItem}>Trip planner</Link>
+                        <Link href="/settings/notifications" className={menuItem}>Notifications & settings</Link>
+                        <div className="my-1 border-t border-hairline" />
+                        <button onClick={() => { logout(); setUserMenuOpen(false); router.push('/'); }} className={menuItem}>Log out</button>
+                      </>
+                    ) : (
+                      <>
+                        <Link href="/register" className={`${menuItem} font-semibold`}>Sign up</Link>
+                        <Link href="/login" className={menuItem}>Log in</Link>
+                        <div className="my-1 border-t border-hairline" />
+                        <Link href="/trip-planner" className={menuItem}>AI trip planner</Link>
+                        <Link href="/register" className={menuItem}>Become a guide</Link>
+                        <Link href="/experiences" className={menuItem}>Browse experiences</Link>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
-            )}
-
-            {/* Mobile hamburger */}
-            <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="lg:hidden p-2 text-gray-600 hover:text-accra-green"
-              aria-label="Toggle menu"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d={menuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'} />
-              </svg>
-            </button>
+            </div>
           </div>
-        </div>
-      </div>
 
-      {/* Mobile menu */}
-      {menuOpen && (
-        <div className="lg:hidden border-t border-gray-100 bg-white px-4 py-3 space-y-1 animate-fade-in">
-          <form onSubmit={handleSearch} className="flex gap-2 mb-3">
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search experiences..."
-              className="flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm outline-none"
-            />
-            <button type="submit" className="bg-accra-green text-white px-4 py-2 rounded-full text-sm font-medium">
-              Go
-            </button>
-          </form>
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.label}
-              href={link.href}
-              onClick={() => setMenuOpen(false)}
-              className="block py-2 text-sm font-medium text-gray-700"
-            >
-              {link.label}
-            </Link>
-          ))}
-          {user ? (
-            <>
-              <Link href={dashboardHref} onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-medium text-gray-700">Dashboard</Link>
-              <button onClick={() => { logout(); setMenuOpen(false); }} className="block w-full text-left py-2 text-sm font-medium text-gray-500">Sign out</button>
-            </>
-          ) : (
-            <>
-              <Link href="/login" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-medium text-gray-700">Sign in</Link>
-              <Link href="/register" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-semibold text-accra-green">Sign up</Link>
-            </>
+          {showBigSearch && (
+            <div className="pb-6 pt-1 animate-fade-in">
+              <BigSearch onSubmit={go} />
+            </div>
           )}
         </div>
+      </header>
+
+      {/* ── Mobile header ─────────────────────────────────────────────── */}
+      {isAuth ? (
+        <header className="md:hidden sticky top-0 z-40 bg-canvas/95 backdrop-blur px-4 h-14 flex items-center border-b border-hairline">
+          <Link href="/" className="flex items-center gap-2" aria-label="Nsoroma home"><Wordmark size="text-[22px]" /></Link>
+        </header>
+      ) : (
+        <header className="md:hidden sticky top-0 z-40 bg-canvas/95 backdrop-blur px-4 pt-3 pb-3 border-b border-hairline">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setSheetOpen(true)}
+              className="flex-1 flex items-center justify-center gap-2.5 rounded-full border border-hairline bg-paper shadow-sm px-4 py-3"
+            >
+              <Search className="w-[18px] h-[18px] text-ink" strokeWidth={2.4} />
+              <span className="text-sm font-semibold text-ink">Start your search</span>
+            </button>
+            {user && <NotificationCenter />}
+          </div>
+        </header>
       )}
-    </nav>
-    )}
 
-    {/* Modern Bottom Navigation (Mobile) */}
-    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bottom-nav-glass px-6 pb-6 pt-3 flex items-center justify-between rounded-t-[32px]">
-      <Link href={dashboardHref} className="flex flex-col items-center gap-1 group">
-        <svg className={`w-6 h-6 ${pathname === dashboardHref ? 'text-sea' : 'text-gray-400 group-hover:text-sea-light'}`} fill={pathname === dashboardHref ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-        </svg>
-        <span className={`text-[10px] font-semibold ${pathname === dashboardHref ? 'text-sea' : 'text-gray-400 group-hover:text-sea-light'}`}>Home</span>
-      </Link>
-      
-      <Link href="/experiences" className="flex flex-col items-center gap-1 group">
-        <svg className={`w-6 h-6 ${pathname === '/experiences' ? 'text-sea' : 'text-gray-400 group-hover:text-sea-light'}`} fill={pathname === '/experiences' ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
-        <span className={`text-[10px] font-semibold ${pathname === '/experiences' ? 'text-sea' : 'text-gray-400 group-hover:text-sea-light'}`}>Explore</span>
-      </Link>
+      {/* ── Mobile search sheet ───────────────────────────────────────── */}
+      {sheetOpen && (
+        <div className="md:hidden fixed inset-0 z-[60] bg-canvas flex flex-col animate-fade-in">
+          <div className="flex items-center justify-between px-4 pt-4">
+            <button onClick={() => setSheetOpen(false)} aria-label="Close search" className="w-9 h-9 rounded-full border border-hairline bg-paper flex items-center justify-center">
+              <X className="w-4 h-4" />
+            </button>
+            <span className="text-[15px] font-semibold">Experiences</span>
+            <span className="w-9" />
+          </div>
+          <form onSubmit={(e) => { e.preventDefault(); go(sheetQ, sheetCat); }} className="flex-1 flex flex-col px-3 pt-5 gap-3 overflow-y-auto">
+            <div className="bg-paper rounded-[28px] shadow-card p-5 animate-scale-in">
+              <h2 className="text-[32px] leading-tight">Where to?</h2>
+              <label className="mt-4 flex items-center gap-3 rounded-2xl border border-stone-300 px-4 py-3.5 focus-within:border-ink focus-within:ring-1 focus-within:ring-ink">
+                <Search className="w-4 h-4 text-ink" />
+                <input
+                  autoFocus
+                  value={sheetQ}
+                  onChange={(e) => setSheetQ(e.target.value)}
+                  placeholder="Search experiences"
+                  className="flex-1 bg-transparent text-[15px] font-medium outline-none placeholder:text-ink-muted"
+                />
+              </label>
+              <p className="mt-5 text-sm font-semibold">Type of experience</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {SEARCH_CATEGORIES.map((c) => (
+                  <button type="button" key={c} onClick={() => setSheetCat((cur) => (cur === c ? '' : c))} className={`pill-tab ${sheetCat === c ? 'pill-tab-active' : ''}`}>
+                    {c}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <Link href="/trip-planner" className="bg-paper rounded-2xl shadow-sm px-5 py-4 flex items-center justify-between">
+              <span className="text-sm text-ink-muted">Not sure where to start?</span>
+              <span className="text-sm font-semibold inline-flex items-center gap-1.5"><Sparkles className="w-4 h-4" />Ask the AI planner</span>
+            </Link>
+            <div className="mt-auto sticky bottom-0 -mx-3 bg-paper border-t border-hairline px-6 py-4 flex items-center justify-between">
+              <button type="button" onClick={() => { setSheetQ(''); setSheetCat(''); }} className="text-[15px] font-semibold underline underline-offset-4">Clear all</button>
+              <button type="submit" className="btn-primary px-6"><Search className="w-4 h-4" /> Search</button>
+            </div>
+          </form>
+        </div>
+      )}
 
-      <div className="relative -top-6">
-        <Link href="/trip-planner" className="w-14 h-14 rounded-full fab-button flex items-center justify-center text-white hover:scale-105 transition-transform border-4 border-white">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
-          </svg>
-        </Link>
-      </div>
+      </>)}
 
-      <button onClick={() => { if (!user) router.push('/login'); else router.push(`${dashboardHref}?tab=wishlist`); }} className="flex flex-col items-center gap-1 group">
-        <svg className="w-6 h-6 text-gray-400 group-hover:text-sea-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-        </svg>
-        <span className="text-[10px] font-semibold text-gray-400 group-hover:text-sea-light">Wishlist</span>
-      </button>
-
-      <Link href="/settings/notifications" className="flex flex-col items-center gap-1 group">
-        <svg className={`w-6 h-6 ${pathname?.startsWith('/settings') ? 'text-sea' : 'text-gray-400 group-hover:text-sea-light'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-        <span className={`text-[10px] font-semibold ${pathname?.startsWith('/settings') ? 'text-sea' : 'text-gray-400 group-hover:text-sea-light'}`}>Settings</span>
-      </Link>
-    </div>
-  </>
+      {/* ── Mobile bottom tab bar ─────────────────────────────────────── */}
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 bottom-nav-glass pb-[max(0.5rem,env(safe-area-inset-bottom))]" aria-label="Primary">
+        <div className="grid grid-cols-5 pt-2">
+          {tabs.map(({ label, href, Icon, active }) => (
+            <Link key={label} href={href} className="flex flex-col items-center gap-1 py-1" aria-current={active ? 'page' : undefined}>
+              <Icon className={`w-6 h-6 ${active ? 'text-ink' : 'text-stone-400'}`} strokeWidth={active ? 2.2 : 1.6} />
+              <span className={`text-[10px] ${active ? 'text-ink font-bold' : 'text-stone-500 font-medium'}`}>{label}</span>
+            </Link>
+          ))}
+        </div>
+      </nav>
+    </>
   );
 }

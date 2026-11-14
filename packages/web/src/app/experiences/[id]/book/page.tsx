@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { experiencesApi } from '@/lib/api';
 import BookingForm, { AvailabilitySlot } from '@/components/booking/BookingForm';
+import { Compass, ShieldCheck } from 'lucide-react';
 
 interface ExperienceSummary {
   id: string;
@@ -14,6 +15,10 @@ interface ExperienceSummary {
   cancellationPolicy: string;
   availability: { slots: AvailabilitySlot[] };
   images?: { url: string; thumbnailUrl: string }[];
+  averageRating?: number;
+  reviewCount?: number;
+  category?: string[];
+  location?: { address: string };
 }
 
 export default function BookingPage() {
@@ -33,75 +38,107 @@ export default function BookingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full" />
+      <div className="max-w-[1120px] mx-auto px-6 sm:px-10 pt-10 grid lg:grid-cols-[1fr_440px] gap-16">
+        <div className="space-y-4"><div className="h-9 w-64 rounded-full shimmer" /><div className="h-72 rounded-xl shimmer" /></div>
+        <div className="hidden lg:block h-96 rounded-xl shimmer" />
       </div>
     );
   }
 
   if (!experience) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-[60vh] flex items-center justify-center px-6">
         <div className="text-center">
-          <p className="text-gray-500 mb-3">Experience not found.</p>
-          <Link href="/experiences" className="text-blue-600 hover:underline text-sm">
-            Browse experiences
-          </Link>
+          <div className="icon-tile w-16 h-16 mx-auto mb-5"><Compass className="w-7 h-7" strokeWidth={1.5} aria-hidden /></div>
+          <h1 className="text-2xl font-semibold">We can’t find that experience</h1>
+          <Link href="/experiences" className="btn-primary mt-6">Browse experiences</Link>
         </div>
       </div>
     );
   }
 
   const slots = experience.availability?.slots || [];
+  const policy = experience.cancellationPolicy || 'flexible';
+  const POLICY: Record<string, string> = {
+    flexible: 'Free cancellation up to 24 hours before the start time.',
+    moderate: 'Free cancellation up to 7 days before the start time.',
+    strict: 'Free cancellation up to 14 days before the start time.',
+  };
+  const img = experience.images?.[0];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-2xl mx-auto px-4 py-8">
-        {!booked && (
-          <Link
-            href={`/experiences/${id}`}
-            className="text-blue-600 hover:underline text-sm mb-6 inline-block"
-          >
-            ← Back to experience
-          </Link>
-        )}
-
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-          {/* Experience header */}
-          <div className="p-6 border-b border-gray-100">
-            <h1 className="text-xl font-bold text-gray-900">{experience.title}</h1>
-            <div className="flex items-center gap-3 mt-1 text-sm text-gray-500">
-              <span>{experience.duration}h</span>
-              <span className="text-gray-300">·</span>
-              <span className="capitalize">{experience.cancellationPolicy} cancellation</span>
-            </div>
-          </div>
-
-          {/* Booking form */}
-          <div className="p-6">
-            <BookingForm
-              experienceId={experience.id}
-              price={experience.price}
-              slots={slots}
-              onSuccess={() => {
-                setBooked(true);
-                // Redirect to dashboard after short delay
-                setTimeout(() => router.push('/dashboard/traveler'), 3000);
-              }}
-            />
-          </div>
+    <div className="bg-canvas">
+      <div className="max-w-[1120px] mx-auto px-6 sm:px-10 pt-8 md:pt-12 pb-10">
+        <div className="flex items-center gap-3">
+          {!booked && (
+            <Link href={`/experiences/${id}`} className="w-9 h-9 -ml-2 rounded-full hover:bg-fog flex items-center justify-center" aria-label="Back to experience">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+            </Link>
+          )}
+          <h1 className="text-[38px] sm:text-[46px] leading-[1.05] font-semibold">{booked ? 'You’re all set' : 'Confirm and pay'}</h1>
         </div>
 
-        {/* Cancellation policy info */}
-        {!booked && (
-          <div className="mt-4 p-4 bg-amber-50 border border-amber-100 rounded-lg text-sm text-amber-800">
-            <strong className="font-medium">Cancellation policy: </strong>
-            <span className="capitalize">{experience.cancellationPolicy}</span>
-            {experience.cancellationPolicy === 'flexible' && ' — Full refund up to 24 hours before.'}
-            {experience.cancellationPolicy === 'moderate' && ' — Full refund up to 7 days before.'}
-            {experience.cancellationPolicy === 'strict' && ' — Full refund up to 14 days before.'}
+        <div className="mt-8 grid lg:grid-cols-[1fr_440px] gap-10 lg:gap-20 items-start">
+          {/* Left: steps */}
+          <div className="min-w-0 order-2 lg:order-1">
+            <section className="pb-8 border-b border-[#E0E0E5]">
+              <h2 className="text-[30px] leading-tight font-semibold mb-6">Your trip</h2>
+              <BookingForm
+                experienceId={experience.id}
+                price={experience.price}
+                slots={slots}
+                onSuccess={() => {
+                  setBooked(true);
+                  // Redirect to dashboard after short delay
+                  setTimeout(() => router.push('/dashboard/traveler'), 3000);
+                }}
+              />
+            </section>
+            {!booked && (
+              <>
+                <section className="py-8 border-b border-[#E0E0E5]">
+                  <h2 className="text-[30px] leading-tight font-semibold mb-2">Cancellation policy</h2>
+                  <p className="text-ink"><span className="font-semibold capitalize">{policy}.</span> {POLICY[policy] ?? ''}</p>
+                </section>
+                <section className="py-8">
+                  <h2 className="text-[30px] leading-tight font-semibold mb-2">Ground rules</h2>
+                  <p className="text-ink-muted">We ask every guest to remember a few simple things about what makes a great guest.</p>
+                  <ul className="mt-3 list-disc pl-5 text-ink space-y-1">
+                    <li>Arrive at the meeting point on time</li>
+                    <li>Respect local customs and your host’s community</li>
+                  </ul>
+                </section>
+              </>
+            )}
           </div>
-        )}
+
+          {/* Right: summary card */}
+          <aside className="order-1 lg:order-2 lg:sticky lg:top-28 rounded-xl border border-[#E0E0E5] p-6">
+            <div className="flex gap-4 pb-6 border-b border-[#E0E0E5]">
+              <div className="w-28 h-24 rounded-lg overflow-hidden bg-[#EBEBF0] shrink-0">
+                {img && (
+                  <img src={img.thumbnailUrl || img.url} alt={experience.title} className="w-full h-full object-cover" />
+                )}
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs text-ink-muted">{experience.category?.[0] ?? 'Experience'}{experience.location?.address ? ` · ${experience.location.address}` : ''}</p>
+                <p className="mt-0.5 font-semibold leading-snug line-clamp-2">{experience.title}</p>
+                {experience.averageRating ? (
+                  <p className="mt-1 text-xs"><span className="font-semibold">★ {experience.averageRating.toFixed(2)}</span> <span className="text-ink-muted">({experience.reviewCount ?? 0})</span></p>
+                ) : null}
+              </div>
+            </div>
+            <div className="py-6 border-b border-[#E0E0E5] space-y-2 text-[15px]">
+              <h3 className="text-[22px] font-semibold mb-3">Price details</h3>
+              <div className="flex justify-between"><span>Price per guest</span><span>{experience.price.currency === 'USD' ? '$' : `${experience.price.currency} `}{experience.price.amount.toFixed(0)}</span></div>
+              <div className="flex justify-between"><span>Duration</span><span>{experience.duration} hrs</span></div>
+            </div>
+            <p className="pt-5 flex items-start gap-2 text-sm text-ink-muted">
+              <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5" aria-hidden />
+              Your payment is held in escrow and only released to the guide after your experience.
+            </p>
+          </aside>
+        </div>
       </div>
     </div>
   );

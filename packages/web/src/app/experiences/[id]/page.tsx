@@ -9,6 +9,9 @@ import { useAuthStore } from '@/store/auth';
 import StarRating from '@/components/ui/StarRating';
 import BookingForm from '@/components/booking/BookingForm';
 import ExperienceCard, { Experience } from '@/components/experiences/ExperienceCard';
+import Carousel from '@/components/ui/Carousel';
+import { useToast } from '@/components/ui/Toast';
+import { Compass, MapPin, ShieldCheck } from 'lucide-react';
 
 interface Review {
   id: string;
@@ -41,6 +44,12 @@ interface ExperienceDetail extends Experience {
 }
 
 const REVIEWS_PER_PAGE = 5;
+
+const POLICY_COPY: Record<string, string> = {
+  flexible: 'Cancel at least 24 hours before the start time for a full refund.',
+  moderate: 'Cancel at least 7 days before the start time for a full refund.',
+  strict: 'Cancel at least 14 days before the start time for a full refund.',
+};
 
 function buildCalendarDays(year: number, month: number) {
   const firstDay = new Date(year, month, 1).getDay();
@@ -79,48 +88,52 @@ function AvailabilityCalendar({ slots }: { slots: AvailabilitySlot[] }) {
   };
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-3">
-        <button onClick={prevMonth} className="p-1.5 rounded-full hover:bg-gray-100" aria-label="Previous month">
-          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
+    <div className="max-w-sm">
+      <div className="flex items-center justify-between mb-4">
+        <button onClick={prevMonth} className="w-8 h-8 rounded-full hover:bg-fog flex items-center justify-center" aria-label="Previous month">
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
         </button>
-        <span className="font-medium text-gray-800 text-sm">{monthName}</span>
-        <button onClick={nextMonth} className="p-1.5 rounded-full hover:bg-gray-100" aria-label="Next month">
-          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
+        <span className="font-semibold text-ink">{monthName}</span>
+        <button onClick={nextMonth} className="w-8 h-8 rounded-full hover:bg-fog flex items-center justify-center" aria-label="Next month">
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
         </button>
       </div>
-      <div className="grid grid-cols-7 text-center text-xs text-gray-400 mb-1">
-        {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(d => <div key={d} className="py-1">{d}</div>)}
+      <div className="grid grid-cols-7 text-center text-xs font-semibold text-ink-muted mb-1">
+        {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map((d) => <div key={d} className="py-1">{d}</div>)}
       </div>
-      <div className="grid grid-cols-7 gap-0.5 text-center text-xs">
+      <div className="grid grid-cols-7 text-center text-sm">
         {days.map((day, i) => {
           if (!day) return <div key={`e-${i}`} />;
           const dateStr = toDateStr(viewYear, viewMonth, day);
           const daySlots = slotsByDate[dateStr] || [];
-          const hasAvailable = daySlots.some(s => s.status === 'available' && s.booked < s.capacity);
-          const hasBooked = daySlots.some(s => s.status === 'booked' || s.booked >= s.capacity);
+          const hasAvailable = daySlots.some((s) => s.status === 'available' && s.booked < s.capacity);
+          const hasBooked = daySlots.some((s) => s.status === 'booked' || s.booked >= s.capacity);
           const isPast = new Date(dateStr) < new Date(today.toDateString());
-          let cls = 'w-8 h-8 mx-auto flex items-center justify-center rounded-full ';
-          if (isPast) cls += 'text-gray-300';
-          else if (hasAvailable) cls += 'bg-emerald-100 text-emerald-700 font-semibold';
-          else if (hasBooked) cls += 'text-gray-300 line-through';
-          else cls += 'text-gray-400';
+          let cls = 'w-10 h-10 mx-auto flex items-center justify-center rounded-full ';
+          if (isPast) cls += 'text-[#D2D2D7] line-through';
+          else if (hasAvailable) cls += 'font-semibold text-ink ring-1 ring-ink';
+          else if (hasBooked) cls += 'text-[#D2D2D7] line-through';
+          else cls += 'text-[#D2D2D7]';
           return (
-            <div key={dateStr} className="flex items-center justify-center py-0.5">
+            <div key={dateStr} className="py-0.5">
               <div className={cls}>{day}</div>
             </div>
           );
         })}
       </div>
-      <div className="flex items-center gap-4 mt-3 text-xs text-gray-400">
-        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-100 inline-block" />Available</span>
-        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-gray-100 inline-block" />Unavailable</span>
+      <div className="flex items-center gap-5 mt-4 text-xs text-ink-muted">
+        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full ring-1 ring-ink inline-block" />Open dates</span>
+        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-[#EBEBF0] inline-block" />Unavailable</span>
       </div>
     </div>
+  );
+}
+
+function Laurel({ flip = false }: { flip?: boolean }) {
+  return (
+    <svg viewBox="0 0 20 32" className={`w-5 h-8 ${flip ? '-scale-x-100' : ''}`} fill="currentColor" aria-hidden>
+      <path d="M15.4 28.8c-3 .6-6.6-1.5-7.5-4.6 3 .1 6 1.9 7.5 4.6zM9.8 23.7c-2.6-1.3-4.3-4.6-3.6-7.6 2.4 1.6 3.9 4.6 3.6 7.6zM6.4 16.4C4.3 14.4 3.7 10.8 5 8.1c1.8 2.3 2.4 5.6 1.4 8.3zM5.4 8.1C4.1 5.7 4.6 2.2 6.6.3c1 2.7.6 6-1.2 7.8zM16.5 31.4c-4.7-.8-8.8-4.6-10.3-9.3C4.6 17.4 4.2 12 5.6 7.4l.9.3c-1.3 4.4-1 9.6.6 14.1 1.5 4.4 5.3 7.9 9.6 8.6l-.2 1z" />
+    </svg>
   );
 }
 
@@ -128,6 +141,7 @@ export default function ExperienceDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { user } = useAuthStore();
+  const { toast } = useToast();
 
   const [experience, setExperience] = useState<ExperienceDetail | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -138,6 +152,7 @@ export default function ExperienceDetailPage() {
   const [activeImage, setActiveImage] = useState(0);
   const [wishlisted, setWishlisted] = useState(false);
   const [showAllPhotos, setShowAllPhotos] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -152,6 +167,13 @@ export default function ExperienceDetailPage() {
       setRecommendations(recsRes.data?.experiences || []);
     }).catch(() => {}).finally(() => setLoading(false));
   }, [id]);
+
+  useEffect(() => {
+    if (!showAllPhotos) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, [showAllPhotos]);
 
   const loadMoreReviews = async () => {
     if (!id) return;
@@ -170,18 +192,25 @@ export default function ExperienceDetailPage() {
     setWishlisted(!wishlisted);
   };
 
+  const share = async () => {
+    const url = typeof window !== 'undefined' ? window.location.href : '';
+    try {
+      if (navigator.share) await navigator.share({ title: experience?.title, url });
+      else { await navigator.clipboard.writeText(url); toast('Link copied', 'success'); }
+    } catch { /* cancelled */ }
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-white">
-        {/* Skeleton hero */}
-        <div className="h-[480px] bg-gray-200 animate-pulse" />
-        <div className="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-4">
-            <div className="h-8 bg-gray-200 rounded animate-pulse w-2/3" />
-            <div className="h-4 bg-gray-100 rounded animate-pulse w-1/3" />
-            <div className="h-24 bg-gray-100 rounded animate-pulse" />
-          </div>
-          <div className="h-64 bg-gray-200 rounded-2xl animate-pulse" />
+      <div className="max-w-[1120px] mx-auto px-5 sm:px-10 pt-6">
+        <div className="h-8 w-2/3 rounded-full shimmer" />
+        <div className="mt-6 grid grid-cols-4 grid-rows-2 gap-2 h-[300px] md:h-[440px] rounded-xl overflow-hidden">
+          <div className="col-span-4 md:col-span-2 row-span-2 shimmer" />
+          {[0, 1, 2, 3].map((i) => <div key={i} className="hidden md:block shimmer" />)}
+        </div>
+        <div className="mt-10 grid lg:grid-cols-[1fr_380px] gap-16">
+          <div className="space-y-3"><div className="h-6 w-1/2 rounded-full shimmer" /><div className="h-4 w-1/3 rounded-full shimmer" /><div className="h-28 rounded-xl shimmer" /></div>
+          <div className="hidden lg:block h-80 rounded-xl shimmer" />
         </div>
       </div>
     );
@@ -189,10 +218,12 @@ export default function ExperienceDetailPage() {
 
   if (!experience) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-500 mb-3">Experience not found.</p>
-          <Link href="/experiences" className="text-[#FF385C] hover:underline text-sm font-medium">Browse experiences</Link>
+      <div className="min-h-[60vh] flex items-center justify-center px-6">
+        <div className="text-center max-w-sm">
+          <div className="icon-tile w-16 h-16 mx-auto mb-5"><Compass className="w-7 h-7" strokeWidth={1.5} aria-hidden /></div>
+          <h1 className="text-2xl font-semibold">We can’t find that experience</h1>
+          <p className="text-ink-muted mt-2">It may have been removed or the link is incorrect.</p>
+          <Link href="/experiences" className="btn-primary mt-6">Browse experiences</Link>
         </div>
       </div>
     );
@@ -201,228 +232,244 @@ export default function ExperienceDetailPage() {
   const slots = experience.availability?.slots || [];
   const hasMoreReviews = reviews.length < reviewTotal;
   const images = experience.images || [];
-  const heroImg = images[activeImage]?.url || images[0]?.url;
+  const guideName = `${experience.guide?.profile?.firstName ?? ''} ${experience.guide?.profile?.lastName ?? ''}`.trim();
+  const isFavorite = experience.averageRating >= 4.8 && reviewTotal >= 3;
+  const policy = experience.cancellationPolicy || 'flexible';
+  const priceLabel = `${experience.price.currency === 'USD' ? '$' : `${experience.price.currency} `}${experience.price.amount.toFixed(0)}`;
+  const description = experience.description || '';
+  const longAbout = description.length > 420;
+
+  const highlights = [
+    { icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z', title: `${experience.duration} hour${experience.duration === 1 ? '' : 's'}`, desc: 'Take your time — the pace is set by the group.' },
+    { icon: 'M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z', title: experience.location.address, desc: 'Exact meeting point is shared after booking.' },
+    { icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z', title: `${policy.charAt(0).toUpperCase()}${policy.slice(1)} cancellation`, desc: POLICY_COPY[policy] ?? 'See the cancellation policy below.' },
+  ];
+
+  const IconBtn = ({ onClick, label, children }: { onClick: () => void; label: string; children: React.ReactNode }) => (
+    <button onClick={onClick} className="inline-flex items-center gap-2 px-2 py-1.5 -mx-2 rounded-lg text-sm font-semibold underline underline-offset-2 hover:bg-fog" aria-label={label}>
+      {children}
+    </button>
+  );
 
   return (
-    <div className="min-h-screen bg-white">
-
-      {/* Full-bleed photo hero with grid overlay */}
-      <div className="relative">
-        {/* Main hero image */}
-        <div className="relative h-[480px] bg-gray-100 overflow-hidden">
-          {heroImg ? (
-            <Image src={heroImg} alt={experience.title} fill className="object-cover" priority />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-              <svg className="w-20 h-20 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </div>
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
-
-          {/* Back button */}
-          <Link
-            href="/experiences"
-            className="absolute top-4 left-4 bg-white rounded-full p-2 shadow-md hover:shadow-lg transition-shadow"
-            aria-label="Back"
-          >
-            <svg className="w-4 h-4 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </Link>
-
-          {/* Wishlist + share */}
-          <div className="absolute top-4 right-4 flex gap-2">
-            <button
-              onClick={toggleWishlist}
-              className="bg-white rounded-full p-2 shadow-md hover:shadow-lg transition-shadow"
-              aria-label={wishlisted ? 'Remove from wishlist' : 'Save'}
-            >
-              <svg className={`w-4 h-4 ${wishlisted ? 'text-[#FF385C] fill-[#FF385C]' : 'text-gray-800'}`}
-                fill={wishlisted ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+    <div className="bg-canvas">
+      {/* ── Mobile photo hero ───────────────────────────────────────────── */}
+      <div className="md:hidden relative aspect-[4/3] bg-[#EBEBF0]">
+        {images[activeImage] && (
+          <Image src={images[activeImage].url} alt={experience.title} fill priority sizes="100vw" className="object-cover" />
+        )}
+        <div className="absolute top-4 inset-x-4 flex justify-between">
+          <button onClick={() => router.back()} className="w-9 h-9 rounded-full bg-paper shadow-md flex items-center justify-center" aria-label="Back">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+          </button>
+          <div className="flex gap-2">
+            <button onClick={share} className="w-9 h-9 rounded-full bg-paper shadow-md flex items-center justify-center" aria-label="Share">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v13M7 8l5-5 5 5M5 14v5a2 2 0 002 2h10a2 2 0 002-2v-5" /></svg>
+            </button>
+            <button onClick={toggleWishlist} className="w-9 h-9 rounded-full bg-paper shadow-md flex items-center justify-center" aria-label={wishlisted ? 'Remove from wishlist' : 'Save'}>
+              <svg viewBox="0 0 32 32" className={`w-4 h-4 ${wishlisted ? 'text-sun' : 'text-transparent'}`} fill="currentColor" stroke={wishlisted ? 'currentColor' : '#1D1D1F'} strokeWidth={2.5} aria-hidden>
+                <path d="M16 28c7-4.73 14-10 14-17a6.98 6.98 0 0 0-7-7c-1.8 0-3.58.68-4.95 2.05L16 8.1l-2.05-2.05a6.98 6.98 0 0 0-9.9 0A6.98 6.98 0 0 0 2 11c0 7 7 12.27 14 17z" />
               </svg>
             </button>
           </div>
-
-          {/* Thumbnail strip */}
-          {images.length > 1 && (
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
-              {images.slice(0, 6).map((img, i) => (
-                <button
-                  key={i}
-                  onClick={() => setActiveImage(i)}
-                  className={`w-12 h-8 rounded-lg overflow-hidden border-2 transition-all ${i === activeImage ? 'border-white scale-110' : 'border-white/50 opacity-70'}`}
-                >
-                  <Image src={img.thumbnailUrl || img.url} alt="" width={48} height={32} className="object-cover w-full h-full" />
-                </button>
-              ))}
-              {images.length > 6 && (
-                <button
-                  onClick={() => setShowAllPhotos(true)}
-                  className="w-12 h-8 rounded-lg bg-black/60 border-2 border-white/50 text-white text-xs font-semibold flex items-center justify-center"
-                >
-                  +{images.length - 6}
-                </button>
-              )}
-            </div>
-          )}
         </div>
+        {images.length > 1 && (
+          <>
+            <button onClick={() => setActiveImage((i) => (i - 1 + images.length) % images.length)} className="absolute inset-y-0 left-0 w-1/3" aria-label="Previous photo" />
+            <button onClick={() => setActiveImage((i) => (i + 1) % images.length)} className="absolute inset-y-0 right-0 w-1/3" aria-label="Next photo" />
+            <span className="absolute bottom-4 right-4 rounded-md bg-black/60 text-white text-xs font-semibold px-2.5 py-1">
+              {activeImage + 1} / {images.length}
+            </span>
+          </>
+        )}
       </div>
 
-      {/* Content */}
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+      <div className="max-w-[1120px] mx-auto px-6 sm:px-10">
+        {/* ── Title row (desktop) ───────────────────────────────────────── */}
+        <div className="hidden md:flex items-end justify-between gap-6 pt-6">
+          <h1 className="text-[36px] leading-tight font-semibold text-ink leading-tight">{experience.title}</h1>
+          <div className="flex items-center gap-4 shrink-0">
+            <IconBtn onClick={share} label="Share">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v13M7 8l5-5 5 5M5 14v5a2 2 0 002 2h10a2 2 0 002-2v-5" /></svg>
+              Share
+            </IconBtn>
+            <IconBtn onClick={toggleWishlist} label={wishlisted ? 'Remove from wishlist' : 'Save'}>
+              <svg viewBox="0 0 32 32" className={`w-4 h-4 ${wishlisted ? 'text-sun' : 'text-transparent'}`} fill="currentColor" stroke={wishlisted ? 'currentColor' : '#1D1D1F'} strokeWidth={3} aria-hidden>
+                <path d="M16 28c7-4.73 14-10 14-17a6.98 6.98 0 0 0-7-7c-1.8 0-3.58.68-4.95 2.05L16 8.1l-2.05-2.05a6.98 6.98 0 0 0-9.9 0A6.98 6.98 0 0 0 2 11c0 7 7 12.27 14 17z" />
+              </svg>
+              {wishlisted ? 'Saved' : 'Save'}
+            </IconBtn>
+          </div>
+        </div>
 
-          {/* Left: main info */}
-          <div className="lg:col-span-2 space-y-8">
-
-            {/* Title + meta */}
-            <div>
-              <div className="flex flex-wrap gap-2 mb-3">
-                {experience.category?.map((cat) => (
-                  <span key={cat} className="text-xs font-medium bg-gray-100 text-gray-600 px-3 py-1 rounded-full">{cat}</span>
-                ))}
-              </div>
-              <h1 className="text-3xl font-bold text-gray-900 leading-tight mb-3">{experience.title}</h1>
-              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
-                {experience.averageRating > 0 && (
-                  <span className="flex items-center gap-1 font-semibold text-gray-900">
-                    <svg className="w-4 h-4 text-[#FF385C]" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                    </svg>
-                    {experience.averageRating.toFixed(2)}
-                    <span className="font-normal text-gray-500">({reviewTotal} reviews)</span>
-                  </span>
+        {/* ── Photo grid (desktop) ──────────────────────────────────────── */}
+        <div className="hidden md:grid relative mt-6 grid-cols-4 grid-rows-2 gap-2 h-[440px] lg:h-[500px] rounded-[28px] overflow-hidden">
+          {[0, 1, 2, 3, 4].map((i) => {
+            const im = images[i];
+            return (
+              <button
+                key={i}
+                onClick={() => { setActiveImage(i); setShowAllPhotos(true); }}
+                className={`relative bg-[#EBEBF0] overflow-hidden group ${i === 0 ? 'col-span-2 row-span-2' : ''}`}
+                aria-label={`Open photo ${i + 1}`}
+                disabled={!im}
+              >
+                {im && (
+                  <Image src={im.url} alt={i === 0 ? experience.title : ''} fill priority={i === 0} sizes={i === 0 ? '50vw' : '25vw'} className="object-cover transition-[filter] duration-200 group-hover:brightness-90" />
                 )}
-                <span className="flex items-center gap-1">
-                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  {experience.duration} hours
-                </span>
-                <span className="flex items-center gap-1">
-                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  {experience.location.address}
-                </span>
-              </div>
-            </div>
+              </button>
+            );
+          })}
+          {images.length > 0 && (
+            <button
+              onClick={() => setShowAllPhotos(true)}
+              className="absolute bottom-6 right-6 inline-flex items-center gap-2 rounded-lg bg-paper border border-ink px-4 py-1.5 text-sm font-semibold hover:bg-fog"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden><path d="M3 11.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm5 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm5 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm-10-5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm5 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm5 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm-10-5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm5 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm5 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3z" /></svg>
+              Show all photos
+            </button>
+          )}
+        </div>
 
-            <hr className="border-gray-100" />
+        {/* ── Content + booking ────────────────────────────────────────── */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_372px] gap-12 lg:gap-24 pt-6 md:pt-10">
+          <div className="min-w-0">
+            <h1 className="md:hidden text-[36px] leading-tight font-semibold leading-tight">{experience.title}</h1>
+            <h2 className="hidden md:block text-[30px] leading-tight font-semibold text-ink">Experience in {experience.location.address}</h2>
+            <p className="mt-1 text-ink">
+              {experience.duration} hr{experience.duration === 1 ? '' : 's'} · Up to 8 guests · {experience.category?.join(' · ')}
+            </p>
+            {!isFavorite && experience.averageRating > 0 && (
+              <p className="mt-1 font-semibold flex items-center gap-1">
+                <svg viewBox="0 0 32 32" className="w-3.5 h-3.5" fill="currentColor" aria-hidden><path d="M15.1 1.58l-4.13 8.88-9.86 1.27a1 1 0 0 0-.54 1.74l7.3 6.57-1.97 9.85a1 1 0 0 0 1.48 1.06l8.62-5 8.63 5a1 1 0 0 0 1.48-1.06l-1.97-9.85 7.3-6.57a1 1 0 0 0-.55-1.73l-9.86-1.28-4.12-8.88a1 1 0 0 0-1.82 0z" /></svg>
+                {experience.averageRating.toFixed(2)} · <a href="#reviews" className="underline underline-offset-2">{reviewTotal} reviews</a>
+              </p>
+            )}
 
-            {/* Guide */}
+            {isFavorite && (
+              <a href="#reviews" className="mt-8 flex items-center gap-4 sm:gap-6 rounded-xl border border-[#E0E0E5] px-5 sm:px-6 py-5 hover:shadow-md transition-shadow">
+                <span className="flex items-center text-ink shrink-0">
+                  <Laurel />
+                  <span className="text-center leading-[1.1] font-semibold text-[17px] px-0.5">Guest<br />favorite</span>
+                  <Laurel flip />
+                </span>
+                <span className="hidden sm:block flex-1 text-[15px] font-semibold leading-snug">
+                  One of the most loved experiences on Nsoroma, according to guests
+                </span>
+                <span className="ml-auto flex items-center divide-x divide-[#E0E0E5]">
+                  <span className="px-4 text-center">
+                    <span className="block text-[22px] font-semibold leading-none">{experience.averageRating.toFixed(2)}</span>
+                    <span className="block text-[10px] tracking-[0.15em] mt-1" aria-hidden>★★★★★</span>
+                  </span>
+                  <span className="pl-4 text-center">
+                    <span className="block text-[22px] font-semibold leading-none">{reviewTotal}</span>
+                    <span className="block text-xs font-semibold underline mt-1">Reviews</span>
+                  </span>
+                </span>
+              </a>
+            )}
+
+            {/* Host */}
             {experience.guide && (
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-full bg-gray-200 overflow-hidden shrink-0 ring-2 ring-gray-100">
-                  {experience.guide.profile?.profilePhotoUrl ? (
-                    <Image src={experience.guide.profile.profilePhotoUrl} alt="Guide" width={56} height={56} className="object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-500 text-xl font-bold bg-gradient-to-br from-gray-200 to-gray-300">
-                      {experience.guide.profile?.firstName?.[0]}
-                    </div>
+              <div className="flex items-center gap-4 py-8 border-b border-[#E0E0E5]">
+                <div className="relative w-12 h-12 shrink-0">
+                  <div className="w-12 h-12 rounded-full bg-ink text-white overflow-hidden flex items-center justify-center text-lg font-semibold">
+                    {experience.guide.profile?.profilePhotoUrl
+                      ? <Image src={experience.guide.profile.profilePhotoUrl} alt={guideName} width={48} height={48} className="object-cover" />
+                      : experience.guide.profile?.firstName?.[0]}
+                  </div>
+                  {experience.guide.verified && (
+                    <span className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-leaf ring-2 ring-paper flex items-center justify-center" title="Verified guide">
+                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth={3.5} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                    </span>
                   )}
                 </div>
-                <div>
-                  <p className="text-xs text-gray-500 mb-0.5">Hosted by</p>
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-gray-900">
-                      {experience.guide.profile?.firstName} {experience.guide.profile?.lastName}
-                    </span>
-                    {experience.guide.verified && (
-                      <span className="flex items-center gap-1 text-xs text-[#FF385C] bg-rose-50 px-2 py-0.5 rounded-full font-medium">
-                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        Verified
-                      </span>
-                    )}
-                  </div>
-                  {experience.guide.profile?.bio && (
-                    <p className="text-sm text-gray-500 mt-0.5 line-clamp-2">{experience.guide.profile.bio}</p>
-                  )}
+                <div className="min-w-0">
+                  <p className="font-semibold text-ink">Hosted by {guideName || 'a local guide'}</p>
+                  <p className="text-sm text-ink-muted">{experience.guide.verified ? 'Verified guide · ' : ''}Local expert in Accra</p>
                 </div>
               </div>
             )}
 
-            <hr className="border-gray-100" />
-
-            {/* Description */}
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-3">About this experience</h2>
-              <p className="text-gray-600 leading-relaxed">{experience.description}</p>
-            </div>
-
             {/* Highlights */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {[
-                { icon: '🕐', label: 'Duration', value: `${experience.duration} hours` },
-                { icon: '📍', label: 'Location', value: experience.location.address },
-                { icon: '🔄', label: 'Cancellation', value: experience.cancellationPolicy || 'Flexible' },
-              ].map((h) => (
-                <div key={h.label} className="bg-gray-50 rounded-2xl p-4">
-                  <p className="text-xl mb-1">{h.icon}</p>
-                  <p className="text-xs text-gray-400 font-medium uppercase tracking-wide">{h.label}</p>
-                  <p className="text-sm font-semibold text-gray-800 mt-0.5 capitalize">{h.value}</p>
-                </div>
+            <ul className="py-8 space-y-6 border-b border-[#E0E0E5]">
+              {highlights.map((h) => (
+                <li key={h.title} className="flex gap-6">
+                  <svg className="w-6 h-6 shrink-0 text-ink mt-0.5" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d={h.icon} /></svg>
+                  <div>
+                    <p className="font-semibold text-ink">{h.title}</p>
+                    <p className="text-sm text-ink-muted">{h.desc}</p>
+                  </div>
+                </li>
               ))}
-            </div>
+            </ul>
 
-            <hr className="border-gray-100" />
+            {/* About */}
+            <section className="py-8 border-b border-[#E0E0E5]">
+              <h2 className="text-[30px] leading-tight font-semibold mb-4">What you’ll do</h2>
+              <p className={`text-ink leading-[1.6] whitespace-pre-line ${longAbout && !aboutOpen ? 'line-clamp-6' : ''}`}>{description}</p>
+              {longAbout && (
+                <button onClick={() => setAboutOpen((o) => !o)} className="mt-4 inline-flex items-center gap-1 font-semibold underline underline-offset-2">
+                  {aboutOpen ? 'Show less' : 'Show more'}
+                  <svg className={`w-3 h-3 transition-transform ${aboutOpen ? '-rotate-90' : ''}`} fill="none" stroke="currentColor" strokeWidth={3.5} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                </button>
+              )}
+            </section>
+
+            {/* Availability */}
+            {slots.length > 0 && (
+              <section className="py-8 border-b border-[#E0E0E5]">
+                <h2 className="text-[30px] leading-tight font-semibold">Upcoming availability</h2>
+                <p className="text-sm text-ink-muted mt-1 mb-6">Pick a date and time in the booking panel.</p>
+                <AvailabilityCalendar slots={slots} />
+              </section>
+            )}
 
             {/* Reviews */}
-            <div>
-              <div className="flex items-center gap-3 mb-6">
-                <svg className="w-5 h-5 text-[#FF385C]" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                </svg>
-                <h2 className="text-xl font-semibold text-gray-900">
-                  {experience.averageRating > 0 ? `${experience.averageRating.toFixed(2)} · ` : ''}{reviewTotal} review{reviewTotal !== 1 ? 's' : ''}
-                </h2>
-              </div>
+            <section id="reviews" className="py-10 border-b border-[#E0E0E5] scroll-mt-24">
+              <h2 className="text-[30px] leading-tight font-semibold flex items-center gap-2">
+                <svg viewBox="0 0 32 32" className="w-5 h-5" fill="currentColor" aria-hidden><path d="M15.1 1.58l-4.13 8.88-9.86 1.27a1 1 0 0 0-.54 1.74l7.3 6.57-1.97 9.85a1 1 0 0 0 1.48 1.06l8.62-5 8.63 5a1 1 0 0 0 1.48-1.06l-1.97-9.85 7.3-6.57a1 1 0 0 0-.55-1.73l-9.86-1.28-4.12-8.88a1 1 0 0 0-1.82 0z" /></svg>
+                {experience.averageRating > 0 ? `${experience.averageRating.toFixed(2)} · ` : ''}{reviewTotal} review{reviewTotal !== 1 ? 's' : ''}
+              </h2>
               {reviews.length === 0 ? (
-                <p className="text-gray-400 text-sm">No reviews yet — be the first!</p>
+                <p className="mt-4 text-ink-muted">No reviews yet — book now and be the first to share your experience.</p>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  {reviews.map((review) => (
-                    <div key={review.id}>
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold text-gray-600 shrink-0">
-                          {review.traveler?.profile?.firstName?.[0] ?? '?'}
+                <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-x-16 gap-y-10">
+                  {reviews.map((review) => {
+                    const name = review.traveler?.profile ? `${review.traveler.profile.firstName} ${review.traveler.profile.lastName}` : 'Traveler';
+                    return (
+                      <article key={review.id}>
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-full bg-[#1D1D1F] text-white flex items-center justify-center font-semibold shrink-0">
+                            {review.traveler?.profile?.firstName?.[0] ?? '?'}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-ink">{name}</p>
+                            <p className="text-sm text-ink-muted">
+                              {new Date(review.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-sm font-semibold text-gray-900">
-                            {review.traveler?.profile ? `${review.traveler.profile.firstName} ${review.traveler.profile.lastName}` : 'Traveler'}
-                          </p>
-                          <p className="text-xs text-gray-400">{new Date(review.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
-                        </div>
-                      </div>
-                      <StarRating value={review.rating} readonly size="sm" />
-                      {review.comment && <p className="text-sm text-gray-600 mt-1.5 leading-relaxed">{review.comment}</p>}
-                    </div>
-                  ))}
+                        <div className="mt-3"><StarRating value={review.rating} readonly size="sm" /></div>
+                        {review.comment && <p className="mt-2 text-ink leading-[1.55]">{review.comment}</p>}
+                      </article>
+                    );
+                  })}
                 </div>
               )}
               {hasMoreReviews && (
-                <button
-                  onClick={loadMoreReviews}
-                  className="mt-6 border border-gray-300 rounded-xl px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-                >
+                <button onClick={loadMoreReviews} className="mt-10 btn-ghost">
                   Show more reviews
                 </button>
               )}
-            </div>
-
-            <hr className="border-gray-100" />
+            </section>
 
             {/* Location */}
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Where you'll be</h2>
+            <section className="py-10 border-b border-[#E0E0E5]">
+              <h2 className="text-[30px] leading-tight font-semibold mb-2">Where you’ll be</h2>
+              <p className="text-ink mb-6">{experience.location.address}</p>
               {experience.location.latitude && experience.location.longitude ? (
-                <div className="rounded-2xl overflow-hidden h-64 border border-gray-100">
+                <div className="rounded-xl overflow-hidden h-[340px] border border-[#E0E0E5]">
                   <iframe
                     title="Location"
                     src={`https://www.openstreetmap.org/export/embed.html?bbox=${experience.location.longitude - 0.01},${experience.location.latitude - 0.01},${experience.location.longitude + 0.01},${experience.location.latitude + 0.01}&layer=mapnik&marker=${experience.location.latitude},${experience.location.longitude}`}
@@ -430,97 +477,128 @@ export default function ExperienceDetailPage() {
                   />
                 </div>
               ) : (
-                <div className="rounded-2xl bg-gray-50 h-48 flex items-center justify-center border border-gray-100">
-                  <div className="text-center text-gray-400">
-                    <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <p className="text-sm">{experience.location.address}</p>
+                <div className="rounded-xl bg-fog h-56 flex flex-col items-center justify-center text-ink-muted">
+                  <MapPin className="w-7 h-7 mb-2" strokeWidth={1.5} aria-hidden />
+                  <p className="text-sm">Exact meeting point shared after booking</p>
+                </div>
+              )}
+            </section>
+
+            {/* Meet your host */}
+            {experience.guide && (
+              <section className="py-10 border-b border-[#E0E0E5]">
+                <h2 className="text-[30px] leading-tight font-semibold mb-6">Meet your host</h2>
+                <div className="grid sm:grid-cols-[280px_1fr] gap-8 items-start">
+                  <div className="rounded-3xl shadow-[0_6px_20px_rgba(0,0,0,0.2)] p-6 text-center">
+                    <div className="relative w-24 h-24 mx-auto">
+                      <div className="w-24 h-24 rounded-full bg-ink text-white text-3xl font-semibold flex items-center justify-center overflow-hidden">
+                        {experience.guide.profile?.profilePhotoUrl
+                          ? <Image src={experience.guide.profile.profilePhotoUrl} alt={guideName} width={96} height={96} className="object-cover" />
+                          : experience.guide.profile?.firstName?.[0]}
+                      </div>
+                      {experience.guide.verified && (
+                        <span className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-leaf ring-4 ring-paper flex items-center justify-center">
+                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth={3.5} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                        </span>
+                      )}
+                    </div>
+                    <p className="mt-3 text-[26px] font-bold leading-tight">{experience.guide.profile?.firstName}</p>
+                    <p className="text-sm font-semibold">{experience.guide.verified ? 'Verified guide' : 'Local guide'}</p>
+                  </div>
+                  <div>
+                    {experience.guide.profile?.bio && <p className="text-ink leading-[1.6]">{experience.guide.profile.bio}</p>}
+                    <ul className="mt-5 space-y-2 text-sm text-ink">
+                      <li>Response rate: 100%</li>
+                      <li>Responds within an hour</li>
+                    </ul>
+                    <p className="mt-6 flex items-start gap-2 text-xs text-ink-muted max-w-sm">
+                      <ShieldCheck className="w-4 h-4 shrink-0" aria-hidden />
+                      To protect your payment, always pay and communicate through Nsoroma.
+                    </p>
                   </div>
                 </div>
-              )}
-              <p className="text-sm text-gray-500 mt-3">{experience.location.address}</p>
-            </div>
-
-            {/* Similar experiences */}
-            {recommendations.length > 0 && (
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-5">You might also like</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {recommendations.slice(0, 4).map((rec) => (
-                    <ExperienceCard key={rec.id} experience={rec} />
-                  ))}
-                </div>
-              </div>
+              </section>
             )}
-          </div>
 
-          {/* Right: sticky booking card */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-24 bg-white rounded-2xl border border-gray-200 shadow-xl p-6 space-y-5">
-              {/* Price */}
-              <div>
-                <span className="text-2xl font-bold text-gray-900">
-                  {experience.price.currency} {experience.price.amount.toFixed(0)}
-                </span>
-                <span className="text-gray-500 text-sm"> / person</span>
+            {/* Things to know */}
+            <section className="py-10">
+              <h2 className="text-[30px] leading-tight font-semibold mb-6">Things to know</h2>
+              <div className="grid sm:grid-cols-3 gap-8 text-sm">
+                <div>
+                  <p className="font-semibold mb-2">Cancellation policy</p>
+                  <p className="text-ink-muted">{POLICY_COPY[policy] ?? policy}</p>
+                </div>
+                <div>
+                  <p className="font-semibold mb-2">Guest requirements</p>
+                  <p className="text-ink-muted">Up to 8 guests. Comfortable shoes and water recommended.</p>
+                </div>
+                <div>
+                  <p className="font-semibold mb-2">Payments</p>
+                  <p className="text-ink-muted">Held in escrow and released to your guide after the experience.</p>
+                </div>
               </div>
-
-              {/* Rating summary */}
-              {experience.averageRating > 0 && (
-                <div className="flex items-center gap-1.5 text-sm">
-                  <svg className="w-4 h-4 text-[#FF385C]" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                  </svg>
-                  <span className="font-semibold text-gray-900">{experience.averageRating.toFixed(2)}</span>
-                  <span className="text-gray-400">·</span>
-                  <span className="text-gray-500 underline cursor-pointer">{reviewTotal} reviews</span>
-                </div>
-              )}
-
-              <hr className="border-gray-100" />
-
-              <BookingForm experienceId={experience.id} price={experience.price} slots={slots} />
-
-              {/* Availability calendar */}
-              {slots.length > 0 && (
-                <div className="border-t border-gray-100 pt-4">
-                  <p className="text-sm font-semibold text-gray-700 mb-3">Availability</p>
-                  <AvailabilityCalendar slots={slots} />
-                </div>
-              )}
-
-              <p className="text-xs text-center text-gray-400">You won't be charged yet</p>
-            </div>
+            </section>
           </div>
+
+          {/* ── Sticky booking card ───────────────────────────────────────── */}
+          <aside id="book" className="scroll-mt-24">
+            <div className="lg:sticky lg:top-28 rounded-xl border border-[#E0E0E5] shadow-[0_6px_16px_rgba(0,0,0,0.12)] p-6">
+              <div className="flex items-baseline justify-between gap-3 mb-6">
+                <p>
+                  <span className="text-[22px] font-semibold">{priceLabel}</span>
+                  <span className="text-ink"> / guest</span>
+                </p>
+                {experience.averageRating > 0 && (
+                  <a href="#reviews" className="text-sm"><span className="font-semibold">★ {experience.averageRating.toFixed(2)}</span> · <span className="underline text-ink-muted">{reviewTotal} reviews</span></a>
+                )}
+              </div>
+              <BookingForm experienceId={experience.id} price={experience.price} slots={slots} />
+            </div>
+            <p className="mt-6 flex items-center justify-center gap-2 text-sm text-ink-muted">
+              <ShieldCheck className="w-4 h-4" aria-hidden /> Every booking is protected by escrow
+            </p>
+          </aside>
         </div>
       </div>
 
-      {/* All photos modal */}
+      {/* Similar experiences */}
+      {recommendations.length > 0 && (
+        <div className="max-w-[1120px] mx-auto px-6 sm:px-10 border-t border-[#E0E0E5] mt-4 pt-8">
+          <Carousel title="You might also like" itemClassName="w-[72%] sm:w-[calc((100%-24px)/2)] lg:w-[calc((100%-72px)/4)]">
+            {recommendations.slice(0, 8).map((rec) => <ExperienceCard key={rec.id} experience={rec} />)}
+          </Carousel>
+        </div>
+      )}
+
+      {/* Mobile reserve bar */}
+      <div className="lg:hidden fixed bottom-[64px] md:bottom-0 inset-x-0 z-40 bg-paper border-t border-[#EBEBF0] px-6 py-3 flex items-center justify-between">
+        <div>
+          <p className="text-[15px]"><span className="font-semibold">{priceLabel}</span> / guest</p>
+          {experience.averageRating > 0 && <p className="text-xs text-ink-muted">★ {experience.averageRating.toFixed(2)} · {reviewTotal} reviews</p>}
+        </div>
+        <a href="#book" className="btn-accent !px-8">Reserve</a>
+      </div>
+
+      {/* All photos */}
       {showAllPhotos && (
-        <>
-          <div className="fixed inset-0 bg-black/90 z-50 overflow-y-auto">
-            <div className="max-w-4xl mx-auto px-4 py-8">
-              <button
-                onClick={() => setShowAllPhotos(false)}
-                className="mb-6 flex items-center gap-2 text-white hover:text-gray-300 transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-                Close
-              </button>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {images.map((img, i) => (
-                  <div key={i} className="relative aspect-[4/3] rounded-xl overflow-hidden">
-                    <Image src={img.url} alt={`Photo ${i + 1}`} fill className="object-cover" />
-                  </div>
-                ))}
-              </div>
+        <div className="fixed inset-0 bg-paper z-[80] overflow-y-auto animate-fade-in" role="dialog" aria-modal="true" aria-label="All photos">
+          <div className="sticky top-0 bg-paper/95 backdrop-blur z-10 flex items-center justify-between px-4 sm:px-8 h-16">
+            <button onClick={() => setShowAllPhotos(false)} className="w-9 h-9 rounded-full hover:bg-fog flex items-center justify-center" aria-label="Close photos">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+            </button>
+            <div className="flex items-center gap-4">
+              <IconBtn onClick={share} label="Share">Share</IconBtn>
+              <IconBtn onClick={toggleWishlist} label="Save">{wishlisted ? 'Saved' : 'Save'}</IconBtn>
             </div>
           </div>
-        </>
+          <div className="max-w-3xl mx-auto px-4 pb-16 grid grid-cols-2 gap-2">
+            {images.map((img, i) => (
+              <div key={i} className={`relative overflow-hidden bg-[#EBEBF0] ${i % 3 === 0 ? 'col-span-2 aspect-[3/2]' : 'aspect-square'}`}>
+                <Image src={img.url} alt={`Photo ${i + 1}`} fill sizes="(min-width: 768px) 768px, 100vw" className="object-cover" />
+              </div>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );

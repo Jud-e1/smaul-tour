@@ -148,7 +148,7 @@ describe('AuthService', () => {
 
       const result = await service.register(registerDto as any);
 
-      expect(result.email).toBe(registerDto.email);
+      expect(result.user.email).toBe(registerDto.email);
       expect(mockUserRepository.save).toHaveBeenCalledTimes(1);
       expect(mockUserProfileRepository.save).toHaveBeenCalledTimes(1);
     });

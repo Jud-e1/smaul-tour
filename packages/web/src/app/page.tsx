@@ -2,171 +2,137 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import {
+  ArrowRight, ArrowUpRight, BadgeCheck, CalendarCheck, Cloud, CloudLightning, CloudRain, CloudSun, Flower2,
+  Landmark, Mountain, Palette, Search, ShieldCheck, Sparkles, Star, Sun, Trees, UtensilsCrossed, Waves,
+  type LucideIcon,
+} from 'lucide-react';
+import ExperienceCard, { Experience } from '@/components/experiences/ExperienceCard';
+import Carousel from '@/components/ui/Carousel';
+import World3D from '@/components/three/World3D';
 
-const HERO_IMAGE =
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Black_Star_Gate_located_in_Accra.jpg/1280px-Black_Star_Gate_located_in_Accra.jpg';
-const ABURI_IMAGE =
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Araucaria_columnaris%2C_Aburi_%28P1090843%29.jpg/1280px-Araucaria_columnaris%2C_Aburi_%28P1090843%29.jpg';
-const HERITAGE_IMAGE =
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Kwame_Nkrumah_Monument_at_the_Kwame_Nkrumah_Mausoleum_and_Memorial_Park%2C_Accra_01.jpg/1280px-Kwame_Nkrumah_Monument_at_the_Kwame_Nkrumah_Mausoleum_and_Memorial_Park%2C_Accra_01.jpg';
-const STAYS_IMAGE =
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/M%C3%B6venpick_Ambassador_Hotel_Accra.jpg/1280px-M%C3%B6venpick_Ambassador_Hotel_Accra.jpg';
+// ── Photography: real places in Ghana, self-hosted (Wikimedia Commons, see /photos/CREDITS.md) ──
+const IMG = {
+  jamestown: '/photos/jamestown.jpg',
+  jamestown2: '/photos/jamestown2.jpg',
+  labadi: '/photos/labadi.jpg',
+  waakye: '/photos/waakye.jpg',
+  kakum: '/photos/kakum.jpg',
+  blackstar: '/photos/blackstar.jpg',
+  aburi: '/photos/aburi.jpg',
+  nkrumah: '/photos/nkrumah.jpg',
+  capecoast: '/photos/capecoast.jpg',
+  elmina: '/photos/elmina.jpg',
+  kente: '/photos/kente.jpg',
+  kente2: '/photos/kente2.jpg',
+  osu: '/photos/osu.jpg',
+  drums: '/photos/drums.jpg',
+  drumsNorth: '/photos/drumsNorth.jpg',
+  mole: '/photos/mole.jpg',
+  art: '/photos/art.jpg',
+  jollof: '/photos/jollof.jpg',
+  makola: '/photos/makola.jpg',
+};
 
-const CATEGORIES = [
-  { label: 'Food & Drink', emoji: '🍲' },
-  { label: 'Culture',      emoji: '🥁' },
-  { label: 'Adventure',    emoji: '🧗' },
-  { label: 'Nature',       emoji: '🌿' },
-  { label: 'Art',          emoji: '🎨' },
-  { label: 'Wellness',     emoji: '🧘' },
-  { label: 'Beaches',      emoji: '🏖️' },
-];
+type Seed = [title: string, img: string, category: string, hours: number, price: number, rating: number, reviews: number, place: string];
 
-const TRENDING = [
-  {
-    img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Jamestown%2C_Accra_%28P1100253%29.jpg/1280px-Jamestown%2C_Accra_%28P1100253%29.jpg',
-    title: 'Jamestown Heritage Walk',
-    location: 'Jamestown, Accra',
-    price: '$28',
-    rating: '4.94',
-  },
-  {
-    img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Labadi_Beach_at_Sunset.jpg/1280px-Labadi_Beach_at_Sunset.jpg',
-    title: 'Labadi Beach Sunset',
-    location: 'La, Accra',
-    price: '$35',
-    rating: '4.91',
-  },
-  {
-    img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Waakye_in_Accra%2C_Ghana.jpg/1280px-Waakye_in_Accra%2C_Ghana.jpg',
-    title: 'Waakye Food Crawl',
-    location: 'Osu, Accra',
-    price: '$22',
-    rating: '4.97',
-  },
-  {
-    img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Canopy_walkway_at_Kakum_National_Park_2.jpg/1280px-Canopy_walkway_at_Kakum_National_Park_2.jpg',
-    title: 'Kakum Canopy Walk',
-    location: 'Central Region',
-    price: '$64',
-    rating: '4.89',
-  },
-];
-
-const FEATURES = [
-  {
-    icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-      </svg>
-    ),
-    title: 'AI Trip Planner',
-    desc: 'Describe your dream trip and get a personalized Accra itinerary in seconds.',
-  },
-  {
-    icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-      </svg>
-    ),
-    title: 'Secure Payments',
-    desc: 'Funds held in escrow and released only after your experience is complete.',
-  },
-  {
-    icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-      </svg>
-    ),
-    title: 'Verified Local Guides',
-    desc: 'Every guide is reviewed and verified so you can book with confidence.',
-  },
-];
-
-type WeatherIcon = 'sun' | 'cloud' | 'rain' | 'storm';
-
-interface WeatherCondition {
-  codes: number[];
-  label: string;
-  icon: WeatherIcon;
-  suggestion: string;
-}
-
-const WEATHER_CONDITIONS: WeatherCondition[] = [
-  {
-    codes: [0, 1],
-    label: 'Sunny',
-    icon: 'sun',
-    suggestion: 'Perfect weather for a visit to Labadi Beach. Tap to add to itinerary.',
-  },
-  {
-    codes: [2],
-    label: 'Partly cloudy',
-    icon: 'cloud',
-    suggestion: 'Great light for the Jamestown heritage walk. Tap to add to itinerary.',
-  },
-  {
-    codes: [3, 45, 48],
-    label: 'Cloudy',
-    icon: 'cloud',
-    suggestion: 'Cool and overcast — ideal for the Aburi gardens trail. Tap to add to itinerary.',
-  },
-  {
-    codes: [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82],
-    label: 'Rainy',
-    icon: 'rain',
-    suggestion: 'Showers over Accra — try an indoor museum or an Osu food tour instead.',
-  },
-  {
-    codes: [95, 96, 99],
-    label: 'Thunderstorms',
-    icon: 'storm',
-    suggestion: 'Storms expected today. We suggest indoor experiences and a flexible booking.',
-  },
-];
-
-interface OpenMeteoResponse {
-  current?: {
-    temperature_2m?: number;
-    relative_humidity_2m?: number;
-    weather_code?: number;
+function toExperience([title, img, category, hours, price, rating, reviews, place]: Seed, i: number): Experience {
+  return {
+    id: `curated-${i}-${title}`,
+    title,
+    description: '',
+    price: { amount: price, currency: 'USD' },
+    duration: hours,
+    averageRating: rating,
+    reviewCount: reviews,
+    images: [{ url: img, thumbnailUrl: img }],
+    status: 'active',
+    location: { address: place },
+    category: [category],
   };
 }
 
-interface Weather {
-  temperature: number;
-  humidity: number;
-  condition: WeatherCondition;
-}
+const ORIGINALS: Seed[] = [
+  ['Weave your own kente strip with a master weaver', IMG.kente, 'Culture', 4, 45, 4.98, 212, 'Bonwire weavers, via Accra'],
+  ['Waakye & kelewele night crawl through Osu', IMG.waakye, 'Food & Drink', 3, 22, 4.97, 486, 'Osu, Accra'],
+  ['Drum and dance with a Ga cultural troupe', IMG.drums, 'Culture', 2, 30, 4.95, 158, 'La, Accra'],
+  ['Cook Ghana jollof in a home kitchen', IMG.jollof, 'Food & Drink', 3, 38, 4.96, 274, 'East Legon, Accra'],
+  ['Jamestown street art & lighthouse walk', IMG.jamestown2, 'Art', 3, 28, 4.94, 391, 'Jamestown, Accra'],
+  ['Inside Accra’s contemporary art studios', IMG.art, 'Art', 3, 35, 4.9, 97, 'Osu, Accra'],
+];
 
-const FALLBACK_WEATHER: Weather = { temperature: 28, humidity: 78, condition: WEATHER_CONDITIONS[0] };
+const POPULAR: Seed[] = [
+  ['Labadi Beach sunset, drumming & coconuts', IMG.labadi, 'Beaches', 2, 35, 4.91, 603, 'La, Accra'],
+  ['Haggle like a local in Makola Market', IMG.makola, 'Culture', 2, 20, 4.88, 344, 'Central Accra'],
+  ['Oxford Street after dark', IMG.osu, 'Food & Drink', 3, 25, 4.86, 219, 'Osu, Accra'],
+  ['Independence story at Black Star Square', IMG.blackstar, 'Culture', 2, 18, 4.89, 412, 'Accra'],
+  ['Nkrumah Memorial Park with a historian', IMG.nkrumah, 'Culture', 2, 15, 4.9, 188, 'Accra'],
+  ['Jamestown heritage walk', IMG.jamestown, 'Culture', 3, 28, 4.94, 527, 'Jamestown, Accra'],
+];
 
-const WEATHER_ICON_PATHS: Record<WeatherIcon, JSX.Element> = {
-  sun: (
-    <>
-      <circle cx="12" cy="12" r="4.5" />
-      <path strokeLinecap="round" d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.5 1.5m11.2 11.2l1.5 1.5M19.1 4.9l-1.5 1.5M6.4 17.6l-1.5 1.5" />
-    </>
-  ),
-  cloud: (
-    <path strokeLinecap="round" strokeLinejoin="round" d="M7 18h10a4 4 0 000-8 6 6 0 00-11.6 2A3.5 3.5 0 006 18h1z" />
-  ),
-  rain: (
-    <>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M7 15h10a4 4 0 000-8 6 6 0 00-11.6 2A3.5 3.5 0 006 15h1z" />
-      <path strokeLinecap="round" d="M8 18l-1 3m5-3l-1 3m5-3l-1 3" />
-    </>
-  ),
-  storm: (
-    <>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M7 15h10a4 4 0 000-8 6 6 0 00-11.6 2A3.5 3.5 0 006 15h1z" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M13 17l-3 3h3l-1 3" />
-    </>
-  ),
+const DAY_TRIPS: Seed[] = [
+  ['Cape Coast Castle & the slave route', IMG.capecoast, 'Culture', 10, 75, 4.97, 702, 'Cape Coast'],
+  ['Elmina Castle & fishing harbour', IMG.elmina, 'Culture', 10, 70, 4.93, 318, 'Elmina'],
+  ['Kakum canopy walkway at sunrise', IMG.kakum, 'Adventure', 9, 64, 4.89, 455, 'Central Region'],
+  ['Mole National Park elephant safari', IMG.mole, 'Nature', 48, 240, 4.95, 126, 'West Gonja'],
+  ['Aburi Botanical Gardens & mountain trails', IMG.aburi, 'Nature', 6, 40, 4.87, 231, 'Aburi'],
+  ['Drumming village weekend in the north', IMG.drumsNorth, 'Culture', 48, 120, 4.92, 64, 'Northern Region'],
+];
+
+const CHIPS: { label: string; Icon: LucideIcon; img: string }[] = [
+  { label: 'Food & Drink', Icon: UtensilsCrossed, img: IMG.jollof },
+  { label: 'Culture', Icon: Landmark, img: IMG.drums },
+  { label: 'Nature', Icon: Trees, img: IMG.aburi },
+  { label: 'Beaches', Icon: Waves, img: IMG.labadi },
+  { label: 'Adventure', Icon: Mountain, img: IMG.kakum },
+  { label: 'Art', Icon: Palette, img: IMG.art },
+  { label: 'Wellness', Icon: Flower2, img: IMG.osu },
+];
+
+const PLACES = ['Jamestown', 'Osu', 'Labadi', 'Makola', 'Cape Coast', 'Kakum', 'Elmina', 'Aburi', 'Mole', 'Ada Foah', 'Kokrobite', 'Akosombo'];
+
+const INSPIRATION: Record<string, [string, string][]> = {
+  Popular: [['Jamestown', 'Heritage walks'], ['Osu', 'Street food'], ['Labadi', 'Beach evenings'], ['Makola', 'Markets'], ['Aburi', 'Gardens & hikes'], ['Cape Coast', 'Castles'], ['Kakum', 'Canopy walk'], ['Elmina', 'History'], ['Ada Foah', 'River & beach'], ['Kokrobite', 'Surf & reggae'], ['Akosombo', 'Lake Volta'], ['Mole', 'Safari']],
+  Culture: [['Kente weaving', 'Bonwire'], ['Drumming', 'La'], ['Independence', 'Black Star Square'], ['Museums', 'National Museum'], ['Festivals', 'Homowo'], ['Chop bars', 'Local dining']],
+  'Food & drink': [['Waakye', 'Osu'], ['Jollof', 'East Legon'], ['Kelewele', 'Night markets'], ['Fufu', 'Chop bars'], ['Cocoa', 'Farm tours'], ['Palm wine', 'Tapping']],
+  Outdoors: [['Canopy walk', 'Kakum'], ['Waterfalls', 'Wli & Boti'], ['Safari', 'Mole'], ['Hiking', 'Aburi'], ['Kayaking', 'Volta'], ['Birding', 'Sakumono']],
+  Beaches: [['Labadi', 'Accra'], ['Kokrobite', 'Surf'], ['Busua', 'Western Region'], ['Ada Foah', 'Estuary'], ['Anomabo', 'Quiet coast'], ['Bojo', 'Sandbar']],
 };
 
+// ── Live Accra weather (Open-Meteo) ─────────────────────────────────────────
+interface WeatherCondition { codes: number[]; label: string; Icon: LucideIcon; suggestion: string; query: string }
+const WEATHER_CONDITIONS: WeatherCondition[] = [
+  { codes: [0, 1], label: 'Sunny', Icon: Sun, suggestion: 'Perfect beach weather — Labadi is calling.', query: 'Beaches' },
+  { codes: [2], label: 'Partly cloudy', Icon: CloudSun, suggestion: 'Soft light for the Jamestown heritage walk.', query: 'Culture' },
+  { codes: [3, 45, 48], label: 'Cloudy', Icon: Cloud, suggestion: 'Cool and overcast — ideal for the Aburi trails.', query: 'Nature' },
+  { codes: [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82], label: 'Rainy', Icon: CloudRain, suggestion: 'Showers today — try a cooking class or art studio.', query: 'Food & Drink' },
+  { codes: [95, 96, 99], label: 'Thunderstorms', Icon: CloudLightning, suggestion: 'Storms expected — pick indoor experiences with flexible booking.', query: 'Art' },
+];
+interface OpenMeteoResponse { current?: { temperature_2m?: number; relative_humidity_2m?: number; weather_code?: number } }
+interface Weather { temperature: number; humidity: number; condition: WeatherCondition }
+const FALLBACK_WEATHER: Weather = { temperature: 28, humidity: 78, condition: WEATHER_CONDITIONS[0] };
+
+const STEPS: { n: string; Icon: LucideIcon; title: string; body: string }[] = [
+  { n: '01', Icon: Search, title: 'Find your thing', body: 'Browse hand-picked experiences or describe your trip to the AI planner.' },
+  { n: '02', Icon: BadgeCheck, title: 'Book a verified host', body: 'Every guide is ID-checked and interviewed. Prices are shown in full, up front.' },
+  { n: '03', Icon: ShieldCheck, title: 'Pay after it happens', body: 'Your payment sits in escrow and is released to the host after the experience.' },
+];
+
 export default function Home() {
+  const router = useRouter();
   const [weather, setWeather] = useState<Weather>(FALLBACK_WEATHER);
+  const [heroQ, setHeroQ] = useState('');
+  const [heroCat, setHeroCat] = useState('');
+  const [inspoTab, setInspoTab] = useState<keyof typeof INSPIRATION>('Popular');
+
+  const goSearch = () => {
+    const params = new URLSearchParams();
+    if (heroQ.trim()) params.set('q', heroQ.trim());
+    if (heroCat) params.set('categories', heroCat);
+    const qs = params.toString();
+    router.push(qs ? `/experiences?${qs}` : '/experiences');
+  };
 
   useEffect(() => {
     const controller = new AbortController();
@@ -189,281 +155,275 @@ export default function Home() {
     return () => controller.abort();
   }, []);
 
-  const humidityLabel = weather.humidity >= 70 ? 'Humid' : 'Mild';
+  const searchHref = (title: string) => `/experiences?q=${encodeURIComponent(title.split(' ').slice(0, 2).join(' '))}`;
+  const WeatherIcon = weather.condition.Icon;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#E9F6E1] via-[#FCF7DC] to-[#FCEBE3]">
-
-      {/* Hero */}
-      <section className="max-w-6xl mx-auto px-6 pt-14 pb-12 grid lg:grid-cols-2 gap-10 items-center">
-        <div>
-          <span className="inline-flex items-center gap-2 bg-accra-gold text-accra-green text-[11px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full">
-            <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M11 2l1.6 4.4L17 8l-4.4 1.6L11 14l-1.6-4.4L5 8l4.4-1.6L11 2zM18 13l.9 2.5L21.5 16l-2.6.9L18 19.5l-.9-2.6-2.6-.9 2.6-.9L18 13z" />
-            </svg>
-            AI-Powered Discovery
-          </span>
-
-          <h1 className="mt-6 text-5xl sm:text-6xl font-extrabold text-accra-green leading-[1.05] tracking-tight">
-            Experience Accra<br />Like Never Before.
-          </h1>
-
-          <p className="mt-5 text-gray-600 leading-relaxed max-w-md">
-            Curated itineraries, hidden gems, and real-time local insights powered by advanced AI.
-            Your premium journey starts here.
-          </p>
-
-          <div className="mt-8 flex flex-wrap items-center gap-4">
-            <Link
-              href="/experiences"
-              className="bg-accra-green hover:bg-accra-dark text-white font-semibold text-sm px-8 py-4 rounded-full shadow-lg shadow-accra-green/20 transition-colors"
-            >
-              Start Exploring
-            </Link>
-            <Link
-              href="/trip-planner"
-              className="flex items-center gap-3 bg-white hover:bg-gray-50 text-accra-green font-semibold text-sm px-7 py-4 rounded-full border border-gray-200 shadow-sm transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="9" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10 9l5 3-5 3V9z" />
-              </svg>
-              Plan With AI
-            </Link>
-          </div>
+    <div className="bg-canvas overflow-x-clip">
+      {/* ── Opening stage: the 3D world ─────────────────────────────────── */}
+      <section className="relative lg:min-h-[calc(100vh-80px)] flex flex-col">
+        <div className="hero-mesh hidden lg:block" aria-hidden />
+        {/* Phones: content first, then the island as its own block. Desktop: island fills the stage. */}
+        <div className="order-last relative h-[440px] sm:h-[520px] lg:order-none lg:absolute lg:inset-0 lg:left-[36%] lg:h-auto">
+          <World3D variant="island" className="w-full h-full" />
         </div>
+        {/* soft floor fade so the text column reads cleanly */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-full lg:w-[55%] bg-gradient-to-r from-canvas via-canvas/80 to-transparent hidden lg:block" />
 
-        <div className="rounded-3xl overflow-hidden bg-white p-2 shadow-2xl shadow-accra-green/10">
-          <div
-            className="rounded-2xl bg-cover bg-center aspect-[4/3]"
-            style={{ backgroundImage: `url('${HERO_IMAGE}')` }}
-            role="img"
-            aria-label="Black Star Gate, Accra"
-          />
+        <div className="relative z-10 max-w-page mx-auto w-full px-5 sm:px-10 xl:px-16 pt-10 lg:pt-20 lg:flex-1 flex flex-col pointer-events-none">
+          <div className="max-w-[620px] pointer-events-auto">
+            <p className="eyebrow">05.6037° N · 0.1870° W — Accra, Ghana</p>
+            <h1 className="mt-5 text-[52px] sm:text-[76px] xl:text-[92px] leading-[0.92] text-ink">
+              Follow the star to the real Ghana.
+            </h1>
+            <p className="mt-6 text-lg text-stone-600 max-w-md leading-relaxed">
+              <span className="font-semibold text-ink">Nsoroma</span> means <em>star</em> in Akan. Ours points you to
+              small-group experiences with verified local hosts — kente weavers, home cooks, drummers and historians.
+            </p>
+
+            <form
+              onSubmit={(e) => { e.preventDefault(); goSearch(); }}
+              role="search"
+              className="mt-9 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-0 bg-paper rounded-[28px] sm:rounded-full p-2 border border-hairline shadow-card max-w-[600px]"
+            >
+              <label className="flex-1 px-4 sm:px-6 py-2 rounded-full hover:bg-sand transition-colors cursor-text">
+                <span className="block text-xs font-semibold text-ink">Where</span>
+                <input
+                  value={heroQ}
+                  onChange={(e) => setHeroQ(e.target.value)}
+                  placeholder="Experiences, places or guides"
+                  className="w-full bg-transparent text-sm text-ink placeholder:text-ink-muted outline-none"
+                />
+              </label>
+              <span className="hidden sm:block w-px h-8 bg-hairline" aria-hidden />
+              <label className="sm:w-44 px-4 sm:px-6 py-2 rounded-full hover:bg-sand transition-colors cursor-pointer">
+                <span className="block text-xs font-semibold text-ink">Category</span>
+                <select value={heroCat} onChange={(e) => setHeroCat(e.target.value)} className={`w-full bg-transparent text-sm outline-none cursor-pointer ${heroCat ? 'text-ink' : 'text-ink-muted'}`}>
+                  <option value="">Any type</option>
+                  {CHIPS.map((c) => <option key={c.label} value={c.label}>{c.label}</option>)}
+                </select>
+              </label>
+              <button type="submit" className="btn-primary h-12 sm:h-14 !px-7">
+                <Search className="w-4 h-4" strokeWidth={2.5} /> Search
+              </button>
+            </form>
+
+            <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-3 text-sm text-stone-600">
+              <span className="inline-flex items-center gap-2"><Star className="w-4 h-4 fill-ink text-ink" /><b className="text-ink font-semibold">4.9</b> guest rating</span>
+              <span className="inline-flex items-center gap-2"><BadgeCheck className="w-4 h-4 text-ink" />Verified hosts</span>
+              <span className="inline-flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-ink" />Escrow-protected</span>
+            </div>
+          </div>
+
+          {/* destination marking + live weather, pinned to the stage floor */}
+          <div className="mt-auto pb-8 hidden lg:flex items-end justify-between pointer-events-auto">
+            <Link
+              href={`/experiences?categories=${encodeURIComponent(weather.condition.query)}`}
+              className="flex items-center gap-3 rounded-2xl bg-paper/90 backdrop-blur px-4 py-3 border border-hairline shadow-soft hover:bg-paper transition-colors max-w-sm"
+            >
+              <span className="icon-tile w-10 h-10 shrink-0"><WeatherIcon className="w-5 h-5" /></span>
+              <span className="min-w-0">
+                <span className="block text-sm font-semibold">Accra today · {weather.temperature}°C · {weather.condition.label}</span>
+                <span className="block text-xs text-ink-muted truncate">{weather.condition.suggestion}</span>
+              </span>
+            </Link>
+            <p className="mono text-[11px] text-stone-500 uppercase tracking-[0.08em]">Drag to look around ↺ · Postcards from the Gold Coast</p>
+          </div>
         </div>
       </section>
 
-      {/* Bento grid */}
-      <section className="max-w-6xl mx-auto px-6 pb-14 grid lg:grid-cols-3 gap-5">
-        {/* Featured eco-stay */}
-        <Link
-          href="/experiences?categories=Nature"
-          className="lg:col-span-2 group relative rounded-3xl overflow-hidden min-h-[380px] flex items-end"
-        >
-          <div
-            className="absolute inset-0 bg-cover bg-center card-img"
-            style={{ backgroundImage: `url('${ABURI_IMAGE}')` }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
-          <div className="relative z-10 p-7 text-white">
-            <span className="inline-block bg-white/20 backdrop-blur-sm border border-white/30 text-xs font-semibold px-3 py-1 rounded-full">
-              Eco-Stays
+      {/* ── Destinations ticker ─────────────────────────────────────────── */}
+      <div className="border-y border-hairline bg-paper/60 overflow-hidden">
+        <div className="flex w-max animate-[ticker_40s_linear_infinite] py-4">
+          {[...PLACES, ...PLACES].map((p, i) => (
+            <span key={i} className="mono text-[12px] uppercase tracking-[0.12em] text-stone-600 px-6 inline-flex items-center gap-6">
+              {p}<span className="text-stone-300">✦</span>
             </span>
-            <h2 className="mt-3 text-3xl font-bold">Aburi Botanical Escape</h2>
-            <p className="mt-2 text-sm text-white/80 max-w-md leading-relaxed">
-              Discover lush tranquility just outside the city. AI recommends the best trails based on your fitness level.
-            </p>
-          </div>
-        </Link>
-
-        {/* Live weather + AI suggestion */}
-        <div className="bg-white/70 backdrop-blur-sm rounded-3xl p-6 flex flex-col shadow-sm">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-4xl font-bold text-accra-green">{weather.temperature}°C</p>
-              <p className="text-sm text-gray-500 mt-1">{weather.condition.label}, {humidityLabel}</p>
-            </div>
-            <svg
-              className={weather.condition.icon === 'sun' ? 'w-9 h-9 text-accra-gold' : 'w-9 h-9 text-accra-leaf'}
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={1.8}
-              viewBox="0 0 24 24"
-              aria-hidden
-            >
-              {WEATHER_ICON_PATHS[weather.condition.icon]}
-            </svg>
-          </div>
-
-          <div className="mt-auto bg-accra-cream rounded-2xl p-4">
-            <p className="text-xs font-bold text-accra-green">AI Suggestion</p>
-            <p className="text-sm text-gray-600 mt-1 leading-relaxed">
-              {weather.condition.suggestion}
-            </p>
-          </div>
-
-          <Link
-            href="/trip-planner"
-            className="mt-4 text-center bg-white border border-gray-200 rounded-2xl py-3 text-sm font-semibold text-accra-green hover:bg-gray-50 transition-colors"
-          >
-            View Details
-          </Link>
-        </div>
-
-        {/* Heritage walk */}
-        <Link
-          href="/experiences?categories=Culture"
-          className="relative rounded-3xl overflow-hidden min-h-[230px] flex flex-col justify-between p-6 group"
-        >
-          <div className="absolute inset-0 bg-cover bg-center opacity-25 card-img" style={{ backgroundImage: `url('${HERITAGE_IMAGE}')` }} />
-          <div className="absolute inset-0 bg-accra-cream/60" />
-          <div className="relative z-10 w-11 h-11 rounded-full bg-accra-green text-white flex items-center justify-center">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.7} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 10l9-6 9 6M5 10v9h14v-9M9 19v-5h6v5" />
-            </svg>
-          </div>
-          <div className="relative z-10">
-            <h3 className="text-2xl font-bold text-accra-green">Heritage Walk</h3>
-            <p className="text-sm text-gray-600 mt-1">Immerse yourself in history with our curated walking tours.</p>
-          </div>
-        </Link>
-
-        {/* Premium stays */}
-        <Link
-          href="/experiences?categories=Wellness"
-          className="lg:col-span-2 relative rounded-3xl overflow-hidden min-h-[230px] flex flex-col justify-between p-6 group"
-        >
-          <div className="absolute inset-0 bg-cover bg-center opacity-25 card-img" style={{ backgroundImage: `url('${STAYS_IMAGE}')` }} />
-          <div className="absolute inset-0 bg-accra-cream/60" />
-          <div className="relative z-10 w-11 h-11 rounded-full bg-accra-gold text-accra-green flex items-center justify-center">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.7} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 18v-6a2 2 0 012-2h14a2 2 0 012 2v6M3 18h18M3 18v2m18-2v2M7 10V8a2 2 0 012-2h2a2 2 0 012 2v2" />
-            </svg>
-          </div>
-          <div className="relative z-10">
-            <h3 className="text-2xl font-bold text-accra-green">Premium Stays</h3>
-            <p className="text-sm text-gray-600 mt-1">Handpicked boutique hotels matched to your style by AI.</p>
-          </div>
-        </Link>
-      </section>
-
-      {/* Categories */}
-      <section className="max-w-6xl mx-auto px-6 pb-12">
-        <h2 className="text-2xl font-bold text-accra-green mb-6">Explore by category</h2>
-        <div className="flex flex-wrap gap-3">
-          {CATEGORIES.map((cat) => (
-            <Link
-              key={cat.label}
-              href={`/experiences?categories=${encodeURIComponent(cat.label)}`}
-              className="flex items-center gap-2 bg-white/70 border border-white rounded-full px-5 py-2.5 text-sm font-medium text-gray-700 hover:border-accra-green hover:text-accra-green transition-colors"
-            >
-              <span className="text-base">{cat.emoji}</span>
-              {cat.label}
-            </Link>
           ))}
         </div>
-      </section>
+      </div>
 
-      {/* Trending */}
-      <section className="max-w-6xl mx-auto px-6 pb-14">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-accra-green">Trending right now</h2>
-          <Link href="/experiences" className="text-sm font-semibold text-accra-leaf hover:underline">Show all →</Link>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {TRENDING.map((item) => (
-            <Link key={item.title} href="/experiences" className="group">
-              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gray-100 mb-3">
-                <div className="absolute inset-0 bg-cover bg-center card-img" style={{ backgroundImage: `url('${item.img}')` }} />
-              </div>
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-gray-900 text-sm truncate">{item.title}</p>
-                  <p className="text-gray-500 text-sm truncate">{item.location}</p>
-                </div>
-                <div className="flex items-center gap-0.5 shrink-0">
-                  <svg className="w-3 h-3 text-accra-gold" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                  </svg>
-                  <span className="text-xs font-semibold text-gray-900">{item.rating}</span>
-                </div>
-              </div>
-              <p className="mt-1 text-sm text-gray-900">
-                <span className="font-semibold price-underline">{item.price}</span>
-                <span className="text-gray-500"> / person</span>
-              </p>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* AI planner CTA */}
-      <section className="max-w-6xl mx-auto px-6 pb-14">
-        <div className="relative bg-gradient-to-r from-accra-green to-accra-leaf rounded-3xl overflow-hidden p-8 sm:p-12 text-white">
-          <div className="absolute right-0 top-0 w-64 h-64 bg-accra-gold/20 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl pointer-events-none" />
-          <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+      <div className="max-w-page mx-auto px-5 sm:px-10 xl:px-16">
+        {/* ── Categories: photo tiles ──────────────────────────────────── */}
+        <section className="mt-20">
+          <div className="flex items-end justify-between gap-6 mb-8">
             <div>
-              <p className="text-accra-gold text-sm font-semibold uppercase tracking-widest mb-1">New feature</p>
-              <h2 className="text-2xl sm:text-3xl font-bold mb-2">AI Trip Planner</h2>
-              <p className="text-white/80 max-w-md">
-                Tell us your dream trip in plain language — we&apos;ll build a full itinerary with local experiences in seconds.
-              </p>
+              <p className="eyebrow">Ch. 01 — Choose your mood</p>
+              <h2 className="mt-3 text-[40px] sm:text-[52px] leading-[1]">What are you into?</h2>
             </div>
-            <Link
-              href="/trip-planner"
-              className="shrink-0 bg-accra-gold text-accra-green font-bold px-7 py-3.5 rounded-full hover:brightness-105 transition-all text-sm"
-            >
-              Try it free →
-            </Link>
+            <Link href="/experiences" className="hidden sm:inline-flex btn-outline">All experiences <ArrowRight className="w-4 h-4" /></Link>
           </div>
-        </div>
-      </section>
+          <div className="flex gap-4 overflow-x-auto scrollbar-hide -mx-5 px-5 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-4 lg:grid-cols-7">
+            {CHIPS.map(({ label, Icon, img }) => (
+              <Link
+                key={label}
+                href={`/experiences?categories=${encodeURIComponent(label)}`}
+                className="group shrink-0 w-40 sm:w-auto relative aspect-[3/4] rounded-[24px] overflow-hidden"
+              >
+                <img src={img} alt="" className="absolute inset-0 w-full h-full object-cover card-img" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#000000]/75 via-[#000000]/10 to-transparent" />
+                <span className="absolute top-3 left-3 w-9 h-9 rounded-full bg-paper/90 backdrop-blur flex items-center justify-center text-ink"><Icon className="w-4 h-4" /></span>
+                <span className="absolute bottom-3 left-4 right-4 text-paper font-display font-semibold text-lg leading-tight">{label}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
 
-      {/* Why us */}
-      <section className="bg-white/50 border-y border-white">
-        <div className="max-w-6xl mx-auto px-6 py-14">
-          <h2 className="text-2xl font-bold text-accra-green mb-10 text-center">Why travelers choose us</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-            {FEATURES.map((f) => (
-              <div key={f.title} className="flex flex-col items-start gap-3">
-                <div className="w-12 h-12 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center text-accra-leaf">
-                  {f.icon}
-                </div>
-                <h3 className="font-semibold text-accra-green">{f.title}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">{f.desc}</p>
+        {/* ── Rows ─────────────────────────────────────────────────────── */}
+        <div className="mt-16">
+          <Carousel title="Nsoroma Originals" subtitle="Hosted by the people who know Accra best" href="/experiences">
+            {ORIGINALS.map((s, i) => (
+              <ExperienceCard key={s[0]} experience={toExperience(s, i)} href={searchHref(s[0])} badge="Original" />
+            ))}
+          </Carousel>
+          <Carousel title="Popular this week" href="/experiences?sort=popularity">
+            {POPULAR.map((s, i) => (
+              <ExperienceCard key={s[0]} experience={toExperience(s, i + 10)} href={searchHref(s[0])} badge={i < 2 ? 'Popular' : ''} />
+            ))}
+          </Carousel>
+        </div>
+
+        {/* ── How it works ─────────────────────────────────────────────── */}
+        <section className="mt-24">
+          <p className="eyebrow">Ch. 02 — How it works</p>
+          <h2 className="mt-3 text-[40px] sm:text-[52px] leading-[1] max-w-2xl">Three steps to a day you’ll talk about for years.</h2>
+          <div className="mt-10 grid md:grid-cols-3 gap-5">
+            {STEPS.map(({ n, Icon, title, body }) => (
+              <div key={n} className="relative rounded-[28px] bg-paper border border-hairline p-7 overflow-hidden">
+                <span className="mono text-[11px] text-stone-500">{n}</span>
+                <span className="mt-6 flex w-14 h-14 rounded-2xl bg-sand items-center justify-center shadow-[inset_0_-6px_12px_rgba(91,67,52,0.12),0_8px_18px_-8px_rgba(91,67,52,0.35)]">
+                  <Icon className="w-6 h-6" strokeWidth={1.75} />
+                </span>
+                <h3 className="mt-6 font-display text-2xl font-semibold tracking-[-0.02em]">{title}</h3>
+                <p className="mt-2 text-ink-muted leading-relaxed">{body}</p>
+                <span className="absolute -right-3 -top-8 font-display font-bold text-[120px] leading-none text-[#F1EFFF] select-none pointer-events-none" aria-hidden>{n}</span>
               </div>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
 
-      {/* Bottom CTA — keeps sign in / sign up entry points */}
-      <section className="max-w-6xl mx-auto px-6 py-16 text-center">
-        <h2 className="text-3xl font-bold text-accra-green mb-3">Ready to explore Accra?</h2>
-        <p className="text-gray-600 mb-8">Create an account to save itineraries, or sign in to pick up where you left off.</p>
-        <div className="flex gap-3 justify-center flex-wrap">
-          <Link
-            href="/register"
-            className="bg-accra-green hover:bg-accra-dark text-white font-semibold px-8 py-3.5 rounded-full transition-colors text-sm"
-          >
-            Sign up
-          </Link>
-          <Link
-            href="/login"
-            className="bg-white border border-gray-200 text-accra-green font-semibold px-8 py-3.5 rounded-full hover:border-accra-green transition-colors text-sm"
-          >
-            Sign in
-          </Link>
-          <Link
-            href="/experiences"
-            className="border border-transparent text-gray-600 font-semibold px-8 py-3.5 rounded-full hover:text-accra-green transition-colors text-sm"
-          >
-            Browse experiences
-          </Link>
-        </div>
-      </section>
+      {/* ── Illuminated exhibit: the AI planner ─────────────────────────── */}
+      <section className="mt-24 mx-3 sm:mx-6 rounded-[40px] bg-[#000000] text-paper relative overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.18]" style={{ backgroundImage: 'linear-gradient(#FFFFFF 1px, transparent 1px), linear-gradient(90deg, #FFFFFF 1px, transparent 1px)', backgroundSize: '56px 56px', maskImage: 'radial-gradient(ellipse at 70% 60%, black 20%, transparent 70%)', WebkitMaskImage: 'radial-gradient(ellipse at 70% 60%, black 20%, transparent 70%)' }} aria-hidden />
+        <div className="relative max-w-page mx-auto px-6 sm:px-12 xl:px-16 py-16 lg:py-24 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          <div>
+            <p className="mono text-[11px] uppercase tracking-[0.1em] text-[#D2D2D7] inline-flex items-center gap-2"><Sparkles className="w-3.5 h-3.5" />Ch. 03 — AI trip planner</p>
+            <h2 className="mt-4 text-[44px] sm:text-[64px] leading-[0.95] text-paper">Tell us the trip. We’ll plan every day.</h2>
+            <p className="mt-6 text-lg text-[#A1A1A6] leading-relaxed max-w-lg">
+              Describe it like you’d tell a friend — dates, budget, what you love. Nsoroma turns it into a day-by-day plan of
+              bookable experiences you can tweak stop by stop.
+            </p>
+            <div className="mt-9 flex flex-wrap gap-3">
+              <Link href="/trip-planner" className="btn bg-paper text-ink hover:bg-sand">Plan my trip <ArrowRight className="w-4 h-4" /></Link>
+              <Link href="/experiences" className="btn border border-[#3A3A3C] text-paper hover:bg-white/5">Browse instead</Link>
+            </div>
+          </div>
 
-      {/* Footer */}
-      <footer className="border-t border-white bg-white/60">
-        <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500">
-          <p>© 2026 Nsoroma. All rights reserved.</p>
-          <div className="flex gap-5">
-            <Link href="/experiences" className="hover:text-accra-green transition-colors">Explore</Link>
-            <Link href="/trip-planner" className="hover:text-accra-green transition-colors">Itinerary</Link>
-            <Link href="/register" className="hover:text-accra-green transition-colors">Become a Guide</Link>
+          {/* exhibit: pedestal + plan card */}
+          <div className="relative flex justify-center">
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[85%] h-16 rounded-[50%] bg-[#FFFFFF]/10 border border-[#FFFFFF]/25 blur-[0.5px]" aria-hidden />
+            <div className="relative w-full max-w-[420px] mb-8 rounded-[28px] bg-paper text-ink p-6 shadow-[0_40px_80px_-30px_rgba(0,0,0,0.8)] rotate-[-2deg]">
+              <div className="flex items-center justify-between">
+                <p className="mono text-[11px] uppercase tracking-[0.08em] text-stone-500">Your 3-day plan</p>
+                <span className="inline-flex items-center gap-1 rounded-full bg-sand px-2.5 py-1 text-xs font-semibold"><Sparkles className="w-3 h-3" />AI</span>
+              </div>
+              <p className="mt-3 text-sm text-ink-muted italic">“3 days in Accra, street food and history, one beach evening, around $100.”</p>
+              <ul className="mt-5 space-y-3">
+                {[
+                  ['Day 1', 'Jamestown heritage walk', '$28', IMG.jamestown],
+                  ['Day 2', 'Waakye & kelewele crawl', '$22', IMG.waakye],
+                  ['Day 3', 'Labadi sunset session', '$35', IMG.labadi],
+                ].map(([d, t, p, img]) => (
+                  <li key={d} className="flex items-center gap-3 rounded-2xl bg-canvas p-2.5">
+                    <img src={img} alt="" className="w-12 h-12 rounded-xl object-cover" />
+                    <div className="min-w-0 flex-1">
+                      <p className="mono text-[10px] uppercase text-stone-500">{d}</p>
+                      <p className="text-sm font-semibold truncate">{t}</p>
+                    </div>
+                    <span className="text-sm font-semibold pr-1">{p}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-4 pt-4 border-t border-hairline flex items-center justify-between">
+                <span className="text-sm text-ink-muted">Total per guest</span>
+                <span className="font-display text-2xl font-bold">$85</span>
+              </div>
+            </div>
           </div>
         </div>
-      </footer>
+      </section>
+
+      <div className="max-w-page mx-auto px-5 sm:px-10 xl:px-16">
+        <div className="mt-20">
+          <Carousel title="Day trips beyond the city" subtitle="Castles, canopies and safaris — transport included" href="/experiences?categories=Adventure">
+            {DAY_TRIPS.map((s, i) => (
+              <ExperienceCard key={s[0]} experience={toExperience(s, i + 20)} href={searchHref(s[0])} badge={i === 0 ? 'Guest favorite' : ''} />
+            ))}
+          </Carousel>
+        </div>
+
+        {/* ── Promise grid ─────────────────────────────────────────────── */}
+        <section className="mt-20 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {([
+            [BadgeCheck, 'Verified local guides', 'ID-checked and interviewed before they ever host.'],
+            [ShieldCheck, 'Escrow-protected', 'Released to the host only after your experience.'],
+            [CalendarCheck, 'Flexible policies', 'Clear cancellation terms, shown before you pay.'],
+            [Sparkles, 'Planned in seconds', 'An AI planner that books real local experiences.'],
+          ] as [LucideIcon, string, string][]).map(([Icon, t, d]) => (
+            <div key={t} className="rounded-[24px] border border-hairline bg-paper p-6 flex gap-4">
+              <span className="icon-tile w-11 h-11 shrink-0"><Icon className="w-5 h-5" strokeWidth={1.75} /></span>
+              <div>
+                <p className="font-semibold">{t}</p>
+                <p className="mt-1 text-sm text-ink-muted leading-relaxed">{d}</p>
+              </div>
+            </div>
+          ))}
+        </section>
+      </div>
+
+      {/* ── Closing scene ─────────────────────────────────────────────────── */}
+      <section className="mt-24 max-w-page mx-auto px-5 sm:px-10 xl:px-16">
+        <div className="relative rounded-[40px] stage-mesh overflow-hidden grid lg:grid-cols-[1.1fr_1fr] min-h-[520px]">
+          <div className="relative z-10 p-8 sm:p-14 lg:p-16 flex flex-col justify-center">
+            <p className="eyebrow">Ch. 04 — Your turn</p>
+            <h2 className="mt-4 text-[48px] sm:text-[80px] leading-[0.9]">Your star is waiting.</h2>
+            <p className="mt-6 text-lg text-stone-600 max-w-md leading-relaxed">
+              Save experiences, build itineraries and book in a few taps. Or share your own city as a host.
+            </p>
+            <div className="mt-9 flex flex-wrap gap-3">
+              <Link href="/register" className="btn-primary">Create free account <ArrowRight className="w-4 h-4" /></Link>
+              <Link href="/register" className="btn-outline">Become a guide</Link>
+            </div>
+          </div>
+          <div className="relative min-h-[320px]">
+            <World3D variant="star" className="absolute inset-0" fallback={IMG.blackstar} />
+          </div>
+        </div>
+      </section>
+
+      {/* ── Inspiration ──────────────────────────────────────────────────── */}
+      <section className="mt-20 max-w-page mx-auto px-5 sm:px-10 xl:px-16">
+        <h2 className="text-[32px]">Inspiration for your next trip</h2>
+        <div className="mt-5 flex gap-2 overflow-x-auto scrollbar-hide">
+          {(Object.keys(INSPIRATION) as (keyof typeof INSPIRATION)[]).map((t) => (
+            <button key={t} onClick={() => setInspoTab(t)} className={`pill-tab ${inspoTab === t ? 'pill-tab-active' : ''}`}>{t}</button>
+          ))}
+        </div>
+        <ul className="mt-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-x-6 gap-y-6">
+          {INSPIRATION[inspoTab].map(([place, sub]) => (
+            <li key={place}>
+              <Link href={`/experiences?q=${encodeURIComponent(place)}`} className="group flex items-center justify-between gap-2 border-b border-hairline pb-3">
+                <span>
+                  <span className="block font-display text-lg font-semibold tracking-[-0.02em] text-ink">{place}</span>
+                  <span className="block text-sm text-ink-muted">{sub}</span>
+                </span>
+                <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-ink transition-colors" />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
     </div>
   );
 }

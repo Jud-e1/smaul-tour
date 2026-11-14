@@ -44,10 +44,10 @@ const ICONS: Record<ToastType, React.ReactNode> = {
 };
 
 const COLORS: Record<ToastType, string> = {
-  success: 'bg-emerald-600 text-white',
-  error: 'bg-red-600 text-white',
-  info: 'bg-sky-600 text-white',
-  warning: 'bg-amber-500 text-white',
+  success: 'bg-ink text-paper',
+  error: 'bg-[#A50011] text-paper',
+  info: 'bg-ink text-paper',
+  warning: 'bg-[#6E6E73] text-paper',
 };
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
@@ -66,7 +66,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={{ toast }}>
       {children}
-      <div className="fixed bottom-4 right-4 z-[9999] flex flex-col gap-2 pointer-events-none">
+      <div className="fixed bottom-28 right-3 left-3 sm:left-auto sm:right-4 lg:bottom-4 z-[9999] flex flex-col gap-2 pointer-events-none items-end">
         {toasts.map((t) => (
           <div
             key={t.id}

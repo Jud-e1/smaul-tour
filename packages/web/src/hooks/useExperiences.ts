@@ -20,8 +20,13 @@ interface ExperienceQuery {
   pageSize?: number;
 }
 
+interface ExperienceListResponse {
+  experiences?: unknown[];
+  total?: number;
+}
+
 const fetcher = (params: ExperienceQuery) =>
-  experiencesApi.list(params as Record<string, unknown>).then((r: { data: unknown }) => r.data);
+  experiencesApi.list(params as Record<string, unknown>).then((r: { data: ExperienceListResponse }) => r.data);
 
 export function useExperiences(query: ExperienceQuery = {}) {
   const key = ['experiences', JSON.stringify(query)];

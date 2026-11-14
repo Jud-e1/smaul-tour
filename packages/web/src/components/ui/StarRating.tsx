@@ -30,8 +30,8 @@ export default function StarRating({ value, onChange, readonly = false, size = '
         >
           <svg
             viewBox="0 0 24 24"
-            fill={star <= display ? '#FBBF24' : 'none'}
-            stroke={star <= display ? '#FBBF24' : '#D1D5DB'}
+            fill={star <= display ? '#1D1D1F' : 'none'}
+            stroke={star <= display ? '#1D1D1F' : '#D2D2D7'}
             strokeWidth={1.5}
           >
             <path

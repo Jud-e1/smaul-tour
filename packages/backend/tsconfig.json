@@ -8,7 +8,13 @@
       "@/*": ["src/*"]
     },
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    // TypeORM entities and class-validator DTOs are populated by decorators, so
+    // definite-assignment checks don't apply; unused code is caught by ESLint.
+    // Matches tsconfig.build.json so `nest build`, Vercel and Jest agree.
+    "strictPropertyInitialization": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "test"]

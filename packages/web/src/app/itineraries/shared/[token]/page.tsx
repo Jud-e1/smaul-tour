@@ -40,19 +40,19 @@ export default function SharedItineraryPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-gray-500">Loading itinerary...</div>
+      <div className="min-h-screen bg-canvas flex items-center justify-center">
+        <div className="text-ink-muted">Loading itinerary...</div>
       </div>
     );
   }
 
   if (notFound || !itinerary) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-canvas flex items-center justify-center">
         <div className="text-center">
-          <div className="text-xl font-semibold text-gray-700">Itinerary not found</div>
-          <p className="text-gray-500 mt-2">This link may have expired or been removed.</p>
-          <a href="/" className="mt-4 inline-block text-blue-600 hover:underline">
+          <div className="text-xl font-semibold text-ink/80">Itinerary not found</div>
+          <p className="text-ink-muted mt-2">This link may have expired or been removed.</p>
+          <a href="/" className="mt-4 inline-block text-forest-600 hover:underline">
             Go to homepage
           </a>
         </div>
@@ -61,28 +61,28 @@ export default function SharedItineraryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-canvas">
       <div className="max-w-3xl mx-auto px-4 py-8">
         <div className="mb-6">
-          <div className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full mb-3">
+          <div className="inline-block px-3 py-1 bg-forest-100 text-forest-700 text-xs font-medium rounded-full mb-3">
             Shared Itinerary
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Travel Itinerary</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="font-display text-2xl font-bold text-ink">Travel Itinerary</h1>
+          <p className="text-sm text-ink-muted mt-1">
             Generated {new Date(itinerary.generatedAt).toLocaleDateString()}
             {itinerary.parameters.duration && ` · ${itinerary.parameters.duration} days`}
           </p>
         </div>
 
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-          <div className="text-sm text-blue-700 font-medium">Total Estimated Cost</div>
-          <div className="text-2xl font-bold text-blue-900">
+        <div className="bg-forest-50 border border-forest-200 rounded-lg p-4 mb-6">
+          <div className="text-sm text-forest-700 font-medium">Total Estimated Cost</div>
+          <div className="text-2xl font-bold text-forest-900">
             {itinerary.totalCost.currency} {itinerary.totalCost.amount?.toLocaleString()}
           </div>
           {itinerary.parameters.preferences?.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-2">
               {itinerary.parameters.preferences.map((p) => (
-                <span key={p} className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">
+                <span key={p} className="px-2 py-0.5 bg-forest-100 text-forest-700 text-xs rounded-full">
                   {p}
                 </span>
               ))}
@@ -92,24 +92,24 @@ export default function SharedItineraryPage() {
 
         <div className="space-y-3 mb-8">
           {itinerary.experiences.map((exp, idx) => (
-            <div key={exp.experienceId} className="bg-white rounded-lg border border-gray-200 p-4">
+            <div key={exp.experienceId} className="bg-paper rounded-lg border border-[#E0E0E5] p-4">
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold shrink-0">
+                <div className="w-8 h-8 bg-forest-600 text-white rounded-full flex items-center justify-center text-sm font-bold shrink-0">
                   {idx + 1}
                 </div>
                 <div className="flex-1">
-                  <div className="font-semibold text-gray-900">
+                  <div className="font-semibold text-ink">
                     {exp.experience?.title || `Experience ${idx + 1}`}
                   </div>
                   {exp.suggestedDate && (
-                    <div className="text-sm text-gray-500 mt-0.5">
+                    <div className="text-sm text-ink-muted mt-0.5">
                       {new Date(exp.suggestedDate).toLocaleDateString('en-US', {
                         weekday: 'short', month: 'short', day: 'numeric',
                       })}
                     </div>
                   )}
                   {exp.experience && (
-                    <div className="flex items-center gap-3 text-sm text-gray-600 mt-1">
+                    <div className="flex items-center gap-3 text-sm text-ink-muted mt-1">
                       <span>{exp.experience.duration}h</span>
                       <span>·</span>
                       <span>{exp.experience.price.currency} {exp.experience.price.amount}</span>
@@ -121,7 +121,7 @@ export default function SharedItineraryPage() {
                       )}
                     </div>
                   )}
-                  <p className="text-sm text-gray-500 mt-1 italic">{exp.reasoning}</p>
+                  <p className="text-sm text-ink-muted mt-1 italic">{exp.reasoning}</p>
                 </div>
               </div>
             </div>
@@ -131,7 +131,7 @@ export default function SharedItineraryPage() {
         <div className="text-center">
           <a
             href="/trip-planner"
-            className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+            className="inline-block px-6 py-3 bg-forest-600 text-white rounded-lg hover:bg-forest-700 font-medium"
           >
             Create Your Own Itinerary
           </a>

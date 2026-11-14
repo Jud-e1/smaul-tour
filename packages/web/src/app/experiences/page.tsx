@@ -1,19 +1,29 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { Suspense, useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { experiencesApi } from '@/lib/api';
 import ExperienceCard, { Experience } from '@/components/experiences/ExperienceCard';
 import { useAuthStore } from '@/store/auth';
 import { userApi } from '@/lib/api';
+import { Compass, Flower2, Landmark, LayoutGrid, Mountain, Palette, Sparkles, Trees, Trophy, UtensilsCrossed, Waves, type LucideIcon } from 'lucide-react';
 
-const CATEGORIES = ['Food & Drink', 'Culture', 'Adventure', 'Nature', 'Art', 'Sports', 'Wellness'];
+const CATEGORIES: { label: string; Icon: LucideIcon }[] = [
+  { label: 'Food & Drink', Icon: UtensilsCrossed },
+  { label: 'Culture', Icon: Landmark },
+  { label: 'Adventure', Icon: Mountain },
+  { label: 'Nature', Icon: Trees },
+  { label: 'Art', Icon: Palette },
+  { label: 'Sports', Icon: Trophy },
+  { label: 'Wellness', Icon: Flower2 },
+  { label: 'Beaches', Icon: Waves },
+];
 const SORT_OPTIONS = [
-  { value: 'rating', label: 'Top Rated' },
-  { value: 'price_asc', label: 'Price: Low to High' },
-  { value: 'price_desc', label: 'Price: High to Low' },
-  { value: 'popularity', label: 'Most Popular' },
+  { value: 'rating', label: 'Top rated' },
+  { value: 'price_asc', label: 'Price: low to high' },
+  { value: 'price_desc', label: 'Price: high to low' },
+  { value: 'popularity', label: 'Most popular' },
 ];
 const PAGE_SIZE = 12;
 const MAX_PAGE_BUTTONS = 7;
@@ -32,7 +42,7 @@ function getPaginationRange(current: number, total: number): (number | '...')[] 
   return pages;
 }
 
-export default function ExperiencesPage() {
+function ExperiencesPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuthStore();
@@ -54,7 +64,18 @@ export default function ExperiencesPage() {
   const [durationMax, setDurationMax] = useState('');
   const [minRating, setMinRating] = useState('');
   const [locationRadius, setLocationRadius] = useState('');
-  const [sortBy, setSortBy] = useState('rating');
+  const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'rating');
+
+  // Keep state in sync when the header search changes the URL while we're already here.
+  const qParam = searchParams.get('q') || '';
+  const catParam = searchParams.get('categories') || '';
+  const sortParam = searchParams.get('sort') || '';
+  useEffect(() => {
+    setSearch(qParam);
+    setSelectedCategories(catParam.split(',').filter(Boolean));
+    if (sortParam) setSortBy(sortParam);
+    setPage(1);
+  }, [qParam, catParam, sortParam]);
 
   const fetchExperiences = useCallback(async () => {
     setLoading(true);
@@ -121,138 +142,144 @@ export default function ExperiencesPage() {
     durationMin || durationMax, minRating, locationRadius,
   ].filter(Boolean).length;
 
-  return (
-    <div className="min-h-screen page-bg-soft">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setDrawerOpen(false); };
+    window.addEventListener('keydown', onKey);
+    return () => { document.body.style.overflow = prev; window.removeEventListener('keydown', onKey); };
+  }, [drawerOpen]);
 
-        {/* Header — Findora-inspired */}
-        <div className="flex items-start justify-between gap-4 mb-6 animate-rise-in">
-          <div className="flex-1">
-            <div className="inline-flex items-center gap-2 chip chip-inactive mb-4 !py-2">
-              <svg className="w-4 h-4 text-accra-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              Accra, Ghana
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
-              Discover Your Next Experience
-            </h1>
-            <p className="text-gray-500 text-sm mt-2 max-w-lg">
-              Curated local adventures, hidden gems, and authentic culture — all in one place.
-            </p>
-          </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <Link
-              href="/settings/notifications"
-              className="w-11 h-11 rounded-full bg-white border border-sea-100 flex items-center justify-center text-gray-500 hover:text-accra-green hover:border-sea-200 transition-colors shadow-sm"
-              title="Notifications"
+  const numberField = 'w-full rounded-xl border border-[#D2D2D7] px-4 pt-6 pb-2 text-[15px] text-ink outline-none focus:border-ink focus:ring-1 focus:ring-ink peer';
+
+  return (
+    <div className="bg-canvas">
+      {/* ── Category bar + Filters (Airbnb) ─────────────────────────────── */}
+      <div className="sticky top-[70px] md:top-20 z-30 bg-canvas/95 backdrop-blur border-b border-hairline">
+        <div className="max-w-page mx-auto px-5 sm:px-10 xl:px-20 flex items-center gap-6">
+          <div className="flex-1 min-w-0 flex gap-8 overflow-x-auto scrollbar-hide">
+            <button
+              onClick={() => { setSelectedCategories([]); setPage(1); }}
+              className={`group shrink-0 flex flex-col items-center gap-1.5 pt-4 pb-3 border-b-2 transition-colors ${
+                selectedCategories.length === 0 ? 'border-ink text-ink' : 'border-transparent text-ink-muted hover:text-ink hover:border-[#E0E0E5]'
+              }`}
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-              </svg>
-            </Link>
-            {user ? (
-              <Link
-                href="/dashboard/traveler"
-                className="w-11 h-11 rounded-full bg-accra-green text-white flex items-center justify-center text-sm font-bold shadow-md hover:bg-accra-dark transition-colors"
-              >
-                {user.email?.[0]?.toUpperCase() ?? 'U'}
-              </Link>
-            ) : (
-              <Link
-                href="/login"
-                className="w-11 h-11 rounded-full bg-white border border-sea-100 flex items-center justify-center text-accra-green hover:bg-beige transition-colors shadow-sm"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              </Link>
+              <LayoutGrid className={`w-6 h-6 ${selectedCategories.length === 0 ? '' : 'opacity-70 group-hover:opacity-100'}`} strokeWidth={1.6} aria-hidden />
+              <span className="text-xs font-semibold whitespace-nowrap">All</span>
+            </button>
+            {CATEGORIES.map((cat) => {
+              const active = selectedCategories.includes(cat.label);
+              return (
+                <button
+                  key={cat.label}
+                  onClick={() => toggleCategory(cat.label)}
+                  aria-pressed={active}
+                  className={`group shrink-0 flex flex-col items-center gap-1.5 pt-4 pb-3 border-b-2 transition-colors ${
+                    active ? 'border-ink text-ink' : 'border-transparent text-ink-muted hover:text-ink hover:border-[#E0E0E5]'
+                  }`}
+                >
+                  <cat.Icon className={`w-6 h-6 ${active ? '' : 'opacity-70 group-hover:opacity-100'}`} strokeWidth={1.6} aria-hidden />
+                  <span className="text-xs font-semibold whitespace-nowrap">{cat.label}</span>
+                </button>
+              );
+            })}
+          </div>
+          <button
+            onClick={() => setDrawerOpen(true)}
+            className={`shrink-0 hidden sm:flex items-center gap-2 h-12 px-4 rounded-xl border text-xs font-semibold transition-colors ${
+              hasActiveFilters ? 'border-ink border-2 bg-fog' : 'border-[#E0E0E5] hover:border-ink'
+            }`}
+            aria-label="Open filters"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden>
+              <path strokeLinecap="round" d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0" />
+              <circle cx="16" cy="6" r="2" /><circle cx="10" cy="12" r="2" /><circle cx="18" cy="18" r="2" />
+            </svg>
+            Filters
+            {activeFilterCount > 0 && (
+              <span className="w-5 h-5 rounded-full bg-ink text-white text-[10px] flex items-center justify-center">{activeFilterCount}</span>
+            )}
+          </button>
+        </div>
+      </div>
+
+      <div className="max-w-page mx-auto px-5 sm:px-10 xl:px-20 pt-6 pb-10">
+        {/* Results header */}
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+          <div className="min-w-0">
+            <h1 className="text-[34px] leading-tight text-ink">
+              {loading ? 'Searching…' : total > 0 ? `${total} experience${total === 1 ? '' : 's'} in Accra` : 'Experiences in Accra'}
+            </h1>
+            {(search || selectedCategories.length > 0) && (
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                {search && (
+                  <button
+                    onClick={() => { setSearch(''); setPage(1); router.replace('/experiences'); }}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-fog border border-[#E0E0E5] px-3 py-1 text-sm hover:border-ink"
+                  >
+                    “{search}” <span aria-hidden>×</span>
+                  </button>
+                )}
+                {selectedCategories.map((c) => (
+                  <button key={c} onClick={() => toggleCategory(c)} className="inline-flex items-center gap-1.5 rounded-full bg-fog border border-[#E0E0E5] px-3 py-1 text-sm hover:border-ink">
+                    {c} <span aria-hidden>×</span>
+                  </button>
+                ))}
+              </div>
             )}
           </div>
-        </div>
-
-        {/* Search + filter bar */}
-        <div className="flex items-center gap-3 mb-5 premium-card p-2 rounded-full relative z-10 animate-slide-up border border-white">
-          <div className="flex-1 flex items-center gap-2 px-3">
-            <svg className="w-5 h-5 text-sea-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              placeholder="Search experiences..."
-              className="flex-1 py-2 text-sm text-gray-800 placeholder-gray-400 outline-none bg-transparent"
-            />
-          </div>
-          <div className="flex items-center gap-2 shrink-0 border-l border-gray-100 pl-3">
-            <select
-              value={sortBy}
-              onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
-              className="text-xs text-gray-700 outline-none bg-transparent font-medium cursor-pointer"
-            >
-              {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-            </select>
+          <div className="flex items-center gap-2">
             <button
               onClick={() => setDrawerOpen(true)}
-              className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
-                hasActiveFilters ? 'bg-sea-500 text-white' : 'bg-sea-50 text-sea-600 hover:bg-sea-100'
-              }`}
-              aria-label="Open filters"
+              className="sm:hidden flex items-center gap-2 h-10 px-4 rounded-full border border-[#E0E0E5] text-sm font-semibold"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
-              </svg>
+              Filters{activeFilterCount > 0 ? ` · ${activeFilterCount}` : ''}
             </button>
+            <label className="flex items-center gap-2 h-10 pl-4 pr-3 rounded-full border border-[#E0E0E5] hover:border-ink text-sm cursor-pointer">
+              <span className="text-ink-muted">Sort</span>
+              <select
+                value={sortBy}
+                onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
+                className="bg-transparent font-semibold text-ink outline-none cursor-pointer"
+              >
+                {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </label>
           </div>
-        </div>
-
-        {/* Category pills */}
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2 mb-8">
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => toggleCategory(cat)}
-              className={`chip shrink-0 ${selectedCategories.includes(cat) ? 'chip-active' : 'chip-inactive'}`}
-            >
-              {cat}
-            </button>
-          ))}
         </div>
 
         {/* Results */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="rounded-3xl shimmer h-80" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-x-6 gap-y-10">
+            {Array.from({ length: 10 }).map((_, i) => (
+              <div key={i}>
+                <div className="rounded-2xl shimmer aspect-[20/19]" />
+                <div className="mt-3 h-4 w-4/5 rounded-full shimmer" />
+                <div className="mt-2 h-3.5 w-1/2 rounded-full shimmer" />
+                <div className="mt-2 h-3.5 w-1/3 rounded-full shimmer" />
+              </div>
             ))}
           </div>
         ) : experiences.length === 0 ? (
-          <div className="text-center py-20 premium-card">
-            <svg className="w-14 h-14 mx-auto mb-4 text-sea-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <p className="text-lg font-semibold text-gray-800">No experiences found</p>
-            <p className="text-sm text-gray-500 mt-1">Try adjusting your filters or search terms</p>
-            {hasActiveFilters && (
-              <button onClick={clearFilters} className="mt-4 text-sm text-accra-green font-semibold hover:underline">Clear all filters</button>
-            )}
+          <div className="max-w-xl mx-auto text-center py-16 sm:py-24">
+            <div className="icon-tile w-16 h-16 mx-auto mb-6"><Compass className="w-7 h-7" strokeWidth={1.5} aria-hidden /></div>
+            <h2 className="text-[34px] leading-tight font-semibold text-ink">No exact matches</h2>
+            <p className="text-ink-muted mt-2">
+              Try changing or removing some of your filters, or searching a different part of Accra.
+            </p>
+            <div className="mt-8 flex justify-center gap-3 flex-wrap">
+              {hasActiveFilters || search ? (
+                <button onClick={() => { clearFilters(); setSearch(''); router.replace('/experiences'); }} className="btn-ghost">
+                  Remove all filters
+                </button>
+              ) : null}
+              <Link href="/trip-planner" className="btn-primary">Ask the AI planner</Link>
+            </div>
           </div>
         ) : (
           <>
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-bold text-gray-900">
-                Nearby Experiences
-                <span className="ml-2 text-sm font-normal text-gray-400">({total} found)</span>
-              </h2>
-              {activeFilterCount > 0 && (
-                <button onClick={clearFilters} className="text-xs text-accra-green font-semibold hover:underline">
-                  Clear {activeFilterCount} filter{activeFilterCount !== 1 ? 's' : ''}
-                </button>
-              )}
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-x-6 gap-y-10">
               {experiences.map((exp) => (
                 <ExperienceCard
                   key={exp.id}
@@ -264,26 +291,24 @@ export default function ExperiencesPage() {
             </div>
 
             {totalPages > 1 && (
-              <div className="flex justify-center items-center gap-1 mt-12">
+              <nav className="flex justify-center items-center gap-2 mt-14" aria-label="Pagination">
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="px-4 py-2.5 border border-sea-100 rounded-full text-sm disabled:opacity-40 hover:bg-white disabled:cursor-not-allowed bg-white/80"
+                  className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-fog disabled:opacity-30 disabled:hover:bg-transparent"
                   aria-label="Previous page"
                 >
-                  ‹
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={3.5} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
                 </button>
                 {paginationRange.map((item, idx) =>
                   item === '...' ? (
-                    <span key={`ellipsis-${idx}`} className="px-2 py-2 text-sm text-gray-400">…</span>
+                    <span key={`ellipsis-${idx}`} className="w-8 text-center text-sm text-ink-muted">…</span>
                   ) : (
                     <button
                       key={item}
                       onClick={() => setPage(item as number)}
-                      className={`px-4 py-2.5 border rounded-full text-sm min-w-[40px] transition-colors ${
-                        page === item
-                          ? 'bg-accra-green border-accra-green text-white font-semibold shadow-md'
-                          : 'border-sea-100 hover:bg-white text-gray-700 bg-white/80'
+                      className={`w-8 h-8 rounded-full text-sm transition-colors ${
+                        page === item ? 'bg-ink text-white font-semibold' : 'text-ink hover:bg-fog'
                       }`}
                       aria-label={`Page ${item}`}
                       aria-current={page === item ? 'page' : undefined}
@@ -295,125 +320,157 @@ export default function ExperiencesPage() {
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
-                  className="px-4 py-2.5 border border-sea-100 rounded-full text-sm disabled:opacity-40 hover:bg-white disabled:cursor-not-allowed bg-white/80"
+                  className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-fog disabled:opacity-30 disabled:hover:bg-transparent"
                   aria-label="Next page"
                 >
-                  ›
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={3.5} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
                 </button>
-              </div>
+              </nav>
             )}
           </>
         )}
+
+        {/* AI planner nudge */}
+        <Link
+          href="/trip-planner"
+          className="mt-16 flex flex-col sm:flex-row items-start sm:items-center gap-4 rounded-2xl bg-fog px-6 py-6 hover:bg-[#E2E2E8] transition-colors"
+        >
+          <span className="icon-tile w-12 h-12 bg-paper"><Sparkles className="w-5 h-5" aria-hidden /></span>
+          <div className="flex-1">
+            <p className="font-semibold text-ink">Not sure what to book?</p>
+            <p className="text-sm text-ink-muted">Describe your trip and the AI planner will build a day-by-day itinerary.</p>
+          </div>
+          <span className="btn-primary !py-2.5 text-sm">Plan my trip</span>
+        </Link>
       </div>
 
-      {/* Filter Drawer */}
+      {/* ── Filters modal (Airbnb) ──────────────────────────────────────── */}
       {drawerOpen && (
-        <>
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" onClick={() => setDrawerOpen(false)} />
-          <div className="fixed right-0 top-0 h-full w-80 bg-white z-50 shadow-2xl overflow-y-auto animate-slide-in-right rounded-l-3xl">
-            <div className="flex items-center justify-between px-6 py-5 border-b border-sea-50">
-              <h2 className="font-bold text-gray-900">Filters</h2>
-              <button onClick={() => setDrawerOpen(false)} className="p-2 rounded-full hover:bg-beige transition-colors">
-                <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+        <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center">
+          <button className="absolute inset-0 bg-black/50 cursor-default" onClick={() => setDrawerOpen(false)} aria-label="Close filters" />
+          <div role="dialog" aria-modal="true" aria-labelledby="filters-title" className="relative w-full sm:max-w-[680px] max-h-[92vh] sm:max-h-[86vh] bg-paper rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col animate-sheet sm:animate-scale-in">
+            <div className="relative flex items-center justify-center h-16 border-b border-[#EBEBF0] shrink-0">
+              <button onClick={() => setDrawerOpen(false)} className="absolute left-5 w-8 h-8 rounded-full hover:bg-fog flex items-center justify-center" aria-label="Close">
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" d="M6 6l12 12M18 6L6 18" /></svg>
               </button>
+              <h2 id="filters-title" className="text-base font-semibold">Filters</h2>
             </div>
 
-            <div className="px-6 py-5 space-y-6">
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-3 text-sm">Category</h3>
-                <div className="space-y-2">
-                  {CATEGORIES.map((cat) => (
-                    <label key={cat} className="flex items-center gap-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={selectedCategories.includes(cat)}
-                        onChange={() => toggleCategory(cat)}
-                        className="accent-accra-green w-4 h-4 rounded"
-                      />
-                      <span className="text-sm text-gray-700">{cat}</span>
-                    </label>
+            <div className="overflow-y-auto px-6 divide-y divide-[#EBEBF0]">
+              <section className="py-8">
+                <h3 className="text-[22px] font-semibold">Type of experience</h3>
+                <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {CATEGORIES.map((cat) => {
+                    const active = selectedCategories.includes(cat.label);
+                    return (
+                      <button
+                        key={cat.label}
+                        onClick={() => toggleCategory(cat.label)}
+                        aria-pressed={active}
+                        className={`text-left rounded-xl border p-4 transition-all ${active ? 'border-ink border-2 bg-fog p-[15px]' : 'border-[#E0E0E5] hover:border-ink'}`}
+                      >
+                        <span className="icon-tile w-10 h-10"><cat.Icon className="w-5 h-5" strokeWidth={1.75} aria-hidden /></span>
+                        <span className="mt-3 block text-sm font-semibold">{cat.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </section>
+
+              <section className="py-8">
+                <h3 className="text-[22px] font-semibold">Price range</h3>
+                <p className="text-sm text-ink-muted mt-1">Per guest, in USD</p>
+                <div className="mt-5 flex items-center gap-4">
+                  <label className="relative flex-1">
+                    <span className="absolute left-4 top-2 text-xs text-ink-muted">Minimum</span>
+                    <input type="number" inputMode="numeric" min={0} value={priceMin} placeholder="$0"
+                      onChange={(e) => { setPriceMin(e.target.value); setPage(1); }} className={numberField} />
+                  </label>
+                  <span className="w-4 h-px bg-[#D2D2D7]" aria-hidden />
+                  <label className="relative flex-1">
+                    <span className="absolute left-4 top-2 text-xs text-ink-muted">Maximum</span>
+                    <input type="number" inputMode="numeric" min={0} value={priceMax} placeholder="Any"
+                      onChange={(e) => { setPriceMax(e.target.value); setPage(1); }} className={numberField} />
+                  </label>
+                </div>
+              </section>
+
+              <section className="py-8">
+                <h3 className="text-[22px] font-semibold">Duration</h3>
+                <p className="text-sm text-ink-muted mt-1">In hours</p>
+                <div className="mt-5 flex items-center gap-4">
+                  <label className="relative flex-1">
+                    <span className="absolute left-4 top-2 text-xs text-ink-muted">At least</span>
+                    <input type="number" min={0} value={durationMin} placeholder="Any"
+                      onChange={(e) => { setDurationMin(e.target.value); setPage(1); }} className={numberField} />
+                  </label>
+                  <span className="w-4 h-px bg-[#D2D2D7]" aria-hidden />
+                  <label className="relative flex-1">
+                    <span className="absolute left-4 top-2 text-xs text-ink-muted">At most</span>
+                    <input type="number" min={0} value={durationMax} placeholder="Any"
+                      onChange={(e) => { setDurationMax(e.target.value); setPage(1); }} className={numberField} />
+                  </label>
+                </div>
+              </section>
+
+              <section className="py-8">
+                <h3 className="text-[22px] font-semibold">Guest rating</h3>
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {[['', 'Any'], ['3', '3.0+'], ['3.5', '3.5+'], ['4', '4.0+'], ['4.5', '4.5+']].map(([v, l]) => (
+                    <button
+                      key={l}
+                      onClick={() => { setMinRating(v); setPage(1); }}
+                      className={`pill-tab ${minRating === v ? 'pill-tab-active' : ''}`}
+                    >
+                      {v && '★ '}{l}
+                    </button>
                   ))}
                 </div>
-              </div>
+              </section>
 
-              <hr className="border-sea-50" />
-
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-3 text-sm">Price Range</h3>
-                <div className="flex gap-2">
-                  <input type="number" placeholder="Min $" value={priceMin} min={0}
-                    onChange={(e) => { setPriceMin(e.target.value); setPage(1); }}
-                    className="w-full border border-sea-100 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sea-200"
-                  />
-                  <input type="number" placeholder="Max $" value={priceMax} min={0}
-                    onChange={(e) => { setPriceMax(e.target.value); setPage(1); }}
-                    className="w-full border border-sea-100 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sea-200"
-                  />
+              <section className="py-8">
+                <h3 className="text-[22px] font-semibold">Distance</h3>
+                <p className="text-sm text-ink-muted mt-1">How far from central Accra</p>
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {[['', 'Any distance'], ['5', '5 km'], ['10', '10 km'], ['25', '25 km'], ['50', '50 km']].map(([v, l]) => (
+                    <button key={l} onClick={() => { setLocationRadius(v); setPage(1); }} className={`pill-tab ${locationRadius === v ? 'pill-tab-active' : ''}`}>
+                      {l}
+                    </button>
+                  ))}
+                  <label className="relative w-32">
+                    <input type="number" min={1} value={locationRadius} placeholder="Custom km"
+                      onChange={(e) => { setLocationRadius(e.target.value); setPage(1); }}
+                      className="w-full h-full rounded-full border border-[#E0E0E5] px-4 py-2 text-sm outline-none focus:border-ink" />
+                  </label>
                 </div>
-              </div>
-
-              <hr className="border-sea-50" />
-
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-3 text-sm">Duration (hours)</h3>
-                <div className="flex gap-2">
-                  <input type="number" placeholder="Min" value={durationMin} min={0}
-                    onChange={(e) => { setDurationMin(e.target.value); setPage(1); }}
-                    className="w-full border border-sea-100 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sea-200"
-                  />
-                  <input type="number" placeholder="Max" value={durationMax} min={0}
-                    onChange={(e) => { setDurationMax(e.target.value); setPage(1); }}
-                    className="w-full border border-sea-100 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sea-200"
-                  />
-                </div>
-              </div>
-
-              <hr className="border-sea-50" />
-
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-3 text-sm">Minimum Rating</h3>
-                <select value={minRating}
-                  onChange={(e) => { setMinRating(e.target.value); setPage(1); }}
-                  className="w-full border border-sea-100 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sea-200 bg-white"
-                >
-                  <option value="">Any rating</option>
-                  <option value="4.5">4.5+ stars</option>
-                  <option value="4">4.0+ stars</option>
-                  <option value="3.5">3.5+ stars</option>
-                  <option value="3">3.0+ stars</option>
-                </select>
-              </div>
-
-              <hr className="border-sea-50" />
-
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-3 text-sm">Location Radius (km)</h3>
-                <input type="number" placeholder="e.g. 10" value={locationRadius} min={1}
-                  onChange={(e) => { setLocationRadius(e.target.value); setPage(1); }}
-                  className="w-full border border-sea-100 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sea-200"
-                />
-              </div>
+              </section>
             </div>
 
-            <div className="sticky bottom-0 bg-white border-t border-sea-50 px-6 py-4 flex gap-3">
-              <button
-                onClick={() => { clearFilters(); setDrawerOpen(false); }}
-                className="flex-1 border border-sea-100 rounded-xl py-3 text-sm font-semibold text-gray-700 hover:bg-beige transition-colors"
-              >
+            <div className="shrink-0 flex items-center justify-between px-6 py-4 border-t border-[#EBEBF0]">
+              <button onClick={() => { clearFilters(); }} className="text-[15px] font-semibold underline underline-offset-2 disabled:text-ink-soft" disabled={!hasActiveFilters}>
                 Clear all
               </button>
-              <button
-                onClick={() => setDrawerOpen(false)}
-                className="flex-1 bg-accra-green text-white rounded-xl py-3 text-sm font-semibold hover:bg-accra-dark transition-colors shadow-md"
-              >
-                Show results
+              <button onClick={() => setDrawerOpen(false)} className="btn-primary">
+                {loading ? 'Updating…' : `Show ${total || ''} result${total === 1 ? '' : 's'}`.replace('  ', ' ')}
               </button>
             </div>
           </div>
-        </>
+        </div>
       )}
     </div>
+  );
+}
+
+export default function ExperiencesRoute() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <p className="text-sm text-ink-muted">Loading experiences…</p>
+        </div>
+      }
+    >
+      <ExperiencesPage />
+    </Suspense>
   );
 }

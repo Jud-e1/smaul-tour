@@ -1,113 +1,72 @@
 'use client';
 
-import { ReactNode, useEffect, useRef, useState } from 'react';
+import { ReactNode } from 'react';
 import Link from 'next/link';
+import { ArrowLeft, BadgeCheck, ShieldCheck, Star } from 'lucide-react';
+import World3D from '@/components/three/World3D';
 
-/** Filled, borderless input styling shared by the auth forms. */
+/** Soft paper field with an ink focus ring. */
 export const authInputClass =
-  'w-full rounded-xl bg-[#F1F6F1] border border-transparent px-4 py-3 text-sm text-gray-800 placeholder-gray-400 outline-none transition-all focus:bg-white focus:border-accra-leaf focus:ring-4 focus:ring-accra-leaf/15';
+  'w-full rounded-2xl bg-paper border border-[#D2D2D7] px-4 py-3.5 text-[15px] text-ink placeholder:text-ink-soft outline-none transition-shadow focus:border-ink focus:shadow-[0_0_0_1px_#1D1D1F]';
 
-export const authLabelClass = 'block text-xs font-bold text-accra-green mb-1.5';
+export const authLabelClass = 'block text-sm font-semibold text-ink mb-1.5';
 
 interface AuthShellProps {
-  /** Headline shown over the illustration. */
-  headline: ReactNode;
-  /** Small caption pinned to the bottom of the illustration panel. */
+  /** Large line shown on the 3D stage. */
+  headline?: ReactNode;
+  /** Small mono caption on the stage. */
   caption: string;
-  /** Illustration served from /public. */
-  image: string;
-  imageAlt: string;
-  /** Link rendered in the top-right corner of the form panel. */
+  /** Still image used when WebGL is unavailable. */
+  image?: string;
+  imageAlt?: string;
+  /** Link shown at the top of the form column, e.g. "New here? Create an account". */
   topLink: { prompt: string; label: string; href: string };
+  /** Kept for API compatibility; the form supplies its own heading. */
+  title?: string;
   children: ReactNode;
 }
 
-/** Pointer-driven parallax offsets, in pixels, for the illustration layers. */
-function useParallax(ref: React.RefObject<HTMLElement>) {
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const element = ref.current;
-    if (!element) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    const onMove = (event: PointerEvent) => {
-      const rect = element.getBoundingClientRect();
-      setOffset({
-        x: ((event.clientX - rect.left) / rect.width - 0.5) * 2,
-        y: ((event.clientY - rect.top) / rect.height - 0.5) * 2,
-      });
-    };
-    const onLeave = () => setOffset({ x: 0, y: 0 });
-
-    element.addEventListener('pointermove', onMove);
-    element.addEventListener('pointerleave', onLeave);
-    return () => {
-      element.removeEventListener('pointermove', onMove);
-      element.removeEventListener('pointerleave', onLeave);
-    };
-  }, [ref]);
-
-  return offset;
-}
-
-export default function AuthShell({ headline, caption, image, imageAlt, topLink, children }: AuthShellProps) {
-  const panelRef = useRef<HTMLDivElement>(null);
-  const { x, y } = useParallax(panelRef);
+/**
+ * Split auth layout: the form on a paper column, and a sand "stage" holding the
+ * 3D star with orbiting postcards from Ghana.
+ */
+export default function AuthShell(props: AuthShellProps) {
+  const { topLink, children, caption, headline } = props;
 
   return (
-    <div className="relative min-h-[calc(100vh-5rem)] overflow-hidden bg-gradient-to-br from-[#EAF7EC] via-white to-[#F4FBF1] px-4 py-10 flex items-center justify-center">
-      {/* Drifting background blobs */}
-      <div className="pointer-events-none absolute -top-24 -left-24 w-96 h-96 rounded-full bg-accra-leaf/15 blur-3xl animate-drift" />
-      <div
-        className="pointer-events-none absolute -bottom-32 -right-20 w-[28rem] h-[28rem] rounded-full bg-accra-green/10 blur-3xl animate-drift"
-        style={{ animationDelay: '-6s' }}
-      />
-      <div
-        className="pointer-events-none absolute top-1/3 right-1/4 w-72 h-72 rounded-full bg-accra-gold/10 blur-3xl animate-drift"
-        style={{ animationDelay: '-12s' }}
-      />
-
-      <div className="relative w-full max-w-5xl bg-white rounded-[2rem] shadow-2xl shadow-accra-green/10 overflow-hidden grid lg:grid-cols-2">
-        {/* Illustration panel */}
-        <div
-          ref={panelRef}
-          className="relative min-h-[240px] lg:min-h-[660px] overflow-hidden bg-gradient-to-br from-accra-green via-accra-leaf to-[#8CC63F] animate-pan-gradient"
-        >
-          <div
-            className="absolute inset-0 bg-cover bg-center animate-float-y transition-transform duration-300 ease-out"
-            style={{
-              backgroundImage: `url('${image}')`,
-              transform: `translate3d(${x * -12}px, ${y * -12}px, 0) scale(1.06)`,
-            }}
-            role="img"
-            aria-label={imageAlt}
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-accra-dark/80 via-accra-dark/10 to-accra-dark/30" />
-
-          <div className="relative h-full flex flex-col justify-between p-7 lg:p-9 text-white">
-            <Link href="/" className="text-lg font-extrabold tracking-tight drop-shadow-sm w-fit">
-              Nsoroma
-            </Link>
-            <div
-              className="transition-transform duration-300 ease-out"
-              style={{ transform: `translate3d(${x * 6}px, ${y * 6}px, 0)` }}
-            >
-              <h2 className="text-2xl lg:text-3xl font-bold leading-snug drop-shadow-sm">{headline}</h2>
-              <p className="mt-3 text-xs font-medium text-white/80">{caption}</p>
-            </div>
-          </div>
+    <div className="min-h-[calc(100vh-80px)] bg-canvas p-2 sm:p-3 grid lg:grid-cols-[minmax(0,560px)_1fr] gap-3">
+      {/* Form column */}
+      <div className="bg-paper rounded-[32px] border border-hairline flex flex-col px-6 sm:px-12 py-8 sm:py-10 animate-rise-in">
+        <div className="flex items-center justify-between gap-4">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-ink hover:opacity-70">
+            <ArrowLeft className="w-4 h-4" /> Home
+          </Link>
+          <p className="text-sm text-ink-muted text-right">
+            {topLink.prompt}{' '}
+            <Link href={topLink.href} className="font-semibold text-ink underline underline-offset-4">{topLink.label}</Link>
+          </p>
         </div>
 
-        {/* Form panel */}
-        <div className="p-7 sm:p-10 lg:p-12 flex flex-col">
-          <p className="text-xs text-gray-500 text-right animate-rise-in">
-            {topLink.prompt}{' '}
-            <Link href={topLink.href} className="font-semibold text-accra-leaf hover:underline">
-              {topLink.label} ↗
-            </Link>
+        <div className="flex-1 flex flex-col justify-center py-10 w-full max-w-[420px] mx-auto">{children}</div>
+
+        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-ink-muted">
+          <span className="inline-flex items-center gap-1.5"><BadgeCheck className="w-3.5 h-3.5" />Verified hosts</span>
+          <span className="inline-flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5" />Escrow-protected payments</span>
+          <span className="inline-flex items-center gap-1.5"><Star className="w-3.5 h-3.5" />4.9 guest rating</span>
+        </div>
+      </div>
+
+      {/* 3D stage */}
+      <div className="relative hidden lg:block rounded-[32px] stage-mesh overflow-hidden lg:sticky lg:top-[92px] lg:h-[calc(100vh-104px)] min-h-[560px] self-start">
+        <World3D variant="star" className="absolute inset-0" fallback={props.image || '/photos/capecoast.jpg'} />
+        <div className="absolute top-8 left-10 right-10 flex items-center justify-between">
+          <span className="mono text-[11px] uppercase tracking-[0.1em] text-stone-600">05.6037° N · 0.1870° W</span>
+          <span className="mono text-[11px] uppercase tracking-[0.1em] text-stone-600">{caption}</span>
+        </div>
+        <div className="absolute bottom-10 left-10 right-10 max-w-lg">
+          <p className="font-display text-[44px] xl:text-[56px] font-semibold leading-[0.95] tracking-[-0.035em] text-ink">
+            {headline ?? 'Follow the star to the real Ghana.'}
           </p>
-          <div className="mt-6 flex-1 flex flex-col justify-center">{children}</div>
         </div>
       </div>
     </div>
