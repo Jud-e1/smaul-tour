@@ -181,14 +181,14 @@ export default function AdminPage() {
         </div>
 
         {/* Tab Navigation */}
-        <nav className="mt-8 mb-8 flex gap-6 sm:gap-8 overflow-x-auto scrollbar-hide border-b border-[#E1D8CA]" aria-label="Admin">
+        <nav className="mt-8 mb-8 flex gap-6 sm:gap-8 overflow-x-auto scrollbar-hide border-b border-[#E0E0E5]" aria-label="Admin">
           {tabs.map((t) => (
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
               aria-current={tab === t.key ? 'page' : undefined}
               className={`pb-3 -mb-px border-b-2 text-[15px] whitespace-nowrap transition-colors ${
-                tab === t.key ? 'border-ink text-ink font-semibold' : 'border-transparent text-ink-muted hover:text-ink hover:border-[#E1D8CA]'
+                tab === t.key ? 'border-ink text-ink font-semibold' : 'border-transparent text-ink-muted hover:text-ink hover:border-[#E0E0E5]'
               }`}
             >
               {t.label}
@@ -202,8 +202,8 @@ export default function AdminPage() {
           <>
             {/* Verifications Tab */}
             {tab === 'verifications' && (
-              <div className="bg-paper rounded-2xl border border-[#E1D8CA] overflow-hidden">
-                <div className="p-4 border-b border-[#E1D8CA]">
+              <div className="bg-paper rounded-2xl border border-[#E0E0E5] overflow-hidden">
+                <div className="p-4 border-b border-[#E0E0E5]">
                   <h2 className="text-lg font-semibold text-ink">Pending Guide Verifications</h2>
                 </div>
                 {verifications.length === 0 ? (
@@ -232,17 +232,17 @@ export default function AdminPage() {
                                 placeholder="Rejection reason"
                                 value={rejectReason}
                                 onChange={(e) => setRejectReason(e.target.value)}
-                                className="border border-[#E1D8CA] rounded px-2 py-1 text-sm w-48"
+                                className="border border-[#E0E0E5] rounded px-2 py-1 text-sm w-48"
                               />
                               <button
                                 onClick={() => rejectVerification(v.id)}
-                                className="px-4 py-2 bg-[#B3261E] text-white text-sm font-semibold rounded-lg hover:bg-[#8C1D17]"
+                                className="px-4 py-2 bg-[#D70015] text-white text-sm font-semibold rounded-lg hover:bg-[#A50011]"
                               >
                                 Confirm
                               </button>
                               <button
                                 onClick={() => setActionTarget(null)}
-                                className="px-4 py-2 border border-[#E1D8CA] text-ink text-sm font-semibold rounded-lg hover:border-ink"
+                                className="px-4 py-2 border border-[#E0E0E5] text-ink text-sm font-semibold rounded-lg hover:border-ink"
                               >
                                 Cancel
                               </button>
@@ -250,7 +250,7 @@ export default function AdminPage() {
                           ) : (
                             <button
                               onClick={() => setActionTarget(v.id)}
-                              className="px-4 py-2 border border-[#E1D8CA] text-[#B3261E] text-sm font-semibold rounded-lg hover:border-[#B3261E]"
+                              className="px-4 py-2 border border-[#E0E0E5] text-[#D70015] text-sm font-semibold rounded-lg hover:border-[#D70015]"
                             >
                               Reject
                             </button>
@@ -265,8 +265,8 @@ export default function AdminPage() {
 
             {/* Experiences Tab */}
             {tab === 'experiences' && (
-              <div className="bg-paper rounded-2xl border border-[#E1D8CA] overflow-hidden">
-                <div className="p-4 border-b border-[#E1D8CA]">
+              <div className="bg-paper rounded-2xl border border-[#E0E0E5] overflow-hidden">
+                <div className="p-4 border-b border-[#E0E0E5]">
                   <h2 className="text-lg font-semibold text-ink">Pending Experience Approvals</h2>
                 </div>
                 {pendingExperiences.length === 0 ? (
@@ -293,17 +293,17 @@ export default function AdminPage() {
                                 placeholder="Rejection reason"
                                 value={rejectReason}
                                 onChange={(ex) => setRejectReason(ex.target.value)}
-                                className="border border-[#E1D8CA] rounded px-2 py-1 text-sm w-48"
+                                className="border border-[#E0E0E5] rounded px-2 py-1 text-sm w-48"
                               />
                               <button
                                 onClick={() => rejectExperience(e.id)}
-                                className="px-4 py-2 bg-[#B3261E] text-white text-sm font-semibold rounded-lg hover:bg-[#8C1D17]"
+                                className="px-4 py-2 bg-[#D70015] text-white text-sm font-semibold rounded-lg hover:bg-[#A50011]"
                               >
                                 Confirm
                               </button>
                               <button
                                 onClick={() => setActionTarget(null)}
-                                className="px-4 py-2 border border-[#E1D8CA] text-ink text-sm font-semibold rounded-lg hover:border-ink"
+                                className="px-4 py-2 border border-[#E0E0E5] text-ink text-sm font-semibold rounded-lg hover:border-ink"
                               >
                                 Cancel
                               </button>
@@ -311,7 +311,7 @@ export default function AdminPage() {
                           ) : (
                             <button
                               onClick={() => setActionTarget(e.id)}
-                              className="px-4 py-2 border border-[#E1D8CA] text-[#B3261E] text-sm font-semibold rounded-lg hover:border-[#B3261E]"
+                              className="px-4 py-2 border border-[#E0E0E5] text-[#D70015] text-sm font-semibold rounded-lg hover:border-[#D70015]"
                             >
                               Reject
                             </button>
@@ -326,8 +326,8 @@ export default function AdminPage() {
 
             {/* Flagged Reviews Tab */}
             {tab === 'reviews' && (
-              <div className="bg-paper rounded-2xl border border-[#E1D8CA] overflow-hidden">
-                <div className="p-4 border-b border-[#E1D8CA]">
+              <div className="bg-paper rounded-2xl border border-[#E0E0E5] overflow-hidden">
+                <div className="p-4 border-b border-[#E0E0E5]">
                   <h2 className="text-lg font-semibold text-ink">Flagged Reviews</h2>
                 </div>
                 {flaggedReviews.length === 0 ? (
@@ -345,7 +345,7 @@ export default function AdminPage() {
                           </div>
                           <button
                             onClick={() => removeReview(r.id)}
-                            className="px-4 py-2 bg-[#B3261E] text-white text-sm font-semibold rounded-lg hover:bg-[#8C1D17] whitespace-nowrap"
+                            className="px-4 py-2 bg-[#D70015] text-white text-sm font-semibold rounded-lg hover:bg-[#A50011] whitespace-nowrap"
                           >
                             Remove
                           </button>
@@ -359,8 +359,8 @@ export default function AdminPage() {
 
             {/* Users Tab */}
             {tab === 'users' && (
-              <div className="bg-paper rounded-2xl border border-[#E1D8CA] overflow-hidden">
-                <div className="p-4 border-b border-[#E1D8CA]">
+              <div className="bg-paper rounded-2xl border border-[#E0E0E5] overflow-hidden">
+                <div className="p-4 border-b border-[#E0E0E5]">
                   <h2 className="text-lg font-semibold text-ink">User Management</h2>
                 </div>
                 {users.length === 0 ? (
@@ -388,17 +388,17 @@ export default function AdminPage() {
                                 placeholder="Suspension reason"
                                 value={suspendReason}
                                 onChange={(ev) => setSuspendReason(ev.target.value)}
-                                className="border border-[#E1D8CA] rounded px-2 py-1 text-sm w-48"
+                                className="border border-[#E0E0E5] rounded px-2 py-1 text-sm w-48"
                               />
                               <button
                                 onClick={() => suspendUser(u.id)}
-                                className="px-4 py-2 bg-[#B3261E] text-white text-sm font-semibold rounded-lg hover:bg-[#8C1D17]"
+                                className="px-4 py-2 bg-[#D70015] text-white text-sm font-semibold rounded-lg hover:bg-[#A50011]"
                               >
                                 Confirm
                               </button>
                               <button
                                 onClick={() => setActionTarget(null)}
-                                className="px-4 py-2 border border-[#E1D8CA] text-ink text-sm font-semibold rounded-lg hover:border-ink"
+                                className="px-4 py-2 border border-[#E0E0E5] text-ink text-sm font-semibold rounded-lg hover:border-ink"
                               >
                                 Cancel
                               </button>
@@ -406,7 +406,7 @@ export default function AdminPage() {
                           ) : (
                             <button
                               onClick={() => setActionTarget(u.id)}
-                              className="px-4 py-2 border border-[#E1D8CA] text-[#B3261E] text-sm font-semibold rounded-lg hover:border-[#B3261E]"
+                              className="px-4 py-2 border border-[#E0E0E5] text-[#D70015] text-sm font-semibold rounded-lg hover:border-[#D70015]"
                             >
                               Suspend
                             </button>
@@ -433,7 +433,7 @@ export default function AdminPage() {
                       { label: 'Revenue', value: `$${metrics.totalRevenue?.toLocaleString()}` },
                       { label: 'Avg Booking Value', value: `$${metrics.averageBookingValue?.toFixed(2)}` },
                     ].map((m) => (
-                      <div key={m.label} className="bg-paper rounded-2xl border border-[#E1D8CA] overflow-hidden p-4">
+                      <div key={m.label} className="bg-paper rounded-2xl border border-[#E0E0E5] overflow-hidden p-4">
                         <div className="text-sm text-ink-muted">{m.label}</div>
                         <div className="text-2xl font-bold text-ink mt-1">{m.value}</div>
                       </div>
@@ -447,8 +447,8 @@ export default function AdminPage() {
 
             {/* Audit Log Tab */}
             {tab === 'audit' && (
-              <div className="bg-paper rounded-2xl border border-[#E1D8CA] overflow-hidden">
-                <div className="p-4 border-b border-[#E1D8CA]">
+              <div className="bg-paper rounded-2xl border border-[#E0E0E5] overflow-hidden">
+                <div className="p-4 border-b border-[#E0E0E5]">
                   <h2 className="text-lg font-semibold text-ink">Audit Log</h2>
                 </div>
                 {auditLogs.length === 0 ? (

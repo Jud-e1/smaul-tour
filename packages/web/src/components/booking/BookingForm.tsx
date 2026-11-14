@@ -158,7 +158,7 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
         </button>
 
         {selectedSlot && (
-          <div className="rounded-xl border border-[#E1D8CA] divide-y divide-[#E1D8CA] text-sm">
+          <div className="rounded-xl border border-[#E0E0E5] divide-y divide-[#E0E0E5] text-sm">
             <div className="px-4 py-3">
               <p className="font-semibold">Date</p>
               <p className="text-ink-muted">
@@ -182,14 +182,14 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
             <h3 className="text-base font-semibold text-ink">Pay with card</h3>
             <span className="flex gap-1" aria-hidden>
               {['VISA', 'MC', 'MoMo'].map((b) => (
-                <span key={b} className="px-1.5 py-0.5 rounded border border-[#E1D8CA] text-[9px] font-bold text-ink-muted">{b}</span>
+                <span key={b} className="px-1.5 py-0.5 rounded border border-[#E0E0E5] text-[9px] font-bold text-ink-muted">{b}</span>
               ))}
             </span>
           </div>
 
           {/* Airbnb-style grouped card inputs */}
-          <div className="rounded-xl border border-[#C9BCA9] overflow-hidden focus-within:border-ink">
-            <label className="relative block border-b border-[#C9BCA9]">
+          <div className="rounded-xl border border-[#D2D2D7] overflow-hidden focus-within:border-ink">
+            <label className="relative block border-b border-[#D2D2D7]">
               <span className="absolute left-3 top-2 text-xs text-ink-muted">Cardholder name</span>
               <input
                 type="text"
@@ -199,7 +199,7 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
                 className={inputBase}
               />
             </label>
-            <label className="relative block border-b border-[#C9BCA9]">
+            <label className="relative block border-b border-[#D2D2D7]">
               <span className="absolute left-3 top-2 text-xs text-ink-muted">Card number</span>
               <input
                 type="text"
@@ -214,7 +214,7 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
                 className={`${inputBase} tracking-wider`}
               />
             </label>
-            <div className="grid grid-cols-2 divide-x divide-[#C9BCA9]">
+            <div className="grid grid-cols-2 divide-x divide-[#D2D2D7]">
               <label className="relative block">
                 <span className="absolute left-3 top-2 text-xs text-ink-muted">Expiration</span>
                 <input
@@ -250,7 +250,7 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
           {errs.length > 0 && (
             <ul className="space-y-1">
               {errs.map((e) => (
-                <li key={e?.message} className="flex items-center gap-1.5 text-xs text-[#B3261E]">
+                <li key={e?.message} className="flex items-center gap-1.5 text-xs text-[#D70015]">
                   <AlertCircle className="w-3.5 h-3.5 shrink-0" aria-hidden />{e?.message}
                 </li>
               ))}
@@ -265,7 +265,7 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
           </p>
 
           {error && (
-            <div className="flex gap-2 rounded-xl border border-[#B3261E]/30 bg-[#FBEFEA] p-3 text-sm text-[#B3261E]" role="alert">
+            <div className="flex gap-2 rounded-xl border border-[#D70015]/30 bg-[#FFF0F1] p-3 text-sm text-[#D70015]" role="alert">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" aria-hidden />{error}
             </div>
           )}
@@ -282,7 +282,7 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
   const guests = participants || 1;
   return (
     <form onSubmit={bookingForm.handleSubmit(handleBookingSubmit)} className="space-y-4">
-      <div className="rounded-xl border border-[#C9BCA9] overflow-hidden">
+      <div className="rounded-xl border border-[#D2D2D7] overflow-hidden">
         <p className="px-3 pt-2.5 pb-2 text-[10px] font-bold uppercase tracking-[0.04em] text-ink">Date &amp; time</p>
         {availableSlots.length === 0 ? (
           <p className="px-3 pb-4 text-sm text-ink-muted">No open dates right now — check back soon.</p>
@@ -310,7 +310,7 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
                     </span>
                     <span className="block text-xs text-ink-muted">{slot.startTime} – {slot.endTime}</span>
                   </span>
-                  <span className={`text-xs font-medium ${spotsLeft <= 2 ? 'text-[#B3261E]' : 'text-ink-muted'}`}>
+                  <span className={`text-xs font-medium ${spotsLeft <= 2 ? 'text-[#D70015]' : 'text-ink-muted'}`}>
                     {spotsLeft <= 2 ? `Only ${spotsLeft} left` : `${spotsLeft} spots`}
                   </span>
                 </label>
@@ -318,7 +318,7 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
             })}
           </div>
         )}
-        <div className="border-t border-[#C9BCA9] px-3 py-2.5 flex items-center justify-between">
+        <div className="border-t border-[#D2D2D7] px-3 py-2.5 flex items-center justify-between">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.04em] text-ink">Guests</p>
             <p className="text-sm text-ink">{guests} guest{guests === 1 ? '' : 's'}</p>
@@ -329,7 +329,7 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
               onClick={() => setGuests(guests - 1)}
               disabled={guests <= 1}
               aria-label="Fewer guests"
-              className="w-8 h-8 rounded-full border border-[#C9BCA9] text-ink-muted hover:border-ink hover:text-ink disabled:opacity-30 disabled:hover:border-[#C9BCA9] flex items-center justify-center"
+              className="w-8 h-8 rounded-full border border-[#D2D2D7] text-ink-muted hover:border-ink hover:text-ink disabled:opacity-30 disabled:hover:border-[#D2D2D7] flex items-center justify-center"
             >−</button>
             <input
               type="number"
@@ -344,17 +344,17 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
               onClick={() => setGuests(guests + 1)}
               disabled={guests >= maxGuests}
               aria-label="More guests"
-              className="w-8 h-8 rounded-full border border-[#C9BCA9] text-ink-muted hover:border-ink hover:text-ink disabled:opacity-30 disabled:hover:border-[#C9BCA9] flex items-center justify-center"
+              className="w-8 h-8 rounded-full border border-[#D2D2D7] text-ink-muted hover:border-ink hover:text-ink disabled:opacity-30 disabled:hover:border-[#D2D2D7] flex items-center justify-center"
             >+</button>
           </div>
         </div>
       </div>
       {bookingForm.formState.errors.slotId && (
-        <p className="flex items-center gap-1.5 text-xs text-[#B3261E]"><AlertCircle className="w-3.5 h-3.5" aria-hidden />{bookingForm.formState.errors.slotId.message}</p>
+        <p className="flex items-center gap-1.5 text-xs text-[#D70015]"><AlertCircle className="w-3.5 h-3.5" aria-hidden />{bookingForm.formState.errors.slotId.message}</p>
       )}
 
       {error && (
-        <div className="flex gap-2 rounded-xl border border-[#B3261E]/30 bg-[#FBEFEA] p-3 text-sm text-[#B3261E]" role="alert">
+        <div className="flex gap-2 rounded-xl border border-[#D70015]/30 bg-[#FFF0F1] p-3 text-sm text-[#D70015]" role="alert">
           <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" aria-hidden />{error}
         </div>
       )}
@@ -370,7 +370,7 @@ export default function BookingForm({ experienceId, price, slots, onSuccess }: B
             <span className="underline underline-offset-2">{money(price.amount)} × {guests} guest{guests === 1 ? '' : 's'}</span>
             <span>{money(totalCost)}</span>
           </div>
-          <div className="flex justify-between font-semibold pt-4 border-t border-[#E1D8CA]">
+          <div className="flex justify-between font-semibold pt-4 border-t border-[#E0E0E5]">
             <span>Total</span>
             <span>{money(totalCost)}</span>
           </div>

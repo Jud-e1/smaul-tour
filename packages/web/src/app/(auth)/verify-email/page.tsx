@@ -48,7 +48,7 @@ function VerifyEmailPage() {
     <AuthShell title="Verify email" caption="Explore · Experience · Belong" topLink={{ prompt: 'Need help?', label: 'Log in', href: '/login' }}>
       <div className="text-center py-6 animate-fade-in" aria-live="polite">
         {status === 'verifying' ? (
-          <div className="w-12 h-12 mx-auto rounded-full border-[3px] border-[#EAE1D3] border-t-ink animate-spin" />
+          <div className="w-12 h-12 mx-auto rounded-full border-[3px] border-[#EBEBF0] border-t-ink animate-spin" />
         ) : (
           <div className="mx-auto icon-tile w-14 h-14" aria-hidden><st.Icon className="w-6 h-6" strokeWidth={1.75} /></div>
         )}

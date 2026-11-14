@@ -7,7 +7,7 @@ import World3D from '@/components/three/World3D';
 
 /** Soft paper field with an ink focus ring. */
 export const authInputClass =
-  'w-full rounded-2xl bg-paper border border-[#D9CCB7] px-4 py-3.5 text-[15px] text-ink placeholder:text-ink-soft outline-none transition-shadow focus:border-ink focus:shadow-[0_0_0_1px_#1C1B1A]';
+  'w-full rounded-2xl bg-paper border border-[#D2D2D7] px-4 py-3.5 text-[15px] text-ink placeholder:text-ink-soft outline-none transition-shadow focus:border-ink focus:shadow-[0_0_0_1px_#1D1D1F]';
 
 export const authLabelClass = 'block text-sm font-semibold text-ink mb-1.5';
 
@@ -57,7 +57,7 @@ export default function AuthShell(props: AuthShellProps) {
       </div>
 
       {/* 3D stage */}
-      <div className="relative hidden lg:block rounded-[32px] bg-sand paper-grain overflow-hidden lg:sticky lg:top-[92px] lg:h-[calc(100vh-104px)] min-h-[560px] self-start">
+      <div className="relative hidden lg:block rounded-[32px] stage-mesh overflow-hidden lg:sticky lg:top-[92px] lg:h-[calc(100vh-104px)] min-h-[560px] self-start">
         <World3D variant="star" className="absolute inset-0" fallback={props.image || '/photos/capecoast.jpg'} />
         <div className="absolute top-8 left-10 right-10 flex items-center justify-between">
           <span className="mono text-[11px] uppercase tracking-[0.1em] text-stone-600">05.6037° N · 0.1870° W</span>

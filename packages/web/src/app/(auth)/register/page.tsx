@@ -12,7 +12,7 @@ import { Compass, Luggage } from 'lucide-react';
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
   return (
-    <p className="mt-1.5 flex items-center gap-1.5 text-xs text-[#B3261E]">
+    <p className="mt-1.5 flex items-center gap-1.5 text-xs text-[#D70015]">
       <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor" aria-hidden><path d="M8 1a7 7 0 110 14A7 7 0 018 1zm0 9.5a1 1 0 100 2 1 1 0 000-2zM8 4a1 1 0 00-1 1v4a1 1 0 002 0V5a1 1 0 00-1-1z" /></svg>
       {message}
     </p>
@@ -86,7 +86,7 @@ export default function RegisterPage() {
                 <label
                   key={opt.role}
                   className={`relative cursor-pointer rounded-xl border p-4 transition-all ${
-                    active ? 'border-ink border-2 p-[15px] bg-fog' : 'border-[#E1D8CA] hover:border-ink'
+                    active ? 'border-ink border-2 p-[15px] bg-fog' : 'border-[#E0E0E5] hover:border-ink'
                   }`}
                 >
                   <input type="radio" value={opt.role} {...register('role')} className="sr-only" />
@@ -174,7 +174,7 @@ export default function RegisterPage() {
             <input
               type="checkbox"
               {...register('agreeToTerms', { required: 'Please accept the terms to continue' })}
-              className="mt-0.5 w-5 h-5 rounded border-[#C9BCA9]"
+              className="mt-0.5 w-5 h-5 rounded border-[#D2D2D7]"
             />
             <span>I agree to Nsoroma’s <span className="font-semibold underline">Terms of Service</span> and <span className="font-semibold underline">Privacy Policy</span>.</span>
           </label>
@@ -182,8 +182,8 @@ export default function RegisterPage() {
         </div>
 
         {(submitError || error) && (
-          <div className="flex gap-3 rounded-xl border border-[#B3261E]/25 bg-[#FBEFEA] p-3.5 text-sm text-ink" role="alert">
-            <span className="w-6 h-6 shrink-0 rounded-full bg-[#B3261E] text-white flex items-center justify-center text-xs font-bold">!</span>
+          <div className="flex gap-3 rounded-xl border border-[#D70015]/25 bg-[#FFF0F1] p-3.5 text-sm text-ink" role="alert">
+            <span className="w-6 h-6 shrink-0 rounded-full bg-[#D70015] text-white flex items-center justify-center text-xs font-bold">!</span>
             <span>{submitError || error}</span>
           </div>
         )}

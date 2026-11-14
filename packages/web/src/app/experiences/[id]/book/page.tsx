@@ -81,7 +81,7 @@ export default function BookingPage() {
         <div className="mt-8 grid lg:grid-cols-[1fr_440px] gap-10 lg:gap-20 items-start">
           {/* Left: steps */}
           <div className="min-w-0 order-2 lg:order-1">
-            <section className="pb-8 border-b border-[#E1D8CA]">
+            <section className="pb-8 border-b border-[#E0E0E5]">
               <h2 className="text-[30px] leading-tight font-semibold mb-6">Your trip</h2>
               <BookingForm
                 experienceId={experience.id}
@@ -96,7 +96,7 @@ export default function BookingPage() {
             </section>
             {!booked && (
               <>
-                <section className="py-8 border-b border-[#E1D8CA]">
+                <section className="py-8 border-b border-[#E0E0E5]">
                   <h2 className="text-[30px] leading-tight font-semibold mb-2">Cancellation policy</h2>
                   <p className="text-ink"><span className="font-semibold capitalize">{policy}.</span> {POLICY[policy] ?? ''}</p>
                 </section>
@@ -113,9 +113,9 @@ export default function BookingPage() {
           </div>
 
           {/* Right: summary card */}
-          <aside className="order-1 lg:order-2 lg:sticky lg:top-28 rounded-xl border border-[#E1D8CA] p-6">
-            <div className="flex gap-4 pb-6 border-b border-[#E1D8CA]">
-              <div className="w-28 h-24 rounded-lg overflow-hidden bg-[#EAE1D3] shrink-0">
+          <aside className="order-1 lg:order-2 lg:sticky lg:top-28 rounded-xl border border-[#E0E0E5] p-6">
+            <div className="flex gap-4 pb-6 border-b border-[#E0E0E5]">
+              <div className="w-28 h-24 rounded-lg overflow-hidden bg-[#EBEBF0] shrink-0">
                 {img && (
                   <img src={img.thumbnailUrl || img.url} alt={experience.title} className="w-full h-full object-cover" />
                 )}
@@ -128,7 +128,7 @@ export default function BookingPage() {
                 ) : null}
               </div>
             </div>
-            <div className="py-6 border-b border-[#E1D8CA] space-y-2 text-[15px]">
+            <div className="py-6 border-b border-[#E0E0E5] space-y-2 text-[15px]">
               <h3 className="text-[22px] font-semibold mb-3">Price details</h3>
               <div className="flex justify-between"><span>Price per guest</span><span>{experience.price.currency === 'USD' ? '$' : `${experience.price.currency} `}{experience.price.amount.toFixed(0)}</span></div>
               <div className="flex justify-between"><span>Duration</span><span>{experience.duration} hrs</span></div>

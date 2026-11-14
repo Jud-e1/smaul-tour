@@ -10,19 +10,20 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Billboard, ContactShadows, Float, Image as DreiImage, RoundedBox } from '@react-three/drei';
 import * as THREE from 'three';
 
-// Clay palette — kept inside the warm, low-saturation world of the UI.
+// Porcelain palette — Apple's whites and greys with Stripe's indigo family.
 const C = {
-  sand: '#E9DCC6',
-  sandDeep: '#DCCBAF',
-  plaster: '#F6EFE3',
-  stone: '#CDBEA6',
-  wood: '#8E6A4E',
-  woodDark: '#5B4334',
-  ink: '#1F1A17',
-  water: '#BFC6C0',
-  waterDeep: '#A9B3AE',
-  frond: '#6F6A4E',
-  frondDark: '#57533D',
+  sand: '#F4F4F8',
+  sandDeep: '#E4E4EC',
+  plaster: '#FFFFFF',
+  stone: '#DADAE4',
+  wood: '#B9B9C6',
+  woodDark: '#8E8EA0',
+  ink: '#1D1D1F',
+  water: '#D9DAF7',
+  waterDeep: '#C2C4F2',
+  frond: '#9F92FE',
+  frondDark: '#7F6EFD',
+  indigo: '#533AFD',
 };
 
 const clay = (color: string, rough = 0.85) => (
@@ -65,7 +66,7 @@ function BlackStar({ scale = 1, spin = 0.35 }: { scale?: number; spin?: number }
   });
   return (
     <mesh ref={ref} geometry={geometry} scale={scale} castShadow>
-      <meshStandardMaterial color={C.ink} roughness={0.32} metalness={0.25} />
+      <meshStandardMaterial color={C.indigo} roughness={0.22} metalness={0.35} emissive="#2E2B8C" emissiveIntensity={0.25} />
     </mesh>
   );
 }
@@ -110,7 +111,7 @@ function Lighthouse({ position }: { position: [number, number, number] }) {
       ))}
       <mesh position={[0, 1.66, 0]} castShadow>
         <cylinderGeometry args={[0.2, 0.2, 0.22, 16]} />
-        <meshStandardMaterial color="#FFF6E2" emissive="#FFE9B8" emissiveIntensity={0.6} roughness={0.4} />
+        <meshStandardMaterial color="#FFFFFF" emissive="#C5BDFE" emissiveIntensity={0.9} roughness={0.4} />
       </mesh>
       <mesh position={[0, 1.92, 0]} castShadow>
         <coneGeometry args={[0.26, 0.32, 16]} />
@@ -256,7 +257,7 @@ function Postcards({ radius = 4.6, cards = POSTCARDS, y = 1.7 }: { radius?: numb
               <Billboard>
                 <group rotation={[0, 0, (i % 2 ? 1 : -1) * 0.08]}>
                   <RoundedBox args={[1.34, 1.64, 0.04]} radius={0.05} position={[0, 0, -0.03]} castShadow>
-                    <meshStandardMaterial color="#FFFDF8" emissive="#FFF8EC" emissiveIntensity={0.35} roughness={0.85} />
+                    <meshStandardMaterial color="#FFFFFF" emissive="#FFFFFF" emissiveIntensity={0.3} roughness={0.6} />
                   </RoundedBox>
                   <DreiImage url={url} scale={[1.18, 1.18]} position={[0, 0.14, 0]} radius={0.06} toneMapped={false} />
                 </group>
@@ -284,11 +285,11 @@ function Rig({ children, strength = 0.18 }: { children: React.ReactNode; strengt
 function Lights() {
   return (
     <>
-      <hemisphereLight args={['#FFF8EC', '#C9B79A', 0.9]} />
+      <hemisphereLight args={['#FFFFFF', '#C9CBEF', 1.0]} />
       <directionalLight
         position={[5, 9, 6]}
         intensity={1.6}
-        color="#FFF1DC"
+        color="#FFFFFF"
         castShadow
         shadow-mapSize={[1024, 1024]}
         shadow-camera-left={-6}
@@ -297,7 +298,7 @@ function Lights() {
         shadow-camera-bottom={-6}
         shadow-bias={-0.0004}
       />
-      <directionalLight position={[-6, 4, -4]} intensity={0.35} color="#E8D9C2" />
+      <directionalLight position={[-6, 4, -4]} intensity={0.35} color="#B9B4FF" />
     </>
   );
 }
@@ -336,7 +337,7 @@ export default function World({ variant = 'island', className = '' }: { variant?
               </group>
             )}
           </Rig>
-          <ContactShadows position={[0, island ? -1.62 : -2.6, 0]} opacity={0.35} scale={island ? 14 : 10} blur={2.6} far={4} color="#5B4334" />
+          <ContactShadows position={[0, island ? -1.62 : -2.6, 0]} opacity={0.35} scale={island ? 14 : 10} blur={2.6} far={4} color="#2E2B8C" />
         </Suspense>
       </Canvas>
     </div>

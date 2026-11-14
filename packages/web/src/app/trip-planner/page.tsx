@@ -36,12 +36,12 @@ interface Itinerary {
 function ItinerarySkeleton() {
   return (
     <div className="space-y-4 animate-pulse">
-      <div className="bg-paper rounded-2xl border border-[#E1D8CA] p-6">
+      <div className="bg-paper rounded-2xl border border-[#E0E0E5] p-6">
         <div className="h-6 bg-gray-200 rounded w-40 mb-4" />
         <div className="h-12 bg-forest-50 rounded-lg mb-4" />
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="flex gap-4 p-4 border border-[#E1D8CA] rounded-lg">
+            <div key={i} className="flex gap-4 p-4 border border-[#E0E0E5] rounded-lg">
               <div className="w-8 h-8 bg-gray-200 rounded-full shrink-0" />
               <div className="flex-1 space-y-2">
                 <div className="h-4 bg-gray-200 rounded w-48" />
@@ -178,7 +178,7 @@ function TripPlannerPage() {
               Describe your ideal days in Accra — pace, budget, what you love — and get a bookable, day-by-day itinerary in seconds.
             </p>
 
-            <div className="mt-8 rounded-2xl border border-[#E1D8CA] shadow-[0_6px_16px_rgba(0,0,0,0.08)] focus-within:shadow-[0_6px_20px_rgba(0,0,0,0.14)] focus-within:border-ink transition-shadow">
+            <div className="mt-8 rounded-2xl border border-[#E0E0E5] shadow-[0_6px_16px_rgba(0,0,0,0.08)] focus-within:shadow-[0_6px_20px_rgba(0,0,0,0.14)] focus-within:border-ink transition-shadow">
               <label htmlFor="trip-input" className="block px-5 pt-4 text-xs font-semibold text-ink">Tell us about your trip</label>
               <textarea
                 id="trip-input"
@@ -190,7 +190,7 @@ function TripPlannerPage() {
                 aria-label="Trip description"
                 onKeyDown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && input.trim()) generate(input); }}
               />
-              <div className="flex items-center justify-between gap-3 border-t border-[#EAE1D3] px-4 py-3">
+              <div className="flex items-center justify-between gap-3 border-t border-[#EBEBF0] px-4 py-3">
                 <span className="hidden sm:block text-xs text-ink-muted">Ctrl + Enter to generate</span>
                 <button
                   onClick={() => generate(input)}
@@ -202,12 +202,12 @@ function TripPlannerPage() {
                 </button>
               </div>
             </div>
-            {error && <p className="mt-3 flex items-center gap-1.5 text-sm text-[#B3261E]" role="alert"><AlertCircle className="w-4 h-4" />{error}</p>}
+            {error && <p className="mt-3 flex items-center gap-1.5 text-sm text-[#D70015]" role="alert"><AlertCircle className="w-4 h-4" />{error}</p>}
 
             <p className="mt-6 text-sm font-semibold">Try one of these</p>
             <div className="mt-3 flex flex-wrap gap-2">
               {EXAMPLES.map((ex) => (
-                <button key={ex} type="button" onClick={() => setInput(ex)} className="text-left rounded-full border border-[#E1D8CA] px-4 py-2 text-sm hover:border-ink transition-colors">
+                <button key={ex} type="button" onClick={() => setInput(ex)} className="text-left rounded-full border border-[#E0E0E5] px-4 py-2 text-sm hover:border-ink transition-colors">
                   {ex}
                 </button>
               ))}
@@ -215,7 +215,7 @@ function TripPlannerPage() {
           </div>
 
           {/* ── How it works ─────────────────────────────────────────── */}
-          <aside className="rounded-[32px] bg-sand paper-grain overflow-hidden">
+          <aside className="rounded-[32px] stage-mesh overflow-hidden">
             <div className="relative h-[230px]">
               <World3D variant="star" className="absolute inset-0" fallback="/photos/blackstar.jpg" />
               <span className="absolute top-5 left-6 mono text-[11px] uppercase tracking-[0.1em] text-stone-600">How it works</span>
@@ -245,7 +245,7 @@ function TripPlannerPage() {
         {itinerary && (
           <section className="mt-14 grid lg:grid-cols-[1fr_400px] gap-10 lg:gap-16 items-start animate-fade-in">
             <div>
-              <div className="flex flex-wrap items-end justify-between gap-4 pb-6 border-b border-[#E1D8CA]">
+              <div className="flex flex-wrap items-end justify-between gap-4 pb-6 border-b border-[#E0E0E5]">
                 <div>
                   <p className="text-sm text-ink-muted">Your itinerary</p>
                   <h2 className="text-[34px] leading-tight font-semibold">{itinerary.experiences.length} stops across Accra</h2>
@@ -256,13 +256,13 @@ function TripPlannerPage() {
                 </div>
               </div>
 
-              <ol className="relative mt-8 space-y-6 before:absolute before:left-[19px] before:top-2 before:bottom-2 before:w-px before:bg-[#E1D8CA]">
+              <ol className="relative mt-8 space-y-6 before:absolute before:left-[19px] before:top-2 before:bottom-2 before:w-px before:bg-[#E0E0E5]">
                 {itinerary.experiences.map((rec, i) => (
                   <li key={rec.experienceId} className="relative flex gap-5">
                     <span className="relative z-10 w-10 h-10 rounded-full bg-ink text-white text-sm font-semibold flex items-center justify-center shrink-0 ring-4 ring-paper">
                       {i + 1}
                     </span>
-                    <div className="flex-1 min-w-0 rounded-2xl border border-[#E1D8CA] p-5 hover:shadow-[0_6px_16px_rgba(0,0,0,0.1)] transition-shadow">
+                    <div className="flex-1 min-w-0 rounded-2xl border border-[#E0E0E5] p-5 hover:shadow-[0_6px_16px_rgba(0,0,0,0.1)] transition-shadow">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
                           <p className="text-xs font-semibold text-ink-muted">
@@ -292,7 +292,7 @@ function TripPlannerPage() {
             </div>
 
             <aside className="lg:sticky lg:top-28 space-y-6">
-              <div className="rounded-2xl border border-[#E1D8CA] shadow-[0_6px_16px_rgba(0,0,0,0.12)] p-6">
+              <div className="rounded-2xl border border-[#E0E0E5] shadow-[0_6px_16px_rgba(0,0,0,0.12)] p-6">
                 <p className="text-sm text-ink-muted">Total estimated cost</p>
                 <p className="mt-1 text-[32px] font-semibold leading-none">{money(itinerary.totalCost.amount, itinerary.totalCost.currency)}</p>
                 <p className="mt-1 text-sm text-ink-muted">per guest · {itinerary.experiences.length} experiences</p>
@@ -305,7 +305,7 @@ function TripPlannerPage() {
                 )}
               </div>
 
-              <div className="rounded-2xl border border-[#E1D8CA] p-6">
+              <div className="rounded-2xl border border-[#E0E0E5] p-6">
                 <h3 className="font-semibold">Change something?</h3>
                 <p className="text-sm text-ink-muted mt-1 mb-4">Describe it in plain words and we’ll update the plan.</p>
                 <input
@@ -313,7 +313,7 @@ function TripPlannerPage() {
                   value={modification}
                   onChange={(e) => setModification(e.target.value)}
                   placeholder="e.g. Swap the food tour for a hike"
-                  className="w-full rounded-lg border border-[#C9BCA9] px-3.5 py-3 text-[15px] outline-none focus:border-ink focus:shadow-[0_0_0_1px_#1C1B1A]"
+                  className="w-full rounded-lg border border-[#D2D2D7] px-3.5 py-3 text-[15px] outline-none focus:border-ink focus:shadow-[0_0_0_1px_#1D1D1F]"
                   onKeyDown={(e) => e.key === 'Enter' && modify()}
                   aria-label="Itinerary modification request"
                 />

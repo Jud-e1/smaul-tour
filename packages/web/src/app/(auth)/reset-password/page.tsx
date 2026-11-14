@@ -56,10 +56,10 @@ export default function ResetPasswordPage() {
                 {...register('email', { required: 'Email is required' })}
                 className={authInputClass}
               />
-              {errors.email && <p className="mt-1.5 text-xs text-[#B3261E]">{errors.email.message}</p>}
+              {errors.email && <p className="mt-1.5 text-xs text-[#D70015]">{errors.email.message}</p>}
             </div>
             {error && (
-              <div className="rounded-xl border border-[#B3261E]/25 bg-[#FBEFEA] p-3.5 text-sm" role="alert">{error}</div>
+              <div className="rounded-xl border border-[#D70015]/25 bg-[#FFF0F1] p-3.5 text-sm" role="alert">{error}</div>
             )}
             <button type="submit" disabled={loading} className="btn-primary w-full !py-3.5 text-base">
               {loading ? 'Sending…' : 'Send reset link'}

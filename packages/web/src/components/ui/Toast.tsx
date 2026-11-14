@@ -45,9 +45,9 @@ const ICONS: Record<ToastType, React.ReactNode> = {
 
 const COLORS: Record<ToastType, string> = {
   success: 'bg-ink text-paper',
-  error: 'bg-[#8C1D17] text-paper',
+  error: 'bg-[#A50011] text-paper',
   info: 'bg-ink text-paper',
-  warning: 'bg-[#4A4741] text-paper',
+  warning: 'bg-[#6E6E73] text-paper',
 };
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {

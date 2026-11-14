@@ -92,7 +92,7 @@ export default function SharedItineraryPage() {
 
         <div className="space-y-3 mb-8">
           {itinerary.experiences.map((exp, idx) => (
-            <div key={exp.experienceId} className="bg-paper rounded-lg border border-[#E1D8CA] p-4">
+            <div key={exp.experienceId} className="bg-paper rounded-lg border border-[#E0E0E5] p-4">
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 bg-forest-600 text-white rounded-full flex items-center justify-center text-sm font-bold shrink-0">
                   {idx + 1}

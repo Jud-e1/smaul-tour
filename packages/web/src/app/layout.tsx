@@ -1,14 +1,14 @@
 import type { Metadata, Viewport } from 'next';
-import { Figtree, Outfit, JetBrains_Mono } from 'next/font/google';
+import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/layout/Navbar';
 import SiteFooter from '@/components/layout/SiteFooter';
 import { ToastProvider } from '@/components/ui/Toast';
 
-// Emphatic geometric headlines (Outfit), friendly reading text (Figtree) and
-// small mono "destination markings" (JetBrains Mono).
-const body = Figtree({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-body', display: 'swap' });
-const display = Outfit({ subsets: ['latin'], weight: ['500', '600', '700', '800'], variable: '--font-display', display: 'swap' });
+// Apple's SF Pro and Stripe's Sohne are proprietary; Inter is the open match for
+// both. JetBrains Mono carries the small destination labels.
+const body = Inter({ subsets: ['latin'], weight: ['300', '400', '500', '600', '700', '800'], variable: '--font-body', display: 'swap' });
+const display = Inter({ subsets: ['latin'], weight: ['500', '600', '700', '800'], variable: '--font-display', display: 'swap' });
 const mono = JetBrains_Mono({ subsets: ['latin'], weight: ['400', '500'], variable: '--font-mono', display: 'swap' });
 
 export const metadata: Metadata = {
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#F7F1E8',
+  themeColor: '#F5F5F7',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

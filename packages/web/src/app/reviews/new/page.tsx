@@ -34,7 +34,7 @@ function ReviewPageContent() {
 export default function NewReviewPage() {
   return (
     <div className="min-h-screen bg-canvas flex items-center justify-center px-4 py-12">
-      <div className="bg-paper rounded-2xl border border-[#E1D8CA] w-full max-w-md p-8">
+      <div className="bg-paper rounded-2xl border border-[#E0E0E5] w-full max-w-md p-8">
         <div className="mb-6">
           <Link href="/dashboard/traveler" className="text-sm text-ink-muted hover:text-ink/80 flex items-center gap-1">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

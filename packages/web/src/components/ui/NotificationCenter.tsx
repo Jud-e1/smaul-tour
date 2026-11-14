@@ -79,8 +79,8 @@ export default function NotificationCenter() {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-[360px] max-w-[calc(100vw-2rem)] bg-paper rounded-2xl shadow-[0_2px_16px_rgba(0,0,0,0.12)] border border-[#EAE1D3] z-50 overflow-hidden animate-fade-in">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-[#EAE1D3]">
+        <div className="absolute right-0 mt-2 w-[360px] max-w-[calc(100vw-2rem)] bg-paper rounded-2xl shadow-[0_2px_16px_rgba(0,0,0,0.12)] border border-[#EBEBF0] z-50 overflow-hidden animate-fade-in">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-[#EBEBF0]">
             <span className="text-base font-semibold text-ink">Notifications</span>
             {unreadCount > 0 && (
               <button
@@ -101,7 +101,7 @@ export default function NotificationCenter() {
               notifications.map((n: Notification) => (
                 <div
                   key={n.id}
-                  className={`px-5 py-3.5 border-b border-[#EAE1D3] last:border-0 cursor-pointer hover:bg-fog transition-colors ${
+                  className={`px-5 py-3.5 border-b border-[#EBEBF0] last:border-0 cursor-pointer hover:bg-fog transition-colors ${
                     n.status !== 'read' ? 'bg-sun-50/60' : 'bg-paper'
                   }`}
                   onClick={() => n.status !== 'read' && markRead(n.id)}
@@ -125,7 +125,7 @@ export default function NotificationCenter() {
             )}
           </div>
 
-          <div className="px-5 py-3 border-t border-[#EAE1D3]">
+          <div className="px-5 py-3 border-t border-[#EBEBF0]">
             <a
               href="/settings/notifications"
               className="text-sm font-semibold underline text-ink"

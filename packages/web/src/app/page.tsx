@@ -162,6 +162,7 @@ export default function Home() {
     <div className="bg-canvas overflow-x-clip">
       {/* ── Opening stage: the 3D world ─────────────────────────────────── */}
       <section className="relative lg:min-h-[calc(100vh-80px)] flex flex-col">
+        <div className="hero-mesh hidden lg:block" aria-hidden />
         {/* Phones: content first, then the island as its own block. Desktop: island fills the stage. */}
         <div className="order-last relative h-[440px] sm:h-[520px] lg:order-none lg:absolute lg:inset-0 lg:left-[36%] lg:h-auto">
           <World3D variant="island" className="w-full h-full" />
@@ -260,7 +261,7 @@ export default function Home() {
                 className="group shrink-0 w-40 sm:w-auto relative aspect-[3/4] rounded-[24px] overflow-hidden"
               >
                 <img src={img} alt="" className="absolute inset-0 w-full h-full object-cover card-img" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1F1A17]/75 via-[#1F1A17]/10 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#000000]/75 via-[#000000]/10 to-transparent" />
                 <span className="absolute top-3 left-3 w-9 h-9 rounded-full bg-paper/90 backdrop-blur flex items-center justify-center text-ink"><Icon className="w-4 h-4" /></span>
                 <span className="absolute bottom-3 left-4 right-4 text-paper font-display font-semibold text-lg leading-tight">{label}</span>
               </Link>
@@ -295,7 +296,7 @@ export default function Home() {
                 </span>
                 <h3 className="mt-6 font-display text-2xl font-semibold tracking-[-0.02em]">{title}</h3>
                 <p className="mt-2 text-ink-muted leading-relaxed">{body}</p>
-                <span className="absolute -right-4 -bottom-10 font-display font-bold text-[140px] leading-none text-sand select-none" aria-hidden>{n}</span>
+                <span className="absolute -right-3 -top-8 font-display font-bold text-[120px] leading-none text-[#F1EFFF] select-none pointer-events-none" aria-hidden>{n}</span>
               </div>
             ))}
           </div>
@@ -303,25 +304,25 @@ export default function Home() {
       </div>
 
       {/* ── Illuminated exhibit: the AI planner ─────────────────────────── */}
-      <section className="mt-24 mx-3 sm:mx-6 rounded-[40px] bg-[#1F1A17] text-paper relative overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.18]" style={{ backgroundImage: 'linear-gradient(#E9DCC6 1px, transparent 1px), linear-gradient(90deg, #E9DCC6 1px, transparent 1px)', backgroundSize: '56px 56px', maskImage: 'radial-gradient(ellipse at 70% 60%, black 20%, transparent 70%)', WebkitMaskImage: 'radial-gradient(ellipse at 70% 60%, black 20%, transparent 70%)' }} aria-hidden />
+      <section className="mt-24 mx-3 sm:mx-6 rounded-[40px] bg-[#000000] text-paper relative overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.18]" style={{ backgroundImage: 'linear-gradient(#FFFFFF 1px, transparent 1px), linear-gradient(90deg, #FFFFFF 1px, transparent 1px)', backgroundSize: '56px 56px', maskImage: 'radial-gradient(ellipse at 70% 60%, black 20%, transparent 70%)', WebkitMaskImage: 'radial-gradient(ellipse at 70% 60%, black 20%, transparent 70%)' }} aria-hidden />
         <div className="relative max-w-page mx-auto px-6 sm:px-12 xl:px-16 py-16 lg:py-24 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           <div>
-            <p className="mono text-[11px] uppercase tracking-[0.1em] text-[#C9BCA9] inline-flex items-center gap-2"><Sparkles className="w-3.5 h-3.5" />Ch. 03 — AI trip planner</p>
+            <p className="mono text-[11px] uppercase tracking-[0.1em] text-[#D2D2D7] inline-flex items-center gap-2"><Sparkles className="w-3.5 h-3.5" />Ch. 03 — AI trip planner</p>
             <h2 className="mt-4 text-[44px] sm:text-[64px] leading-[0.95] text-paper">Tell us the trip. We’ll plan every day.</h2>
-            <p className="mt-6 text-lg text-[#D9CDBB] leading-relaxed max-w-lg">
+            <p className="mt-6 text-lg text-[#A1A1A6] leading-relaxed max-w-lg">
               Describe it like you’d tell a friend — dates, budget, what you love. Nsoroma turns it into a day-by-day plan of
               bookable experiences you can tweak stop by stop.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
               <Link href="/trip-planner" className="btn bg-paper text-ink hover:bg-sand">Plan my trip <ArrowRight className="w-4 h-4" /></Link>
-              <Link href="/experiences" className="btn border border-[#5B4334] text-paper hover:bg-white/5">Browse instead</Link>
+              <Link href="/experiences" className="btn border border-[#3A3A3C] text-paper hover:bg-white/5">Browse instead</Link>
             </div>
           </div>
 
           {/* exhibit: pedestal + plan card */}
           <div className="relative flex justify-center">
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[85%] h-16 rounded-[50%] bg-[#E9DCC6]/10 border border-[#E9DCC6]/25 blur-[0.5px]" aria-hidden />
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[85%] h-16 rounded-[50%] bg-[#FFFFFF]/10 border border-[#FFFFFF]/25 blur-[0.5px]" aria-hidden />
             <div className="relative w-full max-w-[420px] mb-8 rounded-[28px] bg-paper text-ink p-6 shadow-[0_40px_80px_-30px_rgba(0,0,0,0.8)] rotate-[-2deg]">
               <div className="flex items-center justify-between">
                 <p className="mono text-[11px] uppercase tracking-[0.08em] text-stone-500">Your 3-day plan</p>
@@ -383,7 +384,7 @@ export default function Home() {
 
       {/* ── Closing scene ─────────────────────────────────────────────────── */}
       <section className="mt-24 max-w-page mx-auto px-5 sm:px-10 xl:px-16">
-        <div className="relative rounded-[40px] bg-sand paper-grain overflow-hidden grid lg:grid-cols-[1.1fr_1fr] min-h-[520px]">
+        <div className="relative rounded-[40px] stage-mesh overflow-hidden grid lg:grid-cols-[1.1fr_1fr] min-h-[520px]">
           <div className="relative z-10 p-8 sm:p-14 lg:p-16 flex flex-col justify-center">
             <p className="eyebrow">Ch. 04 — Your turn</p>
             <h2 className="mt-4 text-[48px] sm:text-[80px] leading-[0.9]">Your star is waiting.</h2>

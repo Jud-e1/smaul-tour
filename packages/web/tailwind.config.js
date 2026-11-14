@@ -1,42 +1,42 @@
 /** @type {import('tailwindcss').Config} */
 
-// ── Nsoroma design tokens: "Warm Paper" ─────────────────────────────────────
-// Grounded in Oura's DESIGN.md (VoltAgent/awesome-design-md): a warm-paper
-// beige canvas, earthy stone/espresso neutrals, hairline rules, a light serif
-// for headlines and a quiet grotesque for everything else. No saturated hues —
-// colour comes from photography.
+// ── Nsoroma design tokens: "Apple × Stripe" ──────────────────────────────────
+// From the Apple and Stripe DESIGN.md files (VoltAgent/awesome-design-md):
+// Apple's gallery-grey canvas (#F5F5F7), white tiles and black product bands,
+// with Stripe's electric indigo (#533AFD) for every action and its atmospheric
+// gradient mesh for heroes and stages.
 //
-// Legacy colour names (forest / sea / slate / gray / sun / leaf / accra) are
-// remapped onto this system so every page inherits it without markup changes.
+// Legacy colour names (forest / sea / slate / gray / sun / leaf / accra / stone)
+// are remapped onto this system so every page inherits it without markup changes.
 
 const stone = {
-  DEFAULT: '#1C1B1A',
-  50: '#FAF6EF',
-  100: '#F3ECE1',
-  200: '#E6DBCA',
-  300: '#D3C6B2',
-  400: '#A89C8C',
-  500: '#7D7469',
-  600: '#4A4741',
-  700: '#1C1B1A',
-  800: '#141312',
-  900: '#0D0C0B',
-  950: '#080807',
-  dark: '#0D0C0B',
-  light: '#4A4741',
+  DEFAULT: '#1D1D1F',
+  50: '#FAFAFC',
+  100: '#F5F5F7',
+  200: '#E8E8ED',
+  300: '#D2D2D7',
+  400: '#AEAEB2',
+  500: '#86868B',
+  600: '#6E6E73',
+  700: '#1D1D1F',
+  800: '#141416',
+  900: '#0A0A0B',
+  950: '#000000',
+  dark: '#000000',
+  light: '#6E6E73',
 };
 
-// Warm espresso-brown: links, active states, ratings — the only "accent".
+// Stripe indigo: buttons, links, active states, ratings — the one action colour.
 const espresso = {
-  DEFAULT: '#3D2F26',
-  50: '#F3ECE1',
-  100: '#E9DECD',
-  200: '#D6C4AB',
-  300: '#B89E80',
-  400: '#8C7258',
-  500: '#3D2F26',
-  600: '#2E231C',
-  700: '#211913',
+  DEFAULT: '#533AFD',
+  50: '#F1EFFF',
+  100: '#E2DEFF',
+  200: '#C5BDFE',
+  300: '#9F92FE',
+  400: '#7F6EFD',
+  500: '#533AFD',
+  600: '#4434D4',
+  700: '#2E2B8C',
 };
 
 module.exports = {
@@ -61,42 +61,42 @@ module.exports = {
         sun: espresso,
         espresso,
         teal: espresso,
-        leaf: { DEFAULT: '#4A4741', 50: '#EFE6D8', 100: '#E6DBCA', 500: '#4A4741', 600: '#4A4741', 700: '#1C1B1A' },
-        gold: { DEFAULT: '#FFFDF9', 100: '#F3ECE1', 400: '#FFFDF9', 600: '#4A4741' },
-        accra: { green: '#1C1B1A', dark: '#0D0C0B', leaf: '#3D2F26', gold: '#EFE6D8', cream: '#F7F1E8' },
+        leaf: { DEFAULT: '#533AFD', 50: '#F1EFFF', 100: '#E2DEFF', 500: '#533AFD', 600: '#4434D4', 700: '#2E2B8C' },
+        gold: { DEFAULT: '#FFFFFF', 100: '#F5F5F7', 400: '#FFFFFF', 600: '#6E6E73' },
+        accra: { green: '#1D1D1F', dark: '#000000', leaf: '#533AFD', gold: '#E8E8ED', cream: '#F5F5F7' },
         beige: {
-          DEFAULT: '#F7F1E8',
-          50: '#FBF8F3',
-          100: '#F7F1E8',
-          200: '#EFE6D8',
-          300: '#E6DBCA',
-          400: '#D3C6B2',
+          DEFAULT: '#F5F5F7',
+          50: '#FAFAFC',
+          100: '#F5F5F7',
+          200: '#E8E8ED',
+          300: '#D2D2D7',
+          400: '#AEAEB2',
         },
-        canvas: '#F7F1E8',
-        paper: '#FFFDF9',
-        sand: { DEFAULT: '#EFE6D8', dark: '#E6DBCA' },
-        fog: '#EFE6D8',
-        hairline: '#E1D8CA',
+        canvas: '#F5F5F7',
+        paper: '#FFFFFF',
+        sand: { DEFAULT: '#EDEDF2', dark: '#E2E2E8' },
+        fog: '#EDEDF2',
+        hairline: '#E0E0E5',
         ink: {
-          DEFAULT: '#1C1B1A',
-          muted: '#6F675E',
-          soft: '#9A9187',
+          DEFAULT: '#1D1D1F',
+          muted: '#6E6E73',
+          soft: '#86868B',
         },
-        slateink: { DEFAULT: '#1C1B1A' },
+        slateink: { DEFAULT: '#1D1D1F' },
       },
       borderRadius: {
         card: '24px',
         photo: '28px',
       },
       boxShadow: {
-        soft: '0 1px 2px rgba(60,40,20,0.05), 0 4px 14px rgba(60,40,20,0.06)',
-        card: '0 10px 30px -12px rgba(60,40,20,0.22)',
-        float: '0 18px 50px -18px rgba(60,40,20,0.30)',
-        sm: '0 1px 2px rgba(60,40,20,0.06)',
-        md: '0 4px 14px rgba(60,40,20,0.08)',
-        lg: '0 10px 30px -12px rgba(60,40,20,0.22)',
-        xl: '0 18px 50px -18px rgba(60,40,20,0.28)',
-        '2xl': '0 30px 70px -20px rgba(60,40,20,0.35)',
+        soft: '0 1px 2px rgba(29,29,47,0.05), 0 4px 14px rgba(29,29,47,0.06)',
+        card: '0 10px 30px -12px rgba(29,29,47,0.22)',
+        float: '0 18px 50px -18px rgba(29,29,47,0.30)',
+        sm: '0 1px 2px rgba(29,29,47,0.06)',
+        md: '0 4px 14px rgba(29,29,47,0.08)',
+        lg: '0 10px 30px -12px rgba(29,29,47,0.22)',
+        xl: '0 18px 50px -18px rgba(29,29,47,0.28)',
+        '2xl': '0 30px 70px -20px rgba(29,29,47,0.35)',
       },
       maxWidth: {
         page: '1440px',

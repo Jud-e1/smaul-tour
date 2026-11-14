@@ -135,7 +135,7 @@ export default function NotificationPreferencesPage() {
           <div className="bg-paper rounded-lg shadow overflow-x-auto">
             <table className="w-full min-w-[36rem]">
               <thead>
-                <tr className="bg-canvas border-b border-[#E1D8CA]">
+                <tr className="bg-canvas border-b border-[#E0E0E5]">
                   <th className="text-left py-3 px-4 text-sm font-semibold text-ink/80 w-1/2">
                     Notification Type
                   </th>
@@ -153,7 +153,7 @@ export default function NotificationPreferencesPage() {
                 {NOTIFICATION_TYPES.map(({ key, label, description }, idx) => (
                   <tr
                     key={key}
-                    className={`border-b border-[#E1D8CA] ${idx % 2 === 0 ? 'bg-paper' : 'bg-canvas'}`}
+                    className={`border-b border-[#E0E0E5] ${idx % 2 === 0 ? 'bg-paper' : 'bg-canvas'}`}
                   >
                     <td className="py-4 px-4">
                       <div className="font-medium text-ink text-sm">{label}</div>
@@ -183,7 +183,7 @@ export default function NotificationPreferencesPage() {
               </tbody>
             </table>
 
-            <div className="p-4 flex items-center justify-between border-t border-[#E1D8CA]">
+            <div className="p-4 flex items-center justify-between border-t border-[#E0E0E5]">
               {error && <p className="text-sm text-red-600">{error}</p>}
               {saved && !error && (
                 <p className="text-sm text-forest-600">Preferences saved.</p>
