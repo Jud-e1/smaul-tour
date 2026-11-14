@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { authApi } from '@/lib/api';
 import AuthShell from '@/components/auth/AuthShell';
+import { AlertCircle, CheckCircle2, Link2, Loader2, type LucideIcon } from 'lucide-react';
 
 type Status = 'verifying' | 'success' | 'error' | 'missing';
 
@@ -35,11 +36,11 @@ function VerifyEmailPage() {
       });
   }, [searchParams, router]);
 
-  const states: Record<Status, { icon: string; title: string; body: string; cta?: [string, string] }> = {
-    verifying: { icon: '', title: 'Verifying your email…', body: 'This only takes a moment.' },
-    success: { icon: '✅', title: 'Email verified', body: 'Your account is active. Taking you to log in…', cta: ['Go to log in', '/login'] },
-    error: { icon: '⚠️', title: 'We couldn’t verify that link', body: errorMsg, cta: ['Request a new link', '/reset-password'] },
-    missing: { icon: '🔗', title: 'This link looks incomplete', body: 'No verification token found. Open the link from your email again.', cta: ['Back to log in', '/login'] },
+  const states: Record<Status, { Icon: LucideIcon; title: string; body: string; cta?: [string, string] }> = {
+    verifying: { Icon: Loader2, title: 'Verifying your email…', body: 'This only takes a moment.' },
+    success: { Icon: CheckCircle2, title: 'Email verified', body: 'Your account is active. Taking you to log in…', cta: ['Go to log in', '/login'] },
+    error: { Icon: AlertCircle, title: 'We couldn’t verify that link', body: errorMsg, cta: ['Request a new link', '/reset-password'] },
+    missing: { Icon: Link2, title: 'This link looks incomplete', body: 'No verification token found. Open the link from your email again.', cta: ['Back to log in', '/login'] },
   };
   const st = states[status];
 
@@ -47,11 +48,11 @@ function VerifyEmailPage() {
     <AuthShell title="Verify email" caption="Explore · Experience · Belong" topLink={{ prompt: 'Need help?', label: 'Log in', href: '/login' }}>
       <div className="text-center py-6 animate-fade-in" aria-live="polite">
         {status === 'verifying' ? (
-          <div className="w-12 h-12 mx-auto rounded-full border-[3px] border-[#EDF2F2] border-t-ink animate-spin" />
+          <div className="w-12 h-12 mx-auto rounded-full border-[3px] border-[#EAE1D3] border-t-ink animate-spin" />
         ) : (
-          <div className="mx-auto w-14 h-14 rounded-full bg-fog flex items-center justify-center text-2xl" aria-hidden>{st.icon}</div>
+          <div className="mx-auto icon-tile w-14 h-14" aria-hidden><st.Icon className="w-6 h-6" strokeWidth={1.75} /></div>
         )}
-        <h2 className="mt-4 text-[22px] font-semibold">{st.title}</h2>
+        <h2 className="mt-4 text-[30px] leading-tight font-semibold">{st.title}</h2>
         <p className="mt-2 text-ink-muted">{st.body}</p>
         {st.cta && <Link href={st.cta[1]} className="btn-primary w-full mt-6">{st.cta[0]}</Link>}
       </div>

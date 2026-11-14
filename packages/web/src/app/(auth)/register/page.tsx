@@ -7,11 +7,12 @@ import { useForm } from 'react-hook-form';
 import { useAuthStore } from '@/store/auth';
 import AuthShell, { authInputClass, authLabelClass } from '@/components/auth/AuthShell';
 import SocialButtons, { OrDivider } from '@/components/auth/SocialButtons';
+import { Compass, Luggage } from 'lucide-react';
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
   return (
-    <p className="mt-1.5 flex items-center gap-1.5 text-xs text-[#C13515]">
+    <p className="mt-1.5 flex items-center gap-1.5 text-xs text-[#B3261E]">
       <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor" aria-hidden><path d="M8 1a7 7 0 110 14A7 7 0 018 1zm0 9.5a1 1 0 100 2 1 1 0 000-2zM8 4a1 1 0 00-1 1v4a1 1 0 002 0V5a1 1 0 00-1-1z" /></svg>
       {message}
     </p>
@@ -66,9 +67,10 @@ export default function RegisterPage() {
     <AuthShell
       title="Sign up"
       caption="Explore · Experience · Belong"
+      headline="Share a table, a loom, a drum. Belong."
       topLink={{ prompt: 'Already have an account?', label: 'Log in', href: '/login' }}
     >
-      <h2 className="text-[22px] font-semibold text-ink">Welcome to Nsoroma</h2>
+      <h1 className="text-[44px] leading-[0.95] text-ink">Join Nsoroma.</h1>
       <p className="mt-1 text-sm text-ink-muted">Create an account to book local experiences or host your own.</p>
 
       <form onSubmit={(e) => { void handleSubmit(onSubmit)(e); }} className="mt-6 space-y-4" noValidate>
@@ -76,19 +78,19 @@ export default function RegisterPage() {
           <legend className={authLabelClass}>How will you use Nsoroma?</legend>
           <div className="grid grid-cols-2 gap-3">
             {([
-              { role: 'traveler', icon: '🧳', title: 'I’m traveling', desc: 'Book experiences' },
-              { role: 'guide', icon: '🥁', title: 'I’m a local guide', desc: 'Host experiences' },
+              { role: 'traveler', Icon: Luggage, title: 'I’m traveling', desc: 'Book experiences' },
+              { role: 'guide', Icon: Compass, title: 'I’m a local guide', desc: 'Host experiences' },
             ] as const).map((opt) => {
               const active = selectedRole === opt.role;
               return (
                 <label
                   key={opt.role}
                   className={`relative cursor-pointer rounded-xl border p-4 transition-all ${
-                    active ? 'border-ink border-2 p-[15px] bg-fog' : 'border-[#DCE4E5] hover:border-ink'
+                    active ? 'border-ink border-2 p-[15px] bg-fog' : 'border-[#E1D8CA] hover:border-ink'
                   }`}
                 >
                   <input type="radio" value={opt.role} {...register('role')} className="sr-only" />
-                  <span className="text-2xl block" aria-hidden>{opt.icon}</span>
+                  <span className="icon-tile w-10 h-10"><opt.Icon className="w-5 h-5" strokeWidth={1.75} aria-hidden /></span>
                   <span className="mt-3 block text-sm font-semibold text-ink">{opt.title}</span>
                   <span className="block text-xs text-ink-muted">{opt.desc}</span>
                   {active && (
@@ -172,7 +174,7 @@ export default function RegisterPage() {
             <input
               type="checkbox"
               {...register('agreeToTerms', { required: 'Please accept the terms to continue' })}
-              className="mt-0.5 w-5 h-5 rounded border-[#A9B8BA]"
+              className="mt-0.5 w-5 h-5 rounded border-[#C9BCA9]"
             />
             <span>I agree to Nsoroma’s <span className="font-semibold underline">Terms of Service</span> and <span className="font-semibold underline">Privacy Policy</span>.</span>
           </label>
@@ -180,8 +182,8 @@ export default function RegisterPage() {
         </div>
 
         {(submitError || error) && (
-          <div className="flex gap-3 rounded-xl border border-[#C13515]/25 bg-[#FFF8F6] p-3.5 text-sm text-ink" role="alert">
-            <span className="w-6 h-6 shrink-0 rounded-full bg-[#C13515] text-white flex items-center justify-center text-xs font-bold">!</span>
+          <div className="flex gap-3 rounded-xl border border-[#B3261E]/25 bg-[#FBEFEA] p-3.5 text-sm text-ink" role="alert">
+            <span className="w-6 h-6 shrink-0 rounded-full bg-[#B3261E] text-white flex items-center justify-center text-xs font-bold">!</span>
             <span>{submitError || error}</span>
           </div>
         )}

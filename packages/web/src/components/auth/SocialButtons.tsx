@@ -11,7 +11,7 @@ export default function SocialButtons({
   verb?: string;
 }) {
   const row =
-    'relative w-full flex items-center justify-center rounded-lg border border-ink bg-white py-3.5 text-sm font-semibold text-ink hover:bg-fog transition-colors';
+    'relative w-full flex items-center justify-center rounded-full border border-hairline bg-paper hover:border-ink py-3.5 text-sm font-semibold text-ink hover:bg-fog transition-colors';
   return (
     <div className="space-y-3">
       <button type="button" onClick={onGoogle} className={row}>
@@ -36,9 +36,9 @@ export default function SocialButtons({
 export function OrDivider() {
   return (
     <div className="my-6 flex items-center gap-4 text-xs text-ink-muted">
-      <span className="flex-1 h-px bg-[#DCE4E5]" />
+      <span className="flex-1 h-px bg-[#E1D8CA]" />
       or
-      <span className="flex-1 h-px bg-[#DCE4E5]" />
+      <span className="flex-1 h-px bg-[#E1D8CA]" />
     </div>
   );
 }

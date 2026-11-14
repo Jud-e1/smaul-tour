@@ -51,12 +51,12 @@ export default function Carousel({
       <div className="flex items-end justify-between gap-4 mb-4">
         <div className="min-w-0">
           {href ? (
-            <Link href={href} className="group inline-flex items-center gap-1.5 text-[22px] font-semibold text-ink tracking-[-0.02em]">
+            <Link href={href} className="group inline-flex items-center gap-2 font-display text-[30px] leading-tight text-ink tracking-[-0.015em]">
               {title}
               <svg className="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
             </Link>
           ) : (
-            <h2 className="text-[22px] font-semibold text-ink">{title}</h2>
+            <h2 className="text-[30px] leading-tight text-ink">{title}</h2>
           )}
           {subtitle && <p className="text-sm text-ink-muted mt-0.5">{subtitle}</p>}
         </div>
@@ -69,7 +69,7 @@ export default function Carousel({
                 onClick={() => page(d === 'prev' ? -1 : 1)}
                 disabled={disabled}
                 aria-label={d === 'prev' ? 'Previous' : 'Next'}
-                className="w-8 h-8 rounded-full border border-[#DCE4E5] bg-white flex items-center justify-center text-ink hover:shadow-md transition-shadow disabled:opacity-30 disabled:hover:shadow-none disabled:cursor-not-allowed"
+                className="w-8 h-8 rounded-full border border-[#E1D8CA] bg-paper flex items-center justify-center text-ink hover:shadow-md transition-shadow disabled:opacity-30 disabled:hover:shadow-none disabled:cursor-not-allowed"
               >
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={4} viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" d={d === 'prev' ? 'M15 19l-7-7 7-7' : 'M9 5l7 7-7 7'} />

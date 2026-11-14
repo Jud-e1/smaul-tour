@@ -44,10 +44,10 @@ const ICONS: Record<ToastType, React.ReactNode> = {
 };
 
 const COLORS: Record<ToastType, string> = {
-  success: 'bg-forest-600 text-white',
-  error: 'bg-red-600 text-white',
-  info: 'bg-sky-600 text-white',
-  warning: 'bg-amber-500 text-white',
+  success: 'bg-ink text-paper',
+  error: 'bg-[#8C1D17] text-paper',
+  info: 'bg-ink text-paper',
+  warning: 'bg-[#4A4741] text-paper',
 };
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {

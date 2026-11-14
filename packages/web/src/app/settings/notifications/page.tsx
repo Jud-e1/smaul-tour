@@ -128,14 +128,14 @@ export default function NotificationPreferencesPage() {
         </div>
 
         {loading ? (
-          <div className="bg-white rounded-lg shadow p-6 text-center text-ink-muted">
+          <div className="bg-paper rounded-lg shadow p-6 text-center text-ink-muted">
             Loading preferences...
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow overflow-x-auto">
+          <div className="bg-paper rounded-lg shadow overflow-x-auto">
             <table className="w-full min-w-[36rem]">
               <thead>
-                <tr className="bg-canvas border-b border-[#DCE4E5]">
+                <tr className="bg-canvas border-b border-[#E1D8CA]">
                   <th className="text-left py-3 px-4 text-sm font-semibold text-ink/80 w-1/2">
                     Notification Type
                   </th>
@@ -153,7 +153,7 @@ export default function NotificationPreferencesPage() {
                 {NOTIFICATION_TYPES.map(({ key, label, description }, idx) => (
                   <tr
                     key={key}
-                    className={`border-b border-[#DCE4E5] ${idx % 2 === 0 ? 'bg-white' : 'bg-canvas'}`}
+                    className={`border-b border-[#E1D8CA] ${idx % 2 === 0 ? 'bg-paper' : 'bg-canvas'}`}
                   >
                     <td className="py-4 px-4">
                       <div className="font-medium text-ink text-sm">{label}</div>
@@ -171,7 +171,7 @@ export default function NotificationPreferencesPage() {
                           }`}
                         >
                           <span
-                            className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+                            className={`inline-block h-4 w-4 transform rounded-full bg-paper shadow transition-transform ${
                               preferences[key]?.[ch.key] ? 'translate-x-6' : 'translate-x-1'
                             }`}
                           />
@@ -183,7 +183,7 @@ export default function NotificationPreferencesPage() {
               </tbody>
             </table>
 
-            <div className="p-4 flex items-center justify-between border-t border-[#DCE4E5]">
+            <div className="p-4 flex items-center justify-between border-t border-[#E1D8CA]">
               {error && <p className="text-sm text-red-600">{error}</p>}
               {saved && !error && (
                 <p className="text-sm text-forest-600">Preferences saved.</p>

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { notificationsApi } from '@/lib/api';
 import { useAuthStore } from '@/store/auth';
+import { BellRing } from 'lucide-react';
 
 interface Notification {
   id: string;
@@ -71,15 +72,15 @@ export default function NotificationCenter() {
           />
         </svg>
         {unreadCount > 0 && (
-          <span className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] px-1 bg-sun text-white text-[10px] font-bold rounded-full flex items-center justify-center ring-2 ring-white">
+          <span className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] px-1 bg-sun text-white text-[10px] font-bold rounded-full flex items-center justify-center ring-2 ring-paper">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-[360px] max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-[0_2px_16px_rgba(0,0,0,0.12)] border border-[#EDF2F2] z-50 overflow-hidden animate-fade-in">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-[#EDF2F2]">
+        <div className="absolute right-0 mt-2 w-[360px] max-w-[calc(100vw-2rem)] bg-paper rounded-2xl shadow-[0_2px_16px_rgba(0,0,0,0.12)] border border-[#EAE1D3] z-50 overflow-hidden animate-fade-in">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-[#EAE1D3]">
             <span className="text-base font-semibold text-ink">Notifications</span>
             {unreadCount > 0 && (
               <button
@@ -95,13 +96,13 @@ export default function NotificationCenter() {
             {loading ? (
               <div className="p-4 text-center text-ink-muted text-sm">Loading...</div>
             ) : notifications.length === 0 ? (
-              <div className="px-6 py-10 text-center"><p className="text-3xl mb-2" aria-hidden>🔔</p><p className="text-sm font-semibold text-ink">You’re all caught up</p><p className="text-xs text-ink-muted mt-1">Booking updates and messages will show up here.</p></div>
+              <div className="px-6 py-10 text-center"><div className="icon-tile w-12 h-12 mx-auto mb-3" aria-hidden><BellRing className="w-5 h-5" strokeWidth={1.75} /></div><p className="text-sm font-semibold text-ink">You’re all caught up</p><p className="text-xs text-ink-muted mt-1">Booking updates and messages will show up here.</p></div>
             ) : (
               notifications.map((n: Notification) => (
                 <div
                   key={n.id}
-                  className={`px-5 py-3.5 border-b border-[#EDF2F2] last:border-0 cursor-pointer hover:bg-fog transition-colors ${
-                    n.status !== 'read' ? 'bg-sun-50/60' : 'bg-white'
+                  className={`px-5 py-3.5 border-b border-[#EAE1D3] last:border-0 cursor-pointer hover:bg-fog transition-colors ${
+                    n.status !== 'read' ? 'bg-sun-50/60' : 'bg-paper'
                   }`}
                   onClick={() => n.status !== 'read' && markRead(n.id)}
                 >
@@ -124,7 +125,7 @@ export default function NotificationCenter() {
             )}
           </div>
 
-          <div className="px-5 py-3 border-t border-[#EDF2F2]">
+          <div className="px-5 py-3 border-t border-[#EAE1D3]">
             <a
               href="/settings/notifications"
               className="text-sm font-semibold underline text-ink"

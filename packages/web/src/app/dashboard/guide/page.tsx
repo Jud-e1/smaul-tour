@@ -4,10 +4,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import BrandLogo from '@/components/brand/BrandLogo';
+import World3D from '@/components/three/World3D';
 import { experiencesApi, bookingsApi, paymentsApi, userApi, reviewsApi } from '@/lib/api';
 import { useAuthStore, hasStoredSession } from '@/store/auth';
 import { useToast } from '@/components/ui/Toast';
 import StarRating from '@/components/ui/StarRating';
+import { CalendarDays, CheckCircle2, Compass, Hourglass, ImageIcon, ReceiptText, Star, UserRound, Wallet, type LucideIcon } from 'lucide-react';
 
 type Tab = 'experiences' | 'bookings' | 'payments' | 'reviews' | 'profile';
 type BookingFilter = 'upcoming' | 'past' | 'cancelled';
@@ -81,12 +83,12 @@ const EMPTY_FORM: ExperienceForm = {
 const STATUS_COLORS: Record<string, string> = {
   active: 'bg-forest-100 text-forest-700',
   inactive: 'bg-gray-100 text-ink-muted',
-  pending_approval: 'bg-amber-100 text-amber-700',
+  pending_approval: 'bg-sand text-ink',
   confirmed: 'bg-forest-100 text-forest-700',
   completed: 'bg-forest-100 text-forest-700',
   cancelled: 'bg-red-100 text-red-600',
-  pending: 'bg-amber-100 text-amber-700',
-  escrowed: 'bg-purple-100 text-purple-700',
+  pending: 'bg-sand text-ink',
+  escrowed: 'bg-sand text-ink',
   released: 'bg-forest-100 text-forest-700',
 };
 
@@ -278,58 +280,61 @@ export default function GuideDashboard() {
   const firstName = user.profile?.firstName || user.email?.split('@')[0] || 'Guide';
   const avatarInitial = firstName.charAt(0).toUpperCase();
 
-  const tabs: { key: Tab; label: string; icon: string }[] = [
-    { key: 'experiences', label: 'Experiences', icon: '🌟' },
-    { key: 'bookings', label: 'Bookings', icon: '🗓' },
-    { key: 'payments', label: 'Payments', icon: '💰' },
-    { key: 'reviews', label: 'Reviews', icon: '⭐' },
-    { key: 'profile', label: 'Profile', icon: '👤' },
+  const tabs: { key: Tab; label: string; icon: LucideIcon }[] = [
+    { key: 'experiences', label: 'Experiences', icon: Compass },
+    { key: 'bookings', label: 'Bookings', icon: CalendarDays },
+    { key: 'payments', label: 'Payments', icon: Wallet },
+    { key: 'reviews', label: 'Reviews', icon: Star },
+    { key: 'profile', label: 'Profile', icon: UserRound },
   ];
 
   return (
-    <div className="bg-white">
+    <div className="bg-canvas">
       <div className="max-w-[1120px] mx-auto px-6 sm:px-10 pt-8 md:pt-12 pb-10">
-        {/* Header */}
-        <div className="flex flex-wrap items-center justify-between gap-6">
-          <div className="flex items-center gap-4 min-w-0">
-            <Link href="/" className="hidden sm:block shrink-0" aria-label="Nsoroma home">
-              <BrandLogo variant="mark" decorative className="h-10 w-10 object-contain" />
-            </Link>
-            <div className="w-14 h-14 rounded-full bg-ink text-white flex items-center justify-center text-xl font-semibold overflow-hidden shrink-0">
-              {user.profile?.profilePhotoUrl
-                ? <img src={user.profile.profilePhotoUrl} alt={firstName} className="w-14 h-14 object-cover" />
-                : avatarInitial}
+        {/* Header stage with live 3D star */}
+        <div className="relative rounded-[32px] bg-sand paper-grain overflow-hidden grid md:grid-cols-[1.3fr_1fr] min-h-[300px]">
+          <div className="relative z-10 p-7 sm:p-10 flex flex-col justify-between gap-8">
+            <div className="flex items-center gap-3">
+              <Link href="/" className="shrink-0" aria-label="Nsoroma home">
+                <BrandLogo variant="mark" decorative className="h-9 w-9 object-contain" />
+              </Link>
+              <div className="w-12 h-12 rounded-full bg-ink text-paper flex items-center justify-center text-lg font-semibold overflow-hidden shrink-0 ring-4 ring-paper/70">
+                {user.profile?.profilePhotoUrl
+                  ? <img src={user.profile.profilePhotoUrl} alt={firstName} className="w-12 h-12 object-cover" />
+                  : avatarInitial}
+              </div>
+              <span className="mono text-[11px] uppercase tracking-[0.1em] text-stone-600">Hosting · Accra, Ghana</span>
             </div>
-            <div className="min-w-0">
-              <p className="text-sm text-ink-muted">Hosting dashboard</p>
-              <h1 className="text-[28px] sm:text-[32px] font-semibold leading-tight truncate">Welcome back, {firstName}</h1>
+            <div>
+              <h1 className="text-[42px] sm:text-[60px] leading-[0.95] text-ink">Welcome back, {firstName}.</h1>
               {avgRating > 0 && (
-                <div className="flex items-center gap-2 mt-0.5">
+                <div className="flex items-center gap-2 mt-3">
                   <StarRating value={Math.round(avgRating)} readonly size="sm" />
-                  <span className="text-sm text-ink-muted">{avgRating.toFixed(1)} average rating</span>
+                  <span className="text-stone-600">{avgRating.toFixed(1)} average rating from your guests</span>
                 </div>
               )}
             </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Link href="/settings/notifications" className="btn bg-paper text-ink border border-hairline hover:border-ink !py-2.5 text-sm">Notifications</Link>
+              <button onClick={() => { logout(); router.push('/'); }} className="text-sm font-semibold underline underline-offset-4 px-3">Log out</button>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Link href="/settings/notifications" className="btn-outline !py-2.5 text-sm">Notifications</Link>
-            <button onClick={() => { logout(); router.push('/'); }} className="text-sm font-semibold underline underline-offset-2 px-3">
-              Log out
-            </button>
+          <div className="relative min-h-[240px]">
+            <World3D variant="star" className="absolute inset-0" fallback="/photos/drums.jpg" />
           </div>
         </div>
 
         {/* KPI strip */}
-        <div className="mt-8 grid grid-cols-2 sm:grid-cols-5 rounded-2xl border border-[#DCE4E5] overflow-hidden">
+        <div className="mt-6 grid grid-cols-2 sm:grid-cols-5 rounded-[24px] border border-hairline bg-paper overflow-hidden">
           {[
-            { label: 'Total earnings', value: `$${totalEarnings.toFixed(0)}`, icon: '💰' },
-            { label: 'Pending payout', value: `$${pendingEarnings.toFixed(0)}`, icon: '⏳' },
-            { label: 'Total bookings', value: allBookings.length, icon: '🗓️' },
-            { label: 'Active listings', value: activeExperiences, icon: '🌟' },
-            { label: 'Avg rating', value: avgRating > 0 ? avgRating.toFixed(1) : '—', icon: '⭐' },
+            { label: 'Total earnings', value: `$${totalEarnings.toFixed(0)}`, icon: Wallet },
+            { label: 'Pending payout', value: `$${pendingEarnings.toFixed(0)}`, icon: Hourglass },
+            { label: 'Total bookings', value: allBookings.length, icon: CalendarDays },
+            { label: 'Active listings', value: activeExperiences, icon: Compass },
+            { label: 'Avg rating', value: avgRating > 0 ? avgRating.toFixed(1) : '—', icon: Star },
           ].map((stat, i) => (
-            <div key={stat.label} className={`p-5 sm:p-6 border-[#DCE4E5] ${i % 2 === 0 ? 'border-r' : ''} sm:border-r sm:last:border-r-0 ${i < 4 ? 'border-b sm:border-b-0' : ''}`}>
-              <div className="text-xl" aria-hidden>{stat.icon}</div>
+            <div key={stat.label} className={`p-5 sm:p-6 border-[#E1D8CA] ${i % 2 === 0 ? 'border-r' : ''} sm:border-r sm:last:border-r-0 ${i < 4 ? 'border-b sm:border-b-0' : ''}`}>
+              <span className="icon-tile w-10 h-10" aria-hidden><stat.icon className="w-[18px] h-[18px]" strokeWidth={1.75} /></span>
               <div className="mt-3 text-[28px] font-semibold leading-none tracking-[-0.02em]">{stat.value}</div>
               <div className="mt-1.5 text-sm text-ink-muted">{stat.label}</div>
             </div>
@@ -337,13 +342,13 @@ export default function GuideDashboard() {
         </div>
 
         {/* Tabs */}
-        <nav className="mt-10 mb-8 flex gap-6 sm:gap-8 overflow-x-auto scrollbar-hide border-b border-[#DCE4E5]" aria-label="Hosting">
+        <nav className="mt-10 mb-8 flex gap-6 sm:gap-8 overflow-x-auto scrollbar-hide border-b border-[#E1D8CA]" aria-label="Hosting">
           {tabs.map((t) => (
             <button key={t.key} onClick={() => setTab(t.key)} aria-current={tab === t.key ? 'page' : undefined}
               className={`flex items-center gap-2 pb-3 -mb-px border-b-2 text-[15px] whitespace-nowrap transition-colors ${
-                tab === t.key ? 'border-ink text-ink font-semibold' : 'border-transparent text-ink-muted hover:text-ink hover:border-[#DCE4E5]'
+                tab === t.key ? 'border-ink text-ink font-semibold' : 'border-transparent text-ink-muted hover:text-ink hover:border-[#E1D8CA]'
               }`}>
-              <span aria-hidden>{t.icon}</span><span>{t.label}</span>
+              <t.icon className="w-4 h-4" strokeWidth={1.75} aria-hidden /><span>{t.label}</span>
             </button>
           ))}
         </nav>
@@ -353,27 +358,27 @@ export default function GuideDashboard() {
           <div>
             <div className="flex justify-between items-center mb-5">
               <h2 className="font-semibold text-ink">My Experiences</h2>
-              <button onClick={openCreateForm} className="bg-ink text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-[#072226] shadow-sm transition-all">
+              <button onClick={openCreateForm} className="bg-ink text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-[#000000] shadow-sm transition-all">
                 + New Experience
               </button>
             </div>
             {expLoading ? (
-              <div className="space-y-3">{[1,2,3].map((i) => <div key={i} className="h-28 bg-white rounded-2xl border border-[#DCE4E5] animate-pulse" />)}</div>
+              <div className="space-y-3">{[1,2,3].map((i) => <div key={i} className="h-28 bg-paper rounded-2xl border border-[#E1D8CA] animate-pulse" />)}</div>
             ) : experiences.length === 0 ? (
-              <div className="text-center py-16 bg-white rounded-2xl border border-[#DCE4E5]">
-                <div className="text-5xl mb-3">🌟</div>
+              <div className="text-center py-16 bg-paper rounded-2xl border border-[#E1D8CA]">
+                <div className="icon-tile w-14 h-14 mx-auto mb-4" aria-hidden><Compass className="w-6 h-6" strokeWidth={1.6} /></div>
                 <p className="text-ink-muted font-medium">No experiences yet</p>
                 <button onClick={openCreateForm} className="inline-block mt-3 text-sm text-forest-600 hover:text-forest-700 font-medium">Create your first experience →</button>
               </div>
             ) : (
               <div className="space-y-3">
                 {experiences.map((exp) => (
-                  <div key={exp.id} className="bg-white rounded-2xl border border-[#DCE4E5] overflow-hidden hover:shadow-md transition-shadow">
+                  <div key={exp.id} className="bg-paper rounded-2xl border border-[#E1D8CA] overflow-hidden hover:shadow-md transition-shadow">
                     <div className="flex gap-4 p-4">
                       {exp.images?.[0]?.url ? (
                         <img src={exp.images[0].url} alt={exp.title} className="w-20 h-20 rounded-xl object-cover shrink-0" />
                       ) : (
-                        <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-forest-100 to-forest-100 flex items-center justify-center text-3xl shrink-0">🌍</div>
+                        <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-forest-100 to-forest-100 flex items-center justify-center shrink-0"><ImageIcon className="w-7 h-7 text-stone-400" strokeWidth={1.4} /></div>
                       )}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-3">
@@ -401,7 +406,7 @@ export default function GuideDashboard() {
                                 exp.status === 'active' ? 'bg-forest-600' : 'bg-gray-300'
                               }`}
                             >
-                              <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${exp.status === 'active' ? 'translate-x-6' : 'translate-x-1'}`} />
+                              <span className={`inline-block h-4 w-4 transform rounded-full bg-paper shadow transition-transform ${exp.status === 'active' ? 'translate-x-6' : 'translate-x-1'}`} />
                             </button>
                             <button onClick={() => openEditForm(exp)} className="text-xs text-forest-700 border border-forest-200 px-3 py-1.5 rounded-lg hover:bg-forest-50 font-medium transition-colors">Edit</button>
                             <button onClick={() => setDeleteConfirm(exp)} className="text-xs text-red-500 border border-red-200 px-3 py-1.5 rounded-lg hover:bg-red-50 font-medium transition-colors">Delete</button>
@@ -423,17 +428,17 @@ export default function GuideDashboard() {
               {(['upcoming', 'past', 'cancelled'] as BookingFilter[]).map((s) => (
                 <button key={s} onClick={() => setBookingFilter(s)}
                   className={`px-4 py-2 rounded-xl text-sm font-medium capitalize transition-all ${
-                    bookingFilter === s ? 'bg-gray-900 text-white shadow-sm' : 'bg-white text-ink-muted border border-[#DCE4E5] hover:border-[#DCE4E5]'
+                    bookingFilter === s ? 'bg-gray-900 text-white shadow-sm' : 'bg-paper text-ink-muted border border-[#E1D8CA] hover:border-[#E1D8CA]'
                   }`}>
                   {s}
                 </button>
               ))}
             </div>
             {bookingsLoading ? (
-              <div className="space-y-3">{[1,2,3].map((i) => <div key={i} className="h-20 bg-white rounded-2xl border border-[#DCE4E5] animate-pulse" />)}</div>
+              <div className="space-y-3">{[1,2,3].map((i) => <div key={i} className="h-20 bg-paper rounded-2xl border border-[#E1D8CA] animate-pulse" />)}</div>
             ) : bookings.length === 0 ? (
-              <div className="text-center py-16 bg-white rounded-2xl border border-[#DCE4E5]">
-                <div className="text-5xl mb-3">🗓</div>
+              <div className="text-center py-16 bg-paper rounded-2xl border border-[#E1D8CA]">
+                <div className="icon-tile w-14 h-14 mx-auto mb-4" aria-hidden><CalendarDays className="w-6 h-6" strokeWidth={1.6} /></div>
                 <p className="text-ink-muted font-medium">No {bookingFilter} bookings</p>
               </div>
             ) : (
@@ -443,7 +448,7 @@ export default function GuideDashboard() {
                     ? `${booking.traveler.profile.firstName || ''} ${booking.traveler.profile.lastName || ''}`.trim()
                     : booking.traveler?.email || 'Traveler';
                   return (
-                    <div key={booking.id} className="bg-white rounded-2xl border border-[#DCE4E5] p-4 hover:shadow-md transition-shadow">
+                    <div key={booking.id} className="bg-paper rounded-2xl border border-[#E1D8CA] p-4 hover:shadow-md transition-shadow">
                       <div className="flex items-start justify-between gap-4">
                         <div>
                           <p className="font-semibold text-ink">{booking.experience?.title || 'Experience'}</p>
@@ -472,27 +477,27 @@ export default function GuideDashboard() {
           <div>
             <h2 className="font-semibold text-ink mb-5">Payments</h2>
             {paymentsLoading ? (
-              <div className="space-y-3">{[1,2].map((i) => <div key={i} className="h-20 bg-white rounded-2xl border border-[#DCE4E5] animate-pulse" />)}</div>
+              <div className="space-y-3">{[1,2].map((i) => <div key={i} className="h-20 bg-paper rounded-2xl border border-[#E1D8CA] animate-pulse" />)}</div>
             ) : payments.length === 0 ? (
-              <div className="text-center py-16 bg-white rounded-2xl border border-[#DCE4E5]">
-                <div className="text-5xl mb-3">💰</div>
+              <div className="text-center py-16 bg-paper rounded-2xl border border-[#E1D8CA]">
+                <div className="icon-tile w-14 h-14 mx-auto mb-4" aria-hidden><Wallet className="w-6 h-6" strokeWidth={1.6} /></div>
                 <p className="text-ink-muted font-medium">No payments yet</p>
               </div>
             ) : (
               <div className="space-y-6">
                 {[
-                  { label: 'Pending (Escrowed)', filter: (p: Payment) => p.status === 'escrowed' || p.status === 'captured', icon: '⏳', color: 'text-purple-700' },
-                  { label: 'Released', filter: (p: Payment) => p.status === 'released', icon: '✅', color: 'text-forest-700' },
-                  { label: 'Other', filter: (p: Payment) => !['escrowed', 'captured', 'released'].includes(p.status), icon: '📋', color: 'text-ink/80' },
+                  { label: 'Pending (Escrowed)', filter: (p: Payment) => p.status === 'escrowed' || p.status === 'captured', icon: Hourglass, color: 'text-ink' },
+                  { label: 'Released', filter: (p: Payment) => p.status === 'released', icon: CheckCircle2, color: 'text-ink' },
+                  { label: 'Other', filter: (p: Payment) => !['escrowed', 'captured', 'released'].includes(p.status), icon: ReceiptText, color: 'text-stone-600' },
                 ].map(({ label, filter, icon, color }) => {
                   const group = payments.filter(filter);
                   if (group.length === 0) return null;
                   return (
                     <div key={label}>
-                      <h3 className={`text-sm font-semibold mb-3 flex items-center gap-1.5 ${color}`}>{icon} {label}</h3>
+                      <h3 className={`text-sm font-semibold mb-3 flex items-center gap-1.5 ${color}`}>{(() => { const I = icon; return <I className="w-4 h-4" />; })()} {label}</h3>
                       <div className="space-y-3">
                         {group.map((payment) => (
-                          <div key={payment.id} className="bg-white rounded-2xl border border-[#DCE4E5] p-4">
+                          <div key={payment.id} className="bg-paper rounded-2xl border border-[#E1D8CA] p-4">
                             <div className="flex items-center justify-between">
                               <div>
                                 <p className="font-semibold text-ink">{payment.booking?.experience?.title || 'Experience'}</p>
@@ -524,10 +529,10 @@ export default function GuideDashboard() {
           <div>
             <h2 className="font-semibold text-ink mb-5">Reviews</h2>
             {reviewsLoading ? (
-              <div className="space-y-3">{[1,2,3].map((i) => <div key={i} className="h-20 bg-white rounded-2xl border border-[#DCE4E5] animate-pulse" />)}</div>
+              <div className="space-y-3">{[1,2,3].map((i) => <div key={i} className="h-20 bg-paper rounded-2xl border border-[#E1D8CA] animate-pulse" />)}</div>
             ) : reviews.length === 0 ? (
-              <div className="text-center py-16 bg-white rounded-2xl border border-[#DCE4E5]">
-                <div className="text-5xl mb-3">⭐</div>
+              <div className="text-center py-16 bg-paper rounded-2xl border border-[#E1D8CA]">
+                <div className="icon-tile w-14 h-14 mx-auto mb-4" aria-hidden><Star className="w-6 h-6" strokeWidth={1.6} /></div>
                 <p className="text-ink-muted font-medium">No reviews yet</p>
               </div>
             ) : (
@@ -537,7 +542,7 @@ export default function GuideDashboard() {
                     ? `${review.traveler.profile.firstName || ''} ${review.traveler.profile.lastName || ''}`.trim() || 'Traveler'
                     : 'Traveler';
                   return (
-                    <div key={review.id} className="bg-white rounded-2xl border border-[#DCE4E5] p-4 hover:shadow-md transition-shadow">
+                    <div key={review.id} className="bg-paper rounded-2xl border border-[#E1D8CA] p-4 hover:shadow-md transition-shadow">
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
@@ -559,35 +564,35 @@ export default function GuideDashboard() {
 
         {/* ── Profile Tab ── */}
         {tab === 'profile' && (
-          <div className="bg-white rounded-2xl border border-[#DCE4E5] p-6 max-w-lg">
+          <div className="bg-paper rounded-2xl border border-[#E1D8CA] p-6 max-w-lg">
             <h2 className="font-semibold text-ink mb-5">Edit Profile</h2>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-ink mb-1.5">First name</label>
-                  <input value={profileForm.firstName} onChange={(e) => setProfileForm((p) => ({ ...p, firstName: e.target.value }))} className="w-full border border-[#DCE4E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" />
+                  <input value={profileForm.firstName} onChange={(e) => setProfileForm((p) => ({ ...p, firstName: e.target.value }))} className="w-full border border-[#E1D8CA] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-ink mb-1.5">Last name</label>
-                  <input value={profileForm.lastName} onChange={(e) => setProfileForm((p) => ({ ...p, lastName: e.target.value }))} className="w-full border border-[#DCE4E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" />
+                  <input value={profileForm.lastName} onChange={(e) => setProfileForm((p) => ({ ...p, lastName: e.target.value }))} className="w-full border border-[#E1D8CA] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" />
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-semibold text-ink mb-1.5">Profile photo URL</label>
-                <input type="url" value={profileForm.profilePhotoUrl} onChange={(e) => setProfileForm((p) => ({ ...p, profilePhotoUrl: e.target.value }))} placeholder="https://example.com/photo.jpg" className="w-full border border-[#DCE4E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" />
+                <input type="url" value={profileForm.profilePhotoUrl} onChange={(e) => setProfileForm((p) => ({ ...p, profilePhotoUrl: e.target.value }))} placeholder="https://example.com/photo.jpg" className="w-full border border-[#E1D8CA] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" />
                 {profileForm.profilePhotoUrl && (
-                  <img src={profileForm.profilePhotoUrl} alt="Preview" className="mt-2 w-16 h-16 rounded-full object-cover border-2 border-[#DCE4E5]" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                  <img src={profileForm.profilePhotoUrl} alt="Preview" className="mt-2 w-16 h-16 rounded-full object-cover border-2 border-[#E1D8CA]" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                 )}
               </div>
               <div>
                 <label className="block text-sm font-semibold text-ink mb-1.5">Bio</label>
-                <textarea value={profileForm.bio} onChange={(e) => setProfileForm((p) => ({ ...p, bio: e.target.value }))} rows={3} placeholder="Tell travelers about yourself..." className="w-full border border-[#DCE4E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink resize-none" />
+                <textarea value={profileForm.bio} onChange={(e) => setProfileForm((p) => ({ ...p, bio: e.target.value }))} rows={3} placeholder="Tell travelers about yourself..." className="w-full border border-[#E1D8CA] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink resize-none" />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-ink mb-1.5">Phone / Contact</label>
-                <input type="tel" value={profileForm.phone} onChange={(e) => setProfileForm((p) => ({ ...p, phone: e.target.value }))} placeholder="+1 555 000 0000" className="w-full border border-[#DCE4E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" />
+                <input type="tel" value={profileForm.phone} onChange={(e) => setProfileForm((p) => ({ ...p, phone: e.target.value }))} placeholder="+1 555 000 0000" className="w-full border border-[#E1D8CA] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" />
               </div>
-              <button onClick={saveProfile} disabled={profileSaving} className="w-full bg-ink text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-[#072226] disabled:opacity-50 transition-all shadow-sm">
+              <button onClick={saveProfile} disabled={profileSaving} className="w-full bg-ink text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-[#000000] disabled:opacity-50 transition-all shadow-sm">
                 {profileSaving ? 'Saving…' : 'Save Changes'}
               </button>
             </div>
@@ -598,49 +603,49 @@ export default function GuideDashboard() {
       {/* ── Experience Form Modal ── */}
       {showExpForm && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-lg my-4 shadow-2xl">
+          <div className="bg-paper rounded-2xl p-6 w-full max-w-lg my-4 shadow-2xl">
             <h3 className="font-bold text-ink text-lg mb-4">{editingExp ? 'Edit Experience' : 'New Experience'}</h3>
             <div className="space-y-3">
               <div>
                 <label className="block text-sm font-semibold text-ink mb-1.5">Title</label>
-                <input value={expForm.title} onChange={(e) => setExpForm((f) => ({ ...f, title: e.target.value }))} className="w-full border border-[#DCE4E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="e.g. Sunset Kayaking Tour" />
+                <input value={expForm.title} onChange={(e) => setExpForm((f) => ({ ...f, title: e.target.value }))} className="w-full border border-[#E1D8CA] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="e.g. Sunset Kayaking Tour" />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-ink mb-1.5">Description</label>
-                <textarea value={expForm.description} onChange={(e) => setExpForm((f) => ({ ...f, description: e.target.value }))} rows={3} className="w-full border border-[#DCE4E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink resize-none" placeholder="Describe your experience..." />
+                <textarea value={expForm.description} onChange={(e) => setExpForm((f) => ({ ...f, description: e.target.value }))} rows={3} className="w-full border border-[#E1D8CA] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink resize-none" placeholder="Describe your experience..." />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-ink mb-1.5">Address</label>
-                <input value={expForm.address} onChange={(e) => setExpForm((f) => ({ ...f, address: e.target.value }))} className="w-full border border-[#DCE4E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="123 Main St, City, Country" />
+                <input value={expForm.address} onChange={(e) => setExpForm((f) => ({ ...f, address: e.target.value }))} className="w-full border border-[#E1D8CA] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="123 Main St, City, Country" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-ink mb-1.5">Latitude</label>
-                  <input type="number" step="any" value={expForm.latitude} onChange={(e) => setExpForm((f) => ({ ...f, latitude: e.target.value }))} className="w-full border border-[#DCE4E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="40.7128" />
+                  <input type="number" step="any" value={expForm.latitude} onChange={(e) => setExpForm((f) => ({ ...f, latitude: e.target.value }))} className="w-full border border-[#E1D8CA] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="40.7128" />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-ink mb-1.5">Longitude</label>
-                  <input type="number" step="any" value={expForm.longitude} onChange={(e) => setExpForm((f) => ({ ...f, longitude: e.target.value }))} className="w-full border border-[#DCE4E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="-74.0060" />
+                  <input type="number" step="any" value={expForm.longitude} onChange={(e) => setExpForm((f) => ({ ...f, longitude: e.target.value }))} className="w-full border border-[#E1D8CA] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="-74.0060" />
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <div className="col-span-2">
                   <label className="block text-sm font-semibold text-ink mb-1.5">Price</label>
-                  <input type="number" min="0" step="0.01" value={expForm.price} onChange={(e) => setExpForm((f) => ({ ...f, price: e.target.value }))} className="w-full border border-[#DCE4E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="49.99" />
+                  <input type="number" min="0" step="0.01" value={expForm.price} onChange={(e) => setExpForm((f) => ({ ...f, price: e.target.value }))} className="w-full border border-[#E1D8CA] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="49.99" />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-ink mb-1.5">Currency</label>
-                  <input value={expForm.currency} onChange={(e) => setExpForm((f) => ({ ...f, currency: e.target.value.toUpperCase() }))} maxLength={3} className="w-full border border-[#DCE4E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="USD" />
+                  <input value={expForm.currency} onChange={(e) => setExpForm((f) => ({ ...f, currency: e.target.value.toUpperCase() }))} maxLength={3} className="w-full border border-[#E1D8CA] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="USD" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-ink mb-1.5">Duration (hours)</label>
-                  <input type="number" min="0.5" step="0.5" value={expForm.duration} onChange={(e) => setExpForm((f) => ({ ...f, duration: e.target.value }))} className="w-full border border-[#DCE4E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="2" />
+                  <input type="number" min="0.5" step="0.5" value={expForm.duration} onChange={(e) => setExpForm((f) => ({ ...f, duration: e.target.value }))} className="w-full border border-[#E1D8CA] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="2" />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-ink mb-1.5">Cancellation Policy</label>
-                  <select value={expForm.cancellationPolicy} onChange={(e) => setExpForm((f) => ({ ...f, cancellationPolicy: e.target.value as ExperienceForm['cancellationPolicy'] }))} className="w-full border border-[#DCE4E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink">
+                  <select value={expForm.cancellationPolicy} onChange={(e) => setExpForm((f) => ({ ...f, cancellationPolicy: e.target.value as ExperienceForm['cancellationPolicy'] }))} className="w-full border border-[#E1D8CA] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink">
                     <option value="flexible">Flexible</option>
                     <option value="moderate">Moderate</option>
                     <option value="strict">Strict</option>
@@ -649,18 +654,18 @@ export default function GuideDashboard() {
               </div>
               <div>
                 <label className="block text-sm font-semibold text-ink mb-1.5">Categories <span className="text-ink-soft font-normal normal-case">(comma-separated)</span></label>
-                <input value={expForm.category} onChange={(e) => setExpForm((f) => ({ ...f, category: e.target.value }))} className="w-full border border-[#DCE4E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="food, culture, adventure" />
+                <input value={expForm.category} onChange={(e) => setExpForm((f) => ({ ...f, category: e.target.value }))} className="w-full border border-[#E1D8CA] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="food, culture, adventure" />
               </div>
               {!editingExp && (
                 <div>
                   <label className="block text-sm font-semibold text-ink mb-1.5">Image URL <span className="text-ink-soft font-normal normal-case">(optional)</span></label>
-                  <input type="url" value={expForm.imageUrl} onChange={(e) => setExpForm((f) => ({ ...f, imageUrl: e.target.value }))} className="w-full border border-[#DCE4E5] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="https://example.com/image.jpg" />
+                  <input type="url" value={expForm.imageUrl} onChange={(e) => setExpForm((f) => ({ ...f, imageUrl: e.target.value }))} className="w-full border border-[#E1D8CA] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink" placeholder="https://example.com/image.jpg" />
                 </div>
               )}
             </div>
             <div className="flex gap-3 mt-5">
-              <button onClick={() => setShowExpForm(false)} className="flex-1 border border-[#DCE4E5] text-ink/80 py-2.5 rounded-xl text-sm font-medium hover:bg-canvas">Cancel</button>
-              <button onClick={saveExperience} disabled={expSaving} className="flex-1 bg-ink text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-[#072226] disabled:opacity-50">
+              <button onClick={() => setShowExpForm(false)} className="flex-1 border border-[#E1D8CA] text-ink/80 py-2.5 rounded-xl text-sm font-medium hover:bg-canvas">Cancel</button>
+              <button onClick={saveExperience} disabled={expSaving} className="flex-1 bg-ink text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-[#000000] disabled:opacity-50">
                 {expSaving ? 'Saving…' : editingExp ? 'Save Changes' : 'Create Experience'}
               </button>
             </div>
@@ -671,13 +676,13 @@ export default function GuideDashboard() {
       {/* ── Delete Confirm Modal ── */}
       {deleteConfirm && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+          <div className="bg-paper rounded-2xl p-6 w-full max-w-sm shadow-2xl">
             <h3 className="font-bold text-ink text-lg mb-2">Delete Experience</h3>
             <p className="text-sm text-ink-muted mb-4">
               Are you sure you want to delete <span className="font-semibold">{deleteConfirm.title}</span>? This cannot be undone.
             </p>
             <div className="flex gap-3">
-              <button onClick={() => setDeleteConfirm(null)} className="flex-1 border border-[#DCE4E5] text-ink/80 py-2.5 rounded-xl text-sm font-medium hover:bg-canvas">Cancel</button>
+              <button onClick={() => setDeleteConfirm(null)} className="flex-1 border border-[#E1D8CA] text-ink/80 py-2.5 rounded-xl text-sm font-medium hover:bg-canvas">Cancel</button>
               <button onClick={deleteExperience} className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-red-600">Delete</button>
             </div>
           </div>

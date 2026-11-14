@@ -81,7 +81,7 @@ export default function ReviewForm({ bookingId, experienceId, onSuccess }: Revie
           onChange={(e: { target: HTMLTextAreaElement }) => setComment(e.target.value.slice(0, MAX_CHARS))}
           rows={4}
           placeholder="Share your experience..."
-          className="w-full border border-[#DCE4E5] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink resize-none"
+          className="w-full border border-[#E1D8CA] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink resize-none"
         />
         <p className={`text-xs mt-1 text-right ${comment.length >= MAX_CHARS ? 'text-red-500' : 'text-ink-soft'}`}>
           {comment.length}/{MAX_CHARS}

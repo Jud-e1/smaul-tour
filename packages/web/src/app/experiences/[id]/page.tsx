@@ -11,6 +11,7 @@ import BookingForm from '@/components/booking/BookingForm';
 import ExperienceCard, { Experience } from '@/components/experiences/ExperienceCard';
 import Carousel from '@/components/ui/Carousel';
 import { useToast } from '@/components/ui/Toast';
+import { Compass, MapPin, ShieldCheck } from 'lucide-react';
 
 interface Review {
   id: string;
@@ -109,10 +110,10 @@ function AvailabilityCalendar({ slots }: { slots: AvailabilitySlot[] }) {
           const hasBooked = daySlots.some((s) => s.status === 'booked' || s.booked >= s.capacity);
           const isPast = new Date(dateStr) < new Date(today.toDateString());
           let cls = 'w-10 h-10 mx-auto flex items-center justify-center rounded-full ';
-          if (isPast) cls += 'text-[#A9B8BA] line-through';
+          if (isPast) cls += 'text-[#C9BCA9] line-through';
           else if (hasAvailable) cls += 'font-semibold text-ink ring-1 ring-ink';
-          else if (hasBooked) cls += 'text-[#A9B8BA] line-through';
-          else cls += 'text-[#A9B8BA]';
+          else if (hasBooked) cls += 'text-[#C9BCA9] line-through';
+          else cls += 'text-[#C9BCA9]';
           return (
             <div key={dateStr} className="py-0.5">
               <div className={cls}>{day}</div>
@@ -122,7 +123,7 @@ function AvailabilityCalendar({ slots }: { slots: AvailabilitySlot[] }) {
       </div>
       <div className="flex items-center gap-5 mt-4 text-xs text-ink-muted">
         <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full ring-1 ring-ink inline-block" />Open dates</span>
-        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-[#EDF2F2] inline-block" />Unavailable</span>
+        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-[#EAE1D3] inline-block" />Unavailable</span>
       </div>
     </div>
   );
@@ -219,7 +220,7 @@ export default function ExperienceDetailPage() {
     return (
       <div className="min-h-[60vh] flex items-center justify-center px-6">
         <div className="text-center max-w-sm">
-          <p className="text-5xl mb-4" aria-hidden>🧭</p>
+          <div className="icon-tile w-16 h-16 mx-auto mb-5"><Compass className="w-7 h-7" strokeWidth={1.5} aria-hidden /></div>
           <h1 className="text-2xl font-semibold">We can’t find that experience</h1>
           <p className="text-ink-muted mt-2">It may have been removed or the link is incorrect.</p>
           <Link href="/experiences" className="btn-primary mt-6">Browse experiences</Link>
@@ -251,22 +252,22 @@ export default function ExperienceDetailPage() {
   );
 
   return (
-    <div className="bg-white">
+    <div className="bg-canvas">
       {/* ── Mobile photo hero ───────────────────────────────────────────── */}
-      <div className="md:hidden relative aspect-[4/3] bg-[#EDF2F2]">
+      <div className="md:hidden relative aspect-[4/3] bg-[#EAE1D3]">
         {images[activeImage] && (
           <Image src={images[activeImage].url} alt={experience.title} fill priority sizes="100vw" className="object-cover" />
         )}
         <div className="absolute top-4 inset-x-4 flex justify-between">
-          <button onClick={() => router.back()} className="w-9 h-9 rounded-full bg-white shadow-md flex items-center justify-center" aria-label="Back">
+          <button onClick={() => router.back()} className="w-9 h-9 rounded-full bg-paper shadow-md flex items-center justify-center" aria-label="Back">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
           </button>
           <div className="flex gap-2">
-            <button onClick={share} className="w-9 h-9 rounded-full bg-white shadow-md flex items-center justify-center" aria-label="Share">
+            <button onClick={share} className="w-9 h-9 rounded-full bg-paper shadow-md flex items-center justify-center" aria-label="Share">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v13M7 8l5-5 5 5M5 14v5a2 2 0 002 2h10a2 2 0 002-2v-5" /></svg>
             </button>
-            <button onClick={toggleWishlist} className="w-9 h-9 rounded-full bg-white shadow-md flex items-center justify-center" aria-label={wishlisted ? 'Remove from wishlist' : 'Save'}>
-              <svg viewBox="0 0 32 32" className={`w-4 h-4 ${wishlisted ? 'text-sun' : 'text-transparent'}`} fill="currentColor" stroke={wishlisted ? 'currentColor' : '#0B2E33'} strokeWidth={2.5} aria-hidden>
+            <button onClick={toggleWishlist} className="w-9 h-9 rounded-full bg-paper shadow-md flex items-center justify-center" aria-label={wishlisted ? 'Remove from wishlist' : 'Save'}>
+              <svg viewBox="0 0 32 32" className={`w-4 h-4 ${wishlisted ? 'text-sun' : 'text-transparent'}`} fill="currentColor" stroke={wishlisted ? 'currentColor' : '#1C1B1A'} strokeWidth={2.5} aria-hidden>
                 <path d="M16 28c7-4.73 14-10 14-17a6.98 6.98 0 0 0-7-7c-1.8 0-3.58.68-4.95 2.05L16 8.1l-2.05-2.05a6.98 6.98 0 0 0-9.9 0A6.98 6.98 0 0 0 2 11c0 7 7 12.27 14 17z" />
               </svg>
             </button>
@@ -286,14 +287,14 @@ export default function ExperienceDetailPage() {
       <div className="max-w-[1120px] mx-auto px-6 sm:px-10">
         {/* ── Title row (desktop) ───────────────────────────────────────── */}
         <div className="hidden md:flex items-end justify-between gap-6 pt-6">
-          <h1 className="text-[26px] font-semibold text-ink leading-tight">{experience.title}</h1>
+          <h1 className="text-[36px] leading-tight font-semibold text-ink leading-tight">{experience.title}</h1>
           <div className="flex items-center gap-4 shrink-0">
             <IconBtn onClick={share} label="Share">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v13M7 8l5-5 5 5M5 14v5a2 2 0 002 2h10a2 2 0 002-2v-5" /></svg>
               Share
             </IconBtn>
             <IconBtn onClick={toggleWishlist} label={wishlisted ? 'Remove from wishlist' : 'Save'}>
-              <svg viewBox="0 0 32 32" className={`w-4 h-4 ${wishlisted ? 'text-sun' : 'text-transparent'}`} fill="currentColor" stroke={wishlisted ? 'currentColor' : '#0B2E33'} strokeWidth={3} aria-hidden>
+              <svg viewBox="0 0 32 32" className={`w-4 h-4 ${wishlisted ? 'text-sun' : 'text-transparent'}`} fill="currentColor" stroke={wishlisted ? 'currentColor' : '#1C1B1A'} strokeWidth={3} aria-hidden>
                 <path d="M16 28c7-4.73 14-10 14-17a6.98 6.98 0 0 0-7-7c-1.8 0-3.58.68-4.95 2.05L16 8.1l-2.05-2.05a6.98 6.98 0 0 0-9.9 0A6.98 6.98 0 0 0 2 11c0 7 7 12.27 14 17z" />
               </svg>
               {wishlisted ? 'Saved' : 'Save'}
@@ -302,14 +303,14 @@ export default function ExperienceDetailPage() {
         </div>
 
         {/* ── Photo grid (desktop) ──────────────────────────────────────── */}
-        <div className="hidden md:grid relative mt-6 grid-cols-4 grid-rows-2 gap-2 h-[440px] lg:h-[480px] rounded-xl overflow-hidden">
+        <div className="hidden md:grid relative mt-6 grid-cols-4 grid-rows-2 gap-2 h-[440px] lg:h-[500px] rounded-[28px] overflow-hidden">
           {[0, 1, 2, 3, 4].map((i) => {
             const im = images[i];
             return (
               <button
                 key={i}
                 onClick={() => { setActiveImage(i); setShowAllPhotos(true); }}
-                className={`relative bg-[#EDF2F2] overflow-hidden group ${i === 0 ? 'col-span-2 row-span-2' : ''}`}
+                className={`relative bg-[#EAE1D3] overflow-hidden group ${i === 0 ? 'col-span-2 row-span-2' : ''}`}
                 aria-label={`Open photo ${i + 1}`}
                 disabled={!im}
               >
@@ -322,7 +323,7 @@ export default function ExperienceDetailPage() {
           {images.length > 0 && (
             <button
               onClick={() => setShowAllPhotos(true)}
-              className="absolute bottom-6 right-6 inline-flex items-center gap-2 rounded-lg bg-white border border-ink px-4 py-1.5 text-sm font-semibold hover:bg-fog"
+              className="absolute bottom-6 right-6 inline-flex items-center gap-2 rounded-lg bg-paper border border-ink px-4 py-1.5 text-sm font-semibold hover:bg-fog"
             >
               <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden><path d="M3 11.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm5 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm5 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm-10-5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm5 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm5 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm-10-5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm5 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm5 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3z" /></svg>
               Show all photos
@@ -333,8 +334,8 @@ export default function ExperienceDetailPage() {
         {/* ── Content + booking ────────────────────────────────────────── */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_372px] gap-12 lg:gap-24 pt-6 md:pt-10">
           <div className="min-w-0">
-            <h1 className="md:hidden text-[26px] font-semibold leading-tight">{experience.title}</h1>
-            <h2 className="hidden md:block text-[22px] font-semibold text-ink">Experience in {experience.location.address}</h2>
+            <h1 className="md:hidden text-[36px] leading-tight font-semibold leading-tight">{experience.title}</h1>
+            <h2 className="hidden md:block text-[30px] leading-tight font-semibold text-ink">Experience in {experience.location.address}</h2>
             <p className="mt-1 text-ink">
               {experience.duration} hr{experience.duration === 1 ? '' : 's'} · Up to 8 guests · {experience.category?.join(' · ')}
             </p>
@@ -346,7 +347,7 @@ export default function ExperienceDetailPage() {
             )}
 
             {isFavorite && (
-              <a href="#reviews" className="mt-8 flex items-center gap-4 sm:gap-6 rounded-xl border border-[#DCE4E5] px-5 sm:px-6 py-5 hover:shadow-md transition-shadow">
+              <a href="#reviews" className="mt-8 flex items-center gap-4 sm:gap-6 rounded-xl border border-[#E1D8CA] px-5 sm:px-6 py-5 hover:shadow-md transition-shadow">
                 <span className="flex items-center text-ink shrink-0">
                   <Laurel />
                   <span className="text-center leading-[1.1] font-semibold text-[17px] px-0.5">Guest<br />favorite</span>
@@ -355,7 +356,7 @@ export default function ExperienceDetailPage() {
                 <span className="hidden sm:block flex-1 text-[15px] font-semibold leading-snug">
                   One of the most loved experiences on Nsoroma, according to guests
                 </span>
-                <span className="ml-auto flex items-center divide-x divide-[#DCE4E5]">
+                <span className="ml-auto flex items-center divide-x divide-[#E1D8CA]">
                   <span className="px-4 text-center">
                     <span className="block text-[22px] font-semibold leading-none">{experience.averageRating.toFixed(2)}</span>
                     <span className="block text-[10px] tracking-[0.15em] mt-1" aria-hidden>★★★★★</span>
@@ -370,7 +371,7 @@ export default function ExperienceDetailPage() {
 
             {/* Host */}
             {experience.guide && (
-              <div className="flex items-center gap-4 py-8 border-b border-[#DCE4E5]">
+              <div className="flex items-center gap-4 py-8 border-b border-[#E1D8CA]">
                 <div className="relative w-12 h-12 shrink-0">
                   <div className="w-12 h-12 rounded-full bg-ink text-white overflow-hidden flex items-center justify-center text-lg font-semibold">
                     {experience.guide.profile?.profilePhotoUrl
@@ -378,7 +379,7 @@ export default function ExperienceDetailPage() {
                       : experience.guide.profile?.firstName?.[0]}
                   </div>
                   {experience.guide.verified && (
-                    <span className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-leaf ring-2 ring-white flex items-center justify-center" title="Verified guide">
+                    <span className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-leaf ring-2 ring-paper flex items-center justify-center" title="Verified guide">
                       <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth={3.5} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                     </span>
                   )}
@@ -391,7 +392,7 @@ export default function ExperienceDetailPage() {
             )}
 
             {/* Highlights */}
-            <ul className="py-8 space-y-6 border-b border-[#DCE4E5]">
+            <ul className="py-8 space-y-6 border-b border-[#E1D8CA]">
               {highlights.map((h) => (
                 <li key={h.title} className="flex gap-6">
                   <svg className="w-6 h-6 shrink-0 text-ink mt-0.5" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d={h.icon} /></svg>
@@ -404,8 +405,8 @@ export default function ExperienceDetailPage() {
             </ul>
 
             {/* About */}
-            <section className="py-8 border-b border-[#DCE4E5]">
-              <h2 className="text-[22px] font-semibold mb-4">What you’ll do</h2>
+            <section className="py-8 border-b border-[#E1D8CA]">
+              <h2 className="text-[30px] leading-tight font-semibold mb-4">What you’ll do</h2>
               <p className={`text-ink leading-[1.6] whitespace-pre-line ${longAbout && !aboutOpen ? 'line-clamp-6' : ''}`}>{description}</p>
               {longAbout && (
                 <button onClick={() => setAboutOpen((o) => !o)} className="mt-4 inline-flex items-center gap-1 font-semibold underline underline-offset-2">
@@ -417,16 +418,16 @@ export default function ExperienceDetailPage() {
 
             {/* Availability */}
             {slots.length > 0 && (
-              <section className="py-8 border-b border-[#DCE4E5]">
-                <h2 className="text-[22px] font-semibold">Upcoming availability</h2>
+              <section className="py-8 border-b border-[#E1D8CA]">
+                <h2 className="text-[30px] leading-tight font-semibold">Upcoming availability</h2>
                 <p className="text-sm text-ink-muted mt-1 mb-6">Pick a date and time in the booking panel.</p>
                 <AvailabilityCalendar slots={slots} />
               </section>
             )}
 
             {/* Reviews */}
-            <section id="reviews" className="py-10 border-b border-[#DCE4E5] scroll-mt-24">
-              <h2 className="text-[22px] font-semibold flex items-center gap-2">
+            <section id="reviews" className="py-10 border-b border-[#E1D8CA] scroll-mt-24">
+              <h2 className="text-[30px] leading-tight font-semibold flex items-center gap-2">
                 <svg viewBox="0 0 32 32" className="w-5 h-5" fill="currentColor" aria-hidden><path d="M15.1 1.58l-4.13 8.88-9.86 1.27a1 1 0 0 0-.54 1.74l7.3 6.57-1.97 9.85a1 1 0 0 0 1.48 1.06l8.62-5 8.63 5a1 1 0 0 0 1.48-1.06l-1.97-9.85 7.3-6.57a1 1 0 0 0-.55-1.73l-9.86-1.28-4.12-8.88a1 1 0 0 0-1.82 0z" /></svg>
                 {experience.averageRating > 0 ? `${experience.averageRating.toFixed(2)} · ` : ''}{reviewTotal} review{reviewTotal !== 1 ? 's' : ''}
               </h2>
@@ -439,7 +440,7 @@ export default function ExperienceDetailPage() {
                     return (
                       <article key={review.id}>
                         <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 rounded-full bg-[#0B2E33] text-white flex items-center justify-center font-semibold shrink-0">
+                          <div className="w-12 h-12 rounded-full bg-[#1C1B1A] text-white flex items-center justify-center font-semibold shrink-0">
                             {review.traveler?.profile?.firstName?.[0] ?? '?'}
                           </div>
                           <div>
@@ -464,11 +465,11 @@ export default function ExperienceDetailPage() {
             </section>
 
             {/* Location */}
-            <section className="py-10 border-b border-[#DCE4E5]">
-              <h2 className="text-[22px] font-semibold mb-2">Where you’ll be</h2>
+            <section className="py-10 border-b border-[#E1D8CA]">
+              <h2 className="text-[30px] leading-tight font-semibold mb-2">Where you’ll be</h2>
               <p className="text-ink mb-6">{experience.location.address}</p>
               {experience.location.latitude && experience.location.longitude ? (
-                <div className="rounded-xl overflow-hidden h-[340px] border border-[#DCE4E5]">
+                <div className="rounded-xl overflow-hidden h-[340px] border border-[#E1D8CA]">
                   <iframe
                     title="Location"
                     src={`https://www.openstreetmap.org/export/embed.html?bbox=${experience.location.longitude - 0.01},${experience.location.latitude - 0.01},${experience.location.longitude + 0.01},${experience.location.latitude + 0.01}&layer=mapnik&marker=${experience.location.latitude},${experience.location.longitude}`}
@@ -477,7 +478,7 @@ export default function ExperienceDetailPage() {
                 </div>
               ) : (
                 <div className="rounded-xl bg-fog h-56 flex flex-col items-center justify-center text-ink-muted">
-                  <span className="text-3xl mb-2" aria-hidden>📍</span>
+                  <MapPin className="w-7 h-7 mb-2" strokeWidth={1.5} aria-hidden />
                   <p className="text-sm">Exact meeting point shared after booking</p>
                 </div>
               )}
@@ -485,8 +486,8 @@ export default function ExperienceDetailPage() {
 
             {/* Meet your host */}
             {experience.guide && (
-              <section className="py-10 border-b border-[#DCE4E5]">
-                <h2 className="text-[22px] font-semibold mb-6">Meet your host</h2>
+              <section className="py-10 border-b border-[#E1D8CA]">
+                <h2 className="text-[30px] leading-tight font-semibold mb-6">Meet your host</h2>
                 <div className="grid sm:grid-cols-[280px_1fr] gap-8 items-start">
                   <div className="rounded-3xl shadow-[0_6px_20px_rgba(0,0,0,0.2)] p-6 text-center">
                     <div className="relative w-24 h-24 mx-auto">
@@ -496,7 +497,7 @@ export default function ExperienceDetailPage() {
                           : experience.guide.profile?.firstName?.[0]}
                       </div>
                       {experience.guide.verified && (
-                        <span className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-leaf ring-4 ring-white flex items-center justify-center">
+                        <span className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-leaf ring-4 ring-paper flex items-center justify-center">
                           <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth={3.5} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                         </span>
                       )}
@@ -511,7 +512,7 @@ export default function ExperienceDetailPage() {
                       <li>Responds within an hour</li>
                     </ul>
                     <p className="mt-6 flex items-start gap-2 text-xs text-ink-muted max-w-sm">
-                      <span aria-hidden>🛡️</span>
+                      <ShieldCheck className="w-4 h-4 shrink-0" aria-hidden />
                       To protect your payment, always pay and communicate through Nsoroma.
                     </p>
                   </div>
@@ -521,7 +522,7 @@ export default function ExperienceDetailPage() {
 
             {/* Things to know */}
             <section className="py-10">
-              <h2 className="text-[22px] font-semibold mb-6">Things to know</h2>
+              <h2 className="text-[30px] leading-tight font-semibold mb-6">Things to know</h2>
               <div className="grid sm:grid-cols-3 gap-8 text-sm">
                 <div>
                   <p className="font-semibold mb-2">Cancellation policy</p>
@@ -541,7 +542,7 @@ export default function ExperienceDetailPage() {
 
           {/* ── Sticky booking card ───────────────────────────────────────── */}
           <aside id="book" className="scroll-mt-24">
-            <div className="lg:sticky lg:top-28 rounded-xl border border-[#DCE4E5] shadow-[0_6px_16px_rgba(0,0,0,0.12)] p-6">
+            <div className="lg:sticky lg:top-28 rounded-xl border border-[#E1D8CA] shadow-[0_6px_16px_rgba(0,0,0,0.12)] p-6">
               <div className="flex items-baseline justify-between gap-3 mb-6">
                 <p>
                   <span className="text-[22px] font-semibold">{priceLabel}</span>
@@ -554,7 +555,7 @@ export default function ExperienceDetailPage() {
               <BookingForm experienceId={experience.id} price={experience.price} slots={slots} />
             </div>
             <p className="mt-6 flex items-center justify-center gap-2 text-sm text-ink-muted">
-              <span aria-hidden>🛡️</span> Every booking is protected by escrow
+              <ShieldCheck className="w-4 h-4" aria-hidden /> Every booking is protected by escrow
             </p>
           </aside>
         </div>
@@ -562,7 +563,7 @@ export default function ExperienceDetailPage() {
 
       {/* Similar experiences */}
       {recommendations.length > 0 && (
-        <div className="max-w-[1120px] mx-auto px-6 sm:px-10 border-t border-[#DCE4E5] mt-4 pt-8">
+        <div className="max-w-[1120px] mx-auto px-6 sm:px-10 border-t border-[#E1D8CA] mt-4 pt-8">
           <Carousel title="You might also like" itemClassName="w-[72%] sm:w-[calc((100%-24px)/2)] lg:w-[calc((100%-72px)/4)]">
             {recommendations.slice(0, 8).map((rec) => <ExperienceCard key={rec.id} experience={rec} />)}
           </Carousel>
@@ -570,7 +571,7 @@ export default function ExperienceDetailPage() {
       )}
 
       {/* Mobile reserve bar */}
-      <div className="lg:hidden fixed bottom-[64px] md:bottom-0 inset-x-0 z-40 bg-white border-t border-[#EDF2F2] px-6 py-3 flex items-center justify-between">
+      <div className="lg:hidden fixed bottom-[64px] md:bottom-0 inset-x-0 z-40 bg-paper border-t border-[#EAE1D3] px-6 py-3 flex items-center justify-between">
         <div>
           <p className="text-[15px]"><span className="font-semibold">{priceLabel}</span> / guest</p>
           {experience.averageRating > 0 && <p className="text-xs text-ink-muted">★ {experience.averageRating.toFixed(2)} · {reviewTotal} reviews</p>}
@@ -580,8 +581,8 @@ export default function ExperienceDetailPage() {
 
       {/* All photos */}
       {showAllPhotos && (
-        <div className="fixed inset-0 bg-white z-[80] overflow-y-auto animate-fade-in" role="dialog" aria-modal="true" aria-label="All photos">
-          <div className="sticky top-0 bg-white/95 backdrop-blur z-10 flex items-center justify-between px-4 sm:px-8 h-16">
+        <div className="fixed inset-0 bg-paper z-[80] overflow-y-auto animate-fade-in" role="dialog" aria-modal="true" aria-label="All photos">
+          <div className="sticky top-0 bg-paper/95 backdrop-blur z-10 flex items-center justify-between px-4 sm:px-8 h-16">
             <button onClick={() => setShowAllPhotos(false)} className="w-9 h-9 rounded-full hover:bg-fog flex items-center justify-center" aria-label="Close photos">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
             </button>
@@ -592,7 +593,7 @@ export default function ExperienceDetailPage() {
           </div>
           <div className="max-w-3xl mx-auto px-4 pb-16 grid grid-cols-2 gap-2">
             {images.map((img, i) => (
-              <div key={i} className={`relative overflow-hidden bg-[#EDF2F2] ${i % 3 === 0 ? 'col-span-2 aspect-[3/2]' : 'aspect-square'}`}>
+              <div key={i} className={`relative overflow-hidden bg-[#EAE1D3] ${i % 3 === 0 ? 'col-span-2 aspect-[3/2]' : 'aspect-square'}`}>
                 <Image src={img.url} alt={`Photo ${i + 1}`} fill sizes="(min-width: 768px) 768px, 100vw" className="object-cover" />
               </div>
             ))}

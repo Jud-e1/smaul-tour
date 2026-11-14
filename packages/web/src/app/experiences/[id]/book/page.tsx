@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { experiencesApi } from '@/lib/api';
 import BookingForm, { AvailabilitySlot } from '@/components/booking/BookingForm';
+import { Compass, ShieldCheck } from 'lucide-react';
 
 interface ExperienceSummary {
   id: string;
@@ -48,7 +49,7 @@ export default function BookingPage() {
     return (
       <div className="min-h-[60vh] flex items-center justify-center px-6">
         <div className="text-center">
-          <p className="text-5xl mb-4" aria-hidden>🧭</p>
+          <div className="icon-tile w-16 h-16 mx-auto mb-5"><Compass className="w-7 h-7" strokeWidth={1.5} aria-hidden /></div>
           <h1 className="text-2xl font-semibold">We can’t find that experience</h1>
           <Link href="/experiences" className="btn-primary mt-6">Browse experiences</Link>
         </div>
@@ -66,7 +67,7 @@ export default function BookingPage() {
   const img = experience.images?.[0];
 
   return (
-    <div className="bg-white">
+    <div className="bg-canvas">
       <div className="max-w-[1120px] mx-auto px-6 sm:px-10 pt-8 md:pt-12 pb-10">
         <div className="flex items-center gap-3">
           {!booked && (
@@ -74,14 +75,14 @@ export default function BookingPage() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
             </Link>
           )}
-          <h1 className="text-[28px] sm:text-[32px] font-semibold">{booked ? 'You’re all set' : 'Confirm and pay'}</h1>
+          <h1 className="text-[38px] sm:text-[46px] leading-[1.05] font-semibold">{booked ? 'You’re all set' : 'Confirm and pay'}</h1>
         </div>
 
         <div className="mt-8 grid lg:grid-cols-[1fr_440px] gap-10 lg:gap-20 items-start">
           {/* Left: steps */}
           <div className="min-w-0 order-2 lg:order-1">
-            <section className="pb-8 border-b border-[#DCE4E5]">
-              <h2 className="text-[22px] font-semibold mb-6">Your trip</h2>
+            <section className="pb-8 border-b border-[#E1D8CA]">
+              <h2 className="text-[30px] leading-tight font-semibold mb-6">Your trip</h2>
               <BookingForm
                 experienceId={experience.id}
                 price={experience.price}
@@ -95,12 +96,12 @@ export default function BookingPage() {
             </section>
             {!booked && (
               <>
-                <section className="py-8 border-b border-[#DCE4E5]">
-                  <h2 className="text-[22px] font-semibold mb-2">Cancellation policy</h2>
+                <section className="py-8 border-b border-[#E1D8CA]">
+                  <h2 className="text-[30px] leading-tight font-semibold mb-2">Cancellation policy</h2>
                   <p className="text-ink"><span className="font-semibold capitalize">{policy}.</span> {POLICY[policy] ?? ''}</p>
                 </section>
                 <section className="py-8">
-                  <h2 className="text-[22px] font-semibold mb-2">Ground rules</h2>
+                  <h2 className="text-[30px] leading-tight font-semibold mb-2">Ground rules</h2>
                   <p className="text-ink-muted">We ask every guest to remember a few simple things about what makes a great guest.</p>
                   <ul className="mt-3 list-disc pl-5 text-ink space-y-1">
                     <li>Arrive at the meeting point on time</li>
@@ -112,9 +113,9 @@ export default function BookingPage() {
           </div>
 
           {/* Right: summary card */}
-          <aside className="order-1 lg:order-2 lg:sticky lg:top-28 rounded-xl border border-[#DCE4E5] p-6">
-            <div className="flex gap-4 pb-6 border-b border-[#DCE4E5]">
-              <div className="w-28 h-24 rounded-lg overflow-hidden bg-[#EDF2F2] shrink-0">
+          <aside className="order-1 lg:order-2 lg:sticky lg:top-28 rounded-xl border border-[#E1D8CA] p-6">
+            <div className="flex gap-4 pb-6 border-b border-[#E1D8CA]">
+              <div className="w-28 h-24 rounded-lg overflow-hidden bg-[#EAE1D3] shrink-0">
                 {img && (
                   <img src={img.thumbnailUrl || img.url} alt={experience.title} className="w-full h-full object-cover" />
                 )}
@@ -127,13 +128,13 @@ export default function BookingPage() {
                 ) : null}
               </div>
             </div>
-            <div className="py-6 border-b border-[#DCE4E5] space-y-2 text-[15px]">
+            <div className="py-6 border-b border-[#E1D8CA] space-y-2 text-[15px]">
               <h3 className="text-[22px] font-semibold mb-3">Price details</h3>
               <div className="flex justify-between"><span>Price per guest</span><span>{experience.price.currency === 'USD' ? '$' : `${experience.price.currency} `}{experience.price.amount.toFixed(0)}</span></div>
               <div className="flex justify-between"><span>Duration</span><span>{experience.duration} hrs</span></div>
             </div>
             <p className="pt-5 flex items-start gap-2 text-sm text-ink-muted">
-              <span aria-hidden>🛡️</span>
+              <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5" aria-hidden />
               Your payment is held in escrow and only released to the guide after your experience.
             </p>
           </aside>

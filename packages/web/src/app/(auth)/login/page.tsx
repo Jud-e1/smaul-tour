@@ -16,7 +16,7 @@ interface LoginForm {
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
   return (
-    <p className="mt-1.5 flex items-center gap-1.5 text-xs text-[#C13515]">
+    <p className="mt-1.5 flex items-center gap-1.5 text-xs text-[#B3261E]">
       <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor" aria-hidden><path d="M8 1a7 7 0 110 14A7 7 0 018 1zm0 9.5a1 1 0 100 2 1 1 0 000-2zM8 4a1 1 0 00-1 1v4a1 1 0 002 0V5a1 1 0 00-1-1z" /></svg>
       {message}
     </p>
@@ -50,9 +50,10 @@ export default function LoginPage() {
     <AuthShell
       title="Log in"
       caption="Explore · Experience · Belong"
+      headline="Your star is right where you left it."
       topLink={{ prompt: 'New to Nsoroma?', label: 'Create an account', href: '/register' }}
     >
-      <h2 className="text-[22px] font-semibold text-ink">Welcome back to Nsoroma</h2>
+      <h1 className="text-[44px] leading-[0.95] text-ink">Welcome back.</h1>
       <p className="mt-1 text-sm text-ink-muted">Log in to manage trips, wishlists and your AI itineraries.</p>
 
       <form onSubmit={(e) => { void handleSubmit(onSubmit)(e); }} className="mt-6 space-y-4" noValidate>
@@ -96,8 +97,8 @@ export default function LoginPage() {
         </div>
 
         {(submitError || error) && (
-          <div className="flex gap-3 rounded-xl border border-[#C13515]/25 bg-[#FFF8F6] p-3.5 text-sm text-ink" role="alert">
-            <span className="w-6 h-6 shrink-0 rounded-full bg-[#C13515] text-white flex items-center justify-center text-xs font-bold">!</span>
+          <div className="flex gap-3 rounded-xl border border-[#B3261E]/25 bg-[#FBEFEA] p-3.5 text-sm text-ink" role="alert">
+            <span className="w-6 h-6 shrink-0 rounded-full bg-[#B3261E] text-white flex items-center justify-center text-xs font-bold">!</span>
             <span>{submitError || error}</span>
           </div>
         )}

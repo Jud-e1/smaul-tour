@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
+import { Compass, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export interface Experience {
   id: string;
@@ -38,7 +39,7 @@ const STAR =
 export function Stars({ value, count }: { value: number; count?: number }) {
   return (
     <span className="inline-flex items-center gap-1 text-sm text-ink">
-      <svg viewBox="0 0 32 32" className="w-3 h-3 text-sun" fill="currentColor" aria-hidden><path d={STAR} /></svg>
+      <svg viewBox="0 0 32 32" className="w-3 h-3 text-ink" fill="currentColor" aria-hidden><path d={STAR} /></svg>
       <span>{value.toFixed(2)}</span>
       {count ? <span className="text-ink-muted">({count})</span> : null}
     </span>
@@ -59,7 +60,7 @@ export default function ExperienceCard({
   const images = experience.images?.length ? experience.images : [];
   const currentImg = images[imgIdx] ?? images[0];
 
-  const aspectClass = variant === 'compact' ? 'aspect-[4/3]' : 'aspect-[20/19]';
+  const aspectClass = variant === 'compact' ? 'aspect-[4/3]' : 'aspect-[4/5]';
   const guideName = experience.guide?.profile
     ? `${experience.guide.profile.firstName} ${experience.guide.profile.lastName}`.trim()
     : null;
@@ -69,8 +70,8 @@ export default function ExperienceCard({
 
   return (
     <div className="group min-w-0">
-      <Link href={link} className="block rounded-2xl">
-        <div className={`relative ${aspectClass} rounded-2xl overflow-hidden bg-[#EDF2F2]`}>
+      <Link href={link} className="block rounded-[24px]">
+        <div className={`relative ${aspectClass} rounded-[24px] overflow-hidden bg-sand`}>
           {currentImg ? (
             <Image
               src={currentImg.thumbnailUrl || currentImg.url}
@@ -80,11 +81,11 @@ export default function ExperienceCard({
               className="object-cover card-img"
             />
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center text-5xl" aria-hidden>🧭</div>
+            <div className="absolute inset-0 flex items-center justify-center text-stone-400" aria-hidden><Compass className="w-12 h-12" strokeWidth={1.25} /></div>
           )}
 
           {isUnavailable && (
-            <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] flex items-center justify-center z-20">
+            <div className="absolute inset-0 bg-paper/60 backdrop-blur-[1px] flex items-center justify-center z-20">
               <span className="badge">Currently unavailable</span>
             </div>
           )}
@@ -94,13 +95,11 @@ export default function ExperienceCard({
           {onWishlist && (
             <button
               onClick={(e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); onWishlist(experience.id); }}
-              className="absolute top-3 right-3 z-10 p-1 transition-transform hover:scale-110 active:scale-90"
+              className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-paper/90 backdrop-blur flex items-center justify-center shadow-sm transition-transform hover:scale-110 active:scale-90"
               aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
               aria-pressed={wishlisted}
             >
-              <svg viewBox="0 0 32 32" className={`w-6 h-6 drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)] ${wishlisted ? 'text-sun' : 'text-black/50'}`} fill="currentColor" stroke="white" strokeWidth={2} aria-hidden>
-                <path d="M16 28c7-4.73 14-10 14-17a6.98 6.98 0 0 0-7-7c-1.8 0-3.58.68-4.95 2.05L16 8.1l-2.05-2.05a6.98 6.98 0 0 0-9.9 0A6.98 6.98 0 0 0 2 11c0 7 7 12.27 14 17z" />
-              </svg>
+              <Heart className={`w-[18px] h-[18px] text-ink ${wishlisted ? 'fill-ink' : ''}`} strokeWidth={2} />
             </button>
           )}
 
@@ -112,23 +111,23 @@ export default function ExperienceCard({
                     key={i}
                     aria-label={`Show photo ${i + 1}`}
                     onClick={(e) => { e.preventDefault(); setImgIdx(i); }}
-                    className={`w-1.5 h-1.5 rounded-full transition-opacity ${i === imgIdx ? 'bg-white' : 'bg-white/60'}`}
+                    className={`w-1.5 h-1.5 rounded-full transition-opacity ${i === imgIdx ? 'bg-paper' : 'bg-paper/60'}`}
                   />
                 ))}
               </div>
               <button
                 aria-label="Previous photo"
                 onClick={(e) => { e.preventDefault(); setImgIdx((p) => (p - 1 + images.length) % images.length); }}
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 hover:bg-white rounded-full shadow-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:scale-105 z-10"
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-paper/95 hover:bg-paper rounded-full shadow-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:scale-105 z-10"
               >
-                <svg className="w-3 h-3 text-ink" fill="none" stroke="currentColor" strokeWidth={4} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                <ChevronLeft className="w-4 h-4 text-ink" />
               </button>
               <button
                 aria-label="Next photo"
                 onClick={(e) => { e.preventDefault(); setImgIdx((p) => (p + 1) % images.length); }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 hover:bg-white rounded-full shadow-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:scale-105 z-10"
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-paper/95 hover:bg-paper rounded-full shadow-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:scale-105 z-10"
               >
-                <svg className="w-3 h-3 text-ink" fill="none" stroke="currentColor" strokeWidth={4} viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                <ChevronRight className="w-4 h-4 text-ink" />
               </button>
             </>
           )}
@@ -136,7 +135,7 @@ export default function ExperienceCard({
 
         <div className="pt-3 text-[15px] leading-[1.35]">
           <div className="flex items-start justify-between gap-2">
-            <h3 className="font-semibold text-ink line-clamp-2 tracking-[-0.01em]">{experience.title}</h3>
+            <h3 className="font-semibold text-ink line-clamp-2 leading-snug">{experience.title}</h3>
             {experience.averageRating > 0 && <span className="shrink-0"><Stars value={experience.averageRating} /></span>}
           </div>
           <p className="mt-0.5 text-sm text-ink-muted truncate">
