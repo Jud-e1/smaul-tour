@@ -2,14 +2,12 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import BrandLogo from '@/components/brand/BrandLogo';
-import World3D from '@/components/three/World3D';
+import DashboardShell from '@/components/dashboard/DashboardShell';
 import { experiencesApi, bookingsApi, paymentsApi, userApi, reviewsApi } from '@/lib/api';
 import { useAuthStore, hasStoredSession } from '@/store/auth';
 import { useToast } from '@/components/ui/Toast';
 import StarRating from '@/components/ui/StarRating';
-import { CalendarDays, CheckCircle2, Compass, Hourglass, ImageIcon, ReceiptText, Star, UserRound, Wallet, type LucideIcon } from 'lucide-react';
+import { Bell, Plus, Settings, CalendarDays, CheckCircle2, Compass, Hourglass, ImageIcon, ReceiptText, Star, UserRound, Wallet, type LucideIcon } from 'lucide-react';
 
 type Tab = 'experiences' | 'bookings' | 'payments' | 'reviews' | 'profile';
 type BookingFilter = 'upcoming' | 'past' | 'cancelled';
@@ -288,80 +286,52 @@ export default function GuideDashboard() {
     { key: 'profile', label: 'Profile', icon: UserRound },
   ];
 
-  return (
-    <div className="bg-canvas">
-      <div className="max-w-[1120px] mx-auto px-6 sm:px-10 pt-8 md:pt-12 pb-10">
-        {/* Header stage with live 3D star */}
-        <div className="relative rounded-[32px] stage-mesh overflow-hidden grid md:grid-cols-[1.3fr_1fr] min-h-[300px]">
-          <div className="relative z-10 p-7 sm:p-10 flex flex-col justify-between gap-8">
-            <div className="flex items-center gap-3">
-              <Link href="/" className="shrink-0" aria-label="Nsoroma home">
-                <BrandLogo variant="mark" decorative className="h-9 w-9 object-contain" />
-              </Link>
-              <div className="w-12 h-12 rounded-full bg-ink text-paper flex items-center justify-center text-lg font-semibold overflow-hidden shrink-0 ring-4 ring-paper/70">
-                {user.profile?.profilePhotoUrl
-                  ? <img src={user.profile.profilePhotoUrl} alt={firstName} className="w-12 h-12 object-cover" />
-                  : avatarInitial}
-              </div>
-              <span className="mono text-[11px] uppercase tracking-[0.1em] text-stone-600">Hosting · Accra, Ghana</span>
-            </div>
-            <div>
-              <h1 className="text-[42px] sm:text-[60px] leading-[0.95] text-ink">Welcome back, {firstName}.</h1>
-              {avgRating > 0 && (
-                <div className="flex items-center gap-2 mt-3">
-                  <StarRating value={Math.round(avgRating)} readonly size="sm" />
-                  <span className="text-stone-600">{avgRating.toFixed(1)} average rating from your guests</span>
-                </div>
-              )}
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <Link href="/settings/notifications" className="btn bg-paper text-ink border border-hairline hover:border-ink !py-2.5 text-sm">Notifications</Link>
-              <button onClick={() => { logout(); router.push('/'); }} className="text-sm font-semibold underline underline-offset-4 px-3">Log out</button>
-            </div>
-          </div>
-          <div className="relative min-h-[240px]">
-            <World3D variant="star" className="absolute inset-0" fallback="/photos/drums.jpg" />
-          </div>
-        </div>
+  const nav = tabs.map((t) => ({ key: t.key, label: t.label, Icon: t.icon, active: tab === t.key, onClick: () => setTab(t.key) }));
+  const TITLES: Record<Tab, string> = { experiences: 'Experiences', bookings: 'Bookings', payments: 'Payments', reviews: 'Reviews', profile: 'Profile' };
+  const displayName = [user.profile?.firstName, user.profile?.lastName].filter(Boolean).join(' ') || firstName;
 
-        {/* KPI strip */}
-        <div className="mt-6 grid grid-cols-2 sm:grid-cols-5 rounded-[24px] border border-hairline bg-paper overflow-hidden">
+  return (
+    <>
+      <DashboardShell
+        nav={nav}
+        navLabel="Hosting"
+        links={[
+          { key: 'explore', label: 'View marketplace', Icon: Compass, href: '/experiences' },
+          { key: 'notifications', label: 'Notifications', Icon: Bell, href: '/settings/notifications' },
+          { key: 'settings', label: 'Settings', Icon: Settings, href: '/settings/notifications' },
+        ]}
+        user={{ name: displayName, email: user.email, initial: avatarInitial, photo: user.profile?.profilePhotoUrl, role: 'Guide' }}
+        onLogout={() => { logout(); router.push('/'); }}
+        title={TITLES[tab]}
+        subtitle={tab === 'experiences'
+          ? `Welcome back, ${firstName}.${avgRating > 0 ? ` Guests rate you ${avgRating.toFixed(1)} on average.` : ''}`
+          : undefined}
+        actions={tab === 'experiences' ? (
+          <button type="button" onClick={openCreateForm} className="btn-primary !py-2 !px-4 text-[14px]"><Plus className="w-4 h-4" />New experience</button>
+        ) : undefined}
+      >
+        {/* KPIs */}
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
           {[
             { label: 'Total earnings', value: `$${totalEarnings.toFixed(0)}`, icon: Wallet },
             { label: 'Pending payout', value: `$${pendingEarnings.toFixed(0)}`, icon: Hourglass },
             { label: 'Total bookings', value: allBookings.length, icon: CalendarDays },
             { label: 'Active listings', value: activeExperiences, icon: Compass },
             { label: 'Avg rating', value: avgRating > 0 ? avgRating.toFixed(1) : '—', icon: Star },
-          ].map((stat, i) => (
-            <div key={stat.label} className={`p-5 sm:p-6 border-[#E0E0E5] ${i % 2 === 0 ? 'border-r' : ''} sm:border-r sm:last:border-r-0 ${i < 4 ? 'border-b sm:border-b-0' : ''}`}>
-              <span className="icon-tile w-10 h-10" aria-hidden><stat.icon className="w-[18px] h-[18px]" strokeWidth={1.75} /></span>
-              <div className="mt-3 text-[28px] font-semibold leading-none tracking-[-0.02em]">{stat.value}</div>
-              <div className="mt-1.5 text-sm text-ink-muted">{stat.label}</div>
+          ].map((stat) => (
+            <div key={stat.label} className="rounded-[18px] bg-white ring-1 ring-hairline p-4 sm:p-5 min-w-0">
+              <div className="flex items-center justify-between">
+                <p className="text-[13px] font-medium text-stone-600 truncate">{stat.label}</p>
+                <span className="w-8 h-8 rounded-full bg-espresso-50 text-espresso flex items-center justify-center shrink-0"><stat.icon className="w-4 h-4" /></span>
+              </div>
+              <p className="mt-3 text-[28px] font-bold tracking-[-0.035em] leading-none text-ink">{stat.value}</p>
             </div>
           ))}
         </div>
 
-        {/* Tabs */}
-        <nav className="mt-10 mb-8 flex gap-6 sm:gap-8 overflow-x-auto scrollbar-hide border-b border-[#E0E0E5]" aria-label="Hosting">
-          {tabs.map((t) => (
-            <button key={t.key} onClick={() => setTab(t.key)} aria-current={tab === t.key ? 'page' : undefined}
-              className={`flex items-center gap-2 pb-3 -mb-px border-b-2 text-[15px] whitespace-nowrap transition-colors ${
-                tab === t.key ? 'border-ink text-ink font-semibold' : 'border-transparent text-ink-muted hover:text-ink hover:border-[#E0E0E5]'
-              }`}>
-              <t.icon className="w-4 h-4" strokeWidth={1.75} aria-hidden /><span>{t.label}</span>
-            </button>
-          ))}
-        </nav>
-
         {/* ── Experiences Tab ── */}
         {tab === 'experiences' && (
           <div>
-            <div className="flex justify-between items-center mb-5">
-              <h2 className="font-semibold text-ink">My Experiences</h2>
-              <button onClick={openCreateForm} className="bg-ink text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-[#000000] shadow-sm transition-all">
-                + New Experience
-              </button>
-            </div>
             {expLoading ? (
               <div className="space-y-3">{[1,2,3].map((i) => <div key={i} className="h-28 bg-paper rounded-2xl border border-[#E0E0E5] animate-pulse" />)}</div>
             ) : experiences.length === 0 ? (
@@ -598,7 +568,7 @@ export default function GuideDashboard() {
             </div>
           </div>
         )}
-      </div>
+      </DashboardShell>
 
       {/* ── Experience Form Modal ── */}
       {showExpForm && (
@@ -688,6 +658,6 @@ export default function GuideDashboard() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

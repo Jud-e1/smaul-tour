@@ -92,6 +92,8 @@ export default function Navbar() {
   const isAuth = ['/login', '/register', '/reset-password', '/verify-email'].includes(pathname);
   const showBigSearch = isBrowse && !scrolled;
   const showTabs = isHome || showBigSearch;
+  // Signed-in app areas bring their own chrome (DashboardShell); keep only the mobile tab bar.
+  const isApp = pathname.startsWith('/dashboard') || pathname.startsWith('/admin');
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -140,6 +142,7 @@ export default function Navbar() {
   return (
     <>
       {/* ── Desktop / tablet header ───────────────────────────────────── */}
+      {!isApp && (<>
       <header className={`hidden md:block sticky top-0 z-40 bg-canvas/90 backdrop-blur-xl border-b transition-colors ${scrolled ? 'border-hairline' : 'border-transparent'}`}>
         <div className="max-w-page mx-auto px-6 lg:px-10 xl:px-16">
           <div className="h-20 flex items-center justify-between gap-4">
@@ -316,6 +319,8 @@ export default function Navbar() {
           </form>
         </div>
       )}
+
+      </>)}
 
       {/* ── Mobile bottom tab bar ─────────────────────────────────────── */}
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 bottom-nav-glass pb-[max(0.5rem,env(safe-area-inset-bottom))]" aria-label="Primary">

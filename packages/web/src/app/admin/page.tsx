@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { adminApi, reviewsApi } from '@/lib/api';
 import { useAuthStore } from '@/store/auth';
 import { useRouter } from 'next/navigation';
-import BrandLogo from '@/components/brand/BrandLogo';
+import DashboardShell from '@/components/dashboard/DashboardShell';
+import { BadgeCheck, BarChart3, Compass, Flag, Globe, ScrollText, Users, type LucideIcon } from 'lucide-react';
 
 type Tab = 'verifications' | 'experiences' | 'reviews' | 'users' | 'metrics' | 'audit';
 
@@ -63,7 +64,7 @@ interface AuditLog {
 }
 
 export default function AdminPage() {
-  const { user } = useAuthStore();
+  const { user, logout } = useAuthStore();
   const router = useRouter();
   const [tab, setTab] = useState<Tab>('verifications');
   const [verifications, setVerifications] = useState<VerificationRequest[]>([]);
@@ -158,44 +159,30 @@ export default function AdminPage() {
     setUsers((prev) => prev.map((u) => (u.id === id ? { ...u, status: 'active' } : u)));
   };
 
-  const tabs: { key: Tab; label: string }[] = [
-    { key: 'verifications', label: 'Verifications' },
-    { key: 'experiences', label: 'Experiences' },
-    { key: 'reviews', label: 'Reviews' },
-    { key: 'users', label: 'Users' },
-    { key: 'metrics', label: 'Metrics' },
-    { key: 'audit', label: 'Audit Log' },
+  const tabs: { key: Tab; label: string; Icon: LucideIcon }[] = [
+    { key: 'verifications', label: 'Verifications', Icon: BadgeCheck },
+    { key: 'experiences', label: 'Experiences', Icon: Compass },
+    { key: 'reviews', label: 'Reviews', Icon: Flag },
+    { key: 'users', label: 'Users', Icon: Users },
+    { key: 'metrics', label: 'Metrics', Icon: BarChart3 },
+    { key: 'audit', label: 'Audit log', Icon: ScrollText },
   ];
 
   if (!user || user.role !== 'admin') return null;
 
+  const adminName = user.profile?.firstName || user.email?.split('@')[0] || 'Admin';
+  const active = tabs.find((t) => t.key === tab)!;
+
   return (
-    <div className="bg-canvas">
-      <div className="max-w-page mx-auto px-6 lg:px-10 xl:px-20 pt-8 md:pt-12 pb-10">
-        <div className="flex items-center gap-4">
-          <BrandLogo variant="mark" decorative className="h-11 w-11 object-contain" />
-          <div>
-            <p className="text-sm text-ink-muted">Nsoroma operations</p>
-            <h1 className="text-[38px] sm:text-[46px] leading-[1.05] font-semibold leading-tight">Admin console</h1>
-          </div>
-        </div>
-
-        {/* Tab Navigation */}
-        <nav className="mt-8 mb-8 flex gap-6 sm:gap-8 overflow-x-auto scrollbar-hide border-b border-[#E0E0E5]" aria-label="Admin">
-          {tabs.map((t) => (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              aria-current={tab === t.key ? 'page' : undefined}
-              className={`pb-3 -mb-px border-b-2 text-[15px] whitespace-nowrap transition-colors ${
-                tab === t.key ? 'border-ink text-ink font-semibold' : 'border-transparent text-ink-muted hover:text-ink hover:border-[#E0E0E5]'
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </nav>
-
+    <DashboardShell
+      nav={tabs.map((t) => ({ key: t.key, label: t.label, Icon: t.Icon, active: tab === t.key, onClick: () => setTab(t.key) }))}
+      navLabel="Operations"
+      links={[{ key: 'site', label: 'View marketplace', Icon: Globe, href: '/experiences' }]}
+      user={{ name: adminName, email: user.email, initial: adminName.charAt(0).toUpperCase(), photo: user.profile?.profilePhotoUrl, role: 'Admin' }}
+      onLogout={() => { logout(); router.push('/'); }}
+      title={active.label}
+      subtitle="Nsoroma admin console"
+    >
         {loading ? (
           <div className="space-y-3">{[0,1,2].map((i) => <div key={i} className="h-16 rounded-xl shimmer" />)}</div>
         ) : (
@@ -477,7 +464,6 @@ export default function AdminPage() {
             )}
           </>
         )}
-      </div>
-    </div>
+    </DashboardShell>
   );
 }
